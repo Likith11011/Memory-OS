@@ -85,9 +85,9 @@ export const deleteMemory = async (id: number) => {
   return res.data;
 };
 
-export const chatWithMemories = async (message: string) => {
+export const chatWithMemories = async (message: string, nMemories?: number) => {
   if (!message?.trim()) throw new Error("Message cannot be empty");
-  const res = await api.post("/chat/", { message: message.trim() });
+  const res = await api.post("/chat/", { message: message.trim(), nMemories });
   return res.data;
 };
 export const getByCategory = async (category: string) => {
