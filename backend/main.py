@@ -27,7 +27,7 @@ from slowapi.errors import RateLimitExceeded
 from backend.database import Base, engine
 from backend.auth.routes import router as auth_router
 from backend.memories.routes import router as memories_router
-from chat.routes import router as chat_router
+from backend.chat.routes import router as chat_router
 
 Base.metadata.create_all(bind=engine)
 

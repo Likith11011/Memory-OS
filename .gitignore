@@ -44,6 +44,7 @@ next-env.d.ts
 backend/venv/
 backend/__pycache__/
 backend/*.db
+backend/config.py
 # Environment
 .env
 .env.local

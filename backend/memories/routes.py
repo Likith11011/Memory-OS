@@ -13,8 +13,8 @@ from backend.auth.models import User
 from backend.memories.models import Memory
 from backend.memories.extractor import extract_text, detect_language
 from backend.memories.embedder import get_embedding, get_search_embedding
-from vector_store.chroma import add_to_chroma, search_chroma, delete_from_chroma
-from config import settings
+from backend.vector_store.chroma import add_to_chroma, search_chroma, delete_from_chroma
+from backend.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/memories", tags=["memories"])
