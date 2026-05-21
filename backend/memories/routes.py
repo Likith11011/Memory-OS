@@ -6,15 +6,15 @@ from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, B
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-# Backend modules need '' prefix since main.py is in backend/
-from backend.database import get_db
-from backend.auth.utils import get_current_user
-from backend.auth.models import User
-from backend.memories.models import Memory
-from backend.memories.extractor import extract_text, detect_language
-from backend.memories.embedder import get_embedding, get_search_embedding
-from backend.vector_store.chroma import add_to_chroma, search_chroma, delete_from_chroma
-from backend.config import settings
+# modules need '' prefix since main.py is in 
+from database import get_db
+from auth.utils import get_current_user
+from auth.models import User
+from memories.models import Memory
+from memories.extractor import extract_text, detect_language
+from memories.embedder import get_embedding, get_search_embedding
+from vector_store.chroma import add_to_chroma, search_chroma, delete_from_chroma
+from config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/memories", tags=["memories"])

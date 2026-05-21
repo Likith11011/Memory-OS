@@ -1,5 +1,5 @@
 import resend
-from backend.config import settings
+from config import settings
 resend.api_key = settings.RESEND_API_KEY
 
 def send_confirmation_email(to_email: str, username: str) -> bool:

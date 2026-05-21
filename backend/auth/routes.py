@@ -2,9 +2,9 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, field_validator
-from backend.database import get_db
-from backend.auth.models import User
-from backend.auth.utils import hash_password, verify_password, create_access_token, validate_password
+from database import get_db
+from auth.models import User
+from auth.utils import hash_password, verify_password, create_access_token, validate_password
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])

@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from pydantic import BaseModel
-from backend. database import get_db
-from backend.auth.utils import get_current_user
-from backend.auth.models import User
-from backend.memories.models import Memory
-from backend.memories.embedder import get_search_embedding
-from backend.vector_store.chroma import search_chroma
+from  database import get_db
+from auth.utils import get_current_user
+from auth.models import User
+from memories.models import Memory
+from memories.embedder import get_search_embedding
+from vector_store.chroma import search_chroma
 from groq import Groq
 
 logger = logging.getLogger(__name__)
