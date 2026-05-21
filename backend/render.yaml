@@ -10,14 +10,14 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: SECRET_KEY
-        value: memoryos_super_secret_key_2026_change_in_prod
+        value: "<YOUR_SECRET_KEY>"
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_k8cIYWKdnD6t@ep-soft-recipe-aoby8v21-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+        value: "<YOUR_DATABASE_URL>"
       - key: FRONTEND_URL
-        value: memory-os-4pyc-45w5uu4pz-likith11011s-projects.vercel.app
+        value: "<YOUR_FRONTEND_URL>"
       - key: HF_TOKEN
-        value: "<HF_TOKEN_HERE>"
+        value: "<YOUR_HF_TOKEN>"
       - key: FROM_EMAIL
-        value: onboarding@resend.dev
+        value: "<YOUR_EMAIL>"
       - key: RENDER
         value: "true"
