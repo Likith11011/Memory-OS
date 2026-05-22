@@ -47,7 +47,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "memory-os-4pyc-bn29ukz7r-likith11011s-projects.vercel.app",
+        "https://memory-os-4pyc.vercel.app",
         os.getenv("FRONTEND_URL", "http://localhost:3000"),
     ],
     allow_credentials=True,
