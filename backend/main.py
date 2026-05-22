@@ -37,7 +37,7 @@ except Exception as e:
     logger.error(f"Database init failed: {e}")
 
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(title="MemoryOS Lite API", version="1.0.0")
+app = FastAPI(title="MemoryOS API", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -45,7 +45,11 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "memory-os-4pyc-bn29ukz7r-likith11011s-projects.vercel.app",
+        os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -95,7 +99,7 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     schema = get_openapi(
-        title="MemoryOS Lite API",
+        title="MemoryOS API",
         version="1.0.0",
         routes=app.routes,
     )
