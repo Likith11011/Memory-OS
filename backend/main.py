@@ -35,7 +35,7 @@ os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://memory-os-4pyc.vercel.app")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # ------------------------------
 # Database initialization
@@ -138,7 +138,7 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     schema = get_openapi(
-        title="MemoryOS API",
+        title="MemoryOS  API",
         version="1.0.0",
         routes=app.routes,
     )
