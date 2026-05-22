@@ -9,7 +9,6 @@ from auth.utils import hash_password, verify_password, create_access_token, vali
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
 
-
 class SignupRequest(BaseModel):
     email: str
     password: str
@@ -32,7 +31,6 @@ class SignupRequest(BaseModel):
             raise ValueError(msg)
         return v
 
-
 class LoginRequest(BaseModel):
     email: str
     password: str
@@ -45,7 +43,9 @@ class LoginRequest(BaseModel):
             raise ValueError("Invalid email address")
         return v
 
-
+# -----------------------------
+# Signup
+# -----------------------------
 @router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == request.email).first()
@@ -55,7 +55,9 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
     try:
-        hashed = hash_password(request.password)
+        # Truncate password to 72 chars for bcrypt
+        password = request.password[:72]
+        hashed = hash_password(password)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
@@ -74,11 +76,15 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
     token = create_access_token({"sub": user.email})
     return {"access_token": token, "token_type": "bearer"}
 
-
+# -----------------------------
+# Login
+# -----------------------------
 @router.post("/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
-    if not user or not verify_password(request.password, user.hashed_password):
+    # Truncate password to 72 chars for bcrypt verification
+    input_password = request.password[:72]
+    if not user or not verify_password(input_password, user.hashed_password):
         logger.warning(f"Failed login attempt for: {request.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
