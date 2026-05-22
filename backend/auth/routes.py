@@ -9,13 +9,16 @@ from auth.utils import hash_password, verify_password, create_access_token, vali
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
 
+# -----------------------------
+# Pydantic request models
+# -----------------------------
 class SignupRequest(BaseModel):
     email: str
     password: str
 
     @field_validator("email")
     @classmethod
-    def email_must_be_valid(cls, v):
+    def email_must_be_valid(cls, v: str) -> str:
         v = v.strip().lower()
         if not v or "@" not in v or "." not in v.split("@")[-1]:
             raise ValueError("Invalid email address")
@@ -25,7 +28,7 @@ class SignupRequest(BaseModel):
 
     @field_validator("password")
     @classmethod
-    def password_must_be_valid(cls, v):
+    def password_must_be_valid(cls, v: str) -> str:
         valid, msg = validate_password(v)
         if not valid:
             raise ValueError(msg)
@@ -37,14 +40,14 @@ class LoginRequest(BaseModel):
 
     @field_validator("email")
     @classmethod
-    def email_must_be_valid(cls, v):
+    def email_must_be_valid(cls, v: str) -> str:
         v = v.strip().lower()
         if not v or "@" not in v:
             raise ValueError("Invalid email address")
         return v
 
 # -----------------------------
-# Signup
+# Signup endpoint
 # -----------------------------
 @router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
@@ -55,8 +58,7 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
     try:
-        # Truncate password to 72 chars for bcrypt
-        password = request.password[:72]
+        password = request.password[:72]  # truncate for bcrypt
         hashed = hash_password(password)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -77,13 +79,12 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 # -----------------------------
-# Login
+# Login endpoint
 # -----------------------------
 @router.post("/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
-    # Truncate password to 72 chars for bcrypt verification
-    input_password = request.password[:72]
+    input_password = request.password[:72]  # truncate for bcrypt
     if not user or not verify_password(input_password, user.hashed_password):
         logger.warning(f"Failed login attempt for: {request.email}")
         raise HTTPException(
