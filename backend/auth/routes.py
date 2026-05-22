@@ -9,16 +9,14 @@ from auth.utils import hash_password, verify_password, create_access_token, vali
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["auth"])
 
-# -----------------------------
-# Pydantic request models
-# -----------------------------
+
 class SignupRequest(BaseModel):
     email: str
     password: str
 
     @field_validator("email")
     @classmethod
-    def email_must_be_valid(cls, v: str) -> str:
+    def email_must_be_valid(cls, v):
         v = v.strip().lower()
         if not v or "@" not in v or "." not in v.split("@")[-1]:
             raise ValueError("Invalid email address")
@@ -28,11 +26,12 @@ class SignupRequest(BaseModel):
 
     @field_validator("password")
     @classmethod
-    def password_must_be_valid(cls, v: str) -> str:
+    def password_must_be_valid(cls, v):
         valid, msg = validate_password(v)
         if not valid:
             raise ValueError(msg)
         return v
+
 
 class LoginRequest(BaseModel):
     email: str
@@ -40,15 +39,13 @@ class LoginRequest(BaseModel):
 
     @field_validator("email")
     @classmethod
-    def email_must_be_valid(cls, v: str) -> str:
+    def email_must_be_valid(cls, v):
         v = v.strip().lower()
         if not v or "@" not in v:
             raise ValueError("Invalid email address")
         return v
 
-# -----------------------------
-# Signup endpoint
-# -----------------------------
+
 @router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == request.email).first()
@@ -58,8 +55,7 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
     try:
-        password = request.password[:72]  # truncate for bcrypt
-        hashed = hash_password(password)
+        hashed = hash_password(request.password)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
@@ -78,14 +74,11 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
     token = create_access_token({"sub": user.email})
     return {"access_token": token, "token_type": "bearer"}
 
-# -----------------------------
-# Login endpoint
-# -----------------------------
+
 @router.post("/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
-    input_password = request.password[:72]  # truncate for bcrypt
-    if not user or not verify_password(input_password, user.hashed_password):
+    if not user or not verify_password(request.password, user.hashed_password):
         logger.warning(f"Failed login attempt for: {request.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

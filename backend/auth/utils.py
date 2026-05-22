@@ -1,4 +1,5 @@
 import re
+import hashlib
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
@@ -34,18 +35,29 @@ def validate_password(password: str) -> tuple[bool, str]:
     return True, ""
 
 
+def _prepare_password(password: str) -> str:
+    """
+    Hash password with SHA-256 first to avoid bcrypt 72-byte limit.
+    This is safe and standard practice.
+    """
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
 def hash_password(password: str) -> str:
     valid, msg = validate_password(password)
     if not valid:
         raise ValueError(msg)
-    return pwd_context.hash(password)
+    # Pre-hash to avoid bcrypt 72-byte truncation
+    prepared = _prepare_password(password)
+    return pwd_context.hash(prepared)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
     if not plain or not hashed:
         return False
     try:
-        return pwd_context.verify(plain, hashed)
+        prepared = _prepare_password(plain)
+        return pwd_context.verify(prepared, hashed)
     except Exception:
         return False
 

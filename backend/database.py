@@ -9,9 +9,7 @@ connect_args = {}
 if "sqlite" in DATABASE_URL:
     connect_args = {"check_same_thread": False}
 
-engine_kwargs = {
-    "connect_args": connect_args,
-}
+engine_kwargs = {"connect_args": connect_args}
 
 if "postgresql" in DATABASE_URL or "postgres" in DATABASE_URL:
     engine_kwargs.update({
@@ -23,7 +21,6 @@ if "postgresql" in DATABASE_URL or "postgres" in DATABASE_URL:
     })
 
 engine = create_engine(DATABASE_URL, **engine_kwargs)
-
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

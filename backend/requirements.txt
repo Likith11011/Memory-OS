@@ -18,4 +18,3 @@ pytesseract
 Pillow
 youtube-transcript-api
 slowapi
-sentence-transformers

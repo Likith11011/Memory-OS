@@ -5,19 +5,17 @@ services:
     region: singapore
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT}
+    startCommand: uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1 --timeout-keep-alive 75
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-      - key: SECRET_KEY
-        value: "<YOUR_SECRET_KEY>"
-      - key: DATABASE_URL
-        value: "<YOUR_DATABASE_URL>"
-      - key: FRONTEND_URL
-        value: "<YOUR_FRONTEND_URL>"
-      - key: HF_TOKEN
-        value: "<YOUR_HF_TOKEN>"
-      - key: FROM_EMAIL
-        value: "<YOUR_EMAIL>"
       - key: RENDER
         value: "true"
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: memory-os-4pyc-1r25k9e7m-likith11011s-projects.vercel.app
