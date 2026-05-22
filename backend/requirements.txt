@@ -6,7 +6,6 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 pdfplumber
-sentence-transformers
 chromadb
 python-dotenv
 pydantic-settings
@@ -19,3 +18,4 @@ pytesseract
 Pillow
 youtube-transcript-api
 slowapi
+sentence-transformers

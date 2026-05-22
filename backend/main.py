@@ -1,8 +1,21 @@
 import os
 import logging
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
+from memoryos.backend.vector_store.chroma import IS_PRODUCTION
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
+from database import Base, engine
+from auth.routes import router as auth_router
+from memories.routes import router as memories_router
+from chat.routes import router as chat_router
+IS_PRODUCTION = bool(os.getenv("RENDER", False))
 # ------------------------------
-# Logging Setup
+# Logging setup
 # ------------------------------
 for noisy in ["httpx","httpcore","sentence_transformers","huggingface_hub",
               "transformers","filelock","urllib3","chromadb","uvicorn.access"]:
@@ -15,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ------------------------------
-# Environment Variables
+# Environment variables
 # ------------------------------
 os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
 os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
@@ -25,26 +38,7 @@ os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # ------------------------------
-# FastAPI & Middleware
-# ------------------------------
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-
-# ------------------------------
-# Backend Module Imports
-# ------------------------------
-from database import Base, engine
-from auth.routes import router as auth_router
-from memories.routes import router as memories_router
-from chat.routes import router as chat_router
-
-# ------------------------------
-# Database Initialization
+# Database initialization
 # ------------------------------
 try:
     Base.metadata.create_all(bind=engine)
@@ -53,7 +47,7 @@ except Exception as e:
     logger.error(f"Database initialization failed: {e}")
 
 # ------------------------------
-# App Initialization
+# FastAPI initialization
 # ------------------------------
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="MemoryOS Lite API", version="1.0.0")
@@ -80,19 +74,43 @@ app.include_router(memories_router)
 app.include_router(chat_router)
 
 # ------------------------------
-# Startup Event
+# Lazy-loaded embedding model
+# ------------------------------
+_embedding_model = None
+
+def get_embedding_model():
+    global _embedding_model
+    if _embedding_model is None:
+        try:
+            from memories.embedder import model
+            _embedding_model = model
+            logger.info("Embedding model loaded")
+        except Exception as e:
+            logger.error(f"Failed to load embedding model: {e}")
+            raise RuntimeError("Embedding model not available")
+    return _embedding_model
+
+# Example usage inside endpoint
+# model = get_embedding_model()
+
+# ------------------------------
+# Startup event
 # ------------------------------
 @app.on_event("startup")
 async def startup_event():
     logger.info("MemoryOS API starting...")
-    try:
-        from memories.embedder import model
-        logger.info("Embedding model ready")
-    except Exception as e:
-        logger.error(f"Model load failed: {e}")
+    if not IS_PRODUCTION:
+        try:
+            from memories.embedder import model
+            logger.info("Embedding model ready")
+        except Exception as e:
+            logger.error(f"Model load failed: {e}")
+    else:
+        logger.info("Production mode: lightweight embeddings active")
+    # Do NOT load model here to save memory
 
 # ------------------------------
-# Global Exception Handler
+# Global exception handler
 # ------------------------------
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -103,7 +121,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # ------------------------------
-# Health & Root Routes
+# Health & root endpoints
 # ------------------------------
 @app.get("/")
 def root():
@@ -114,7 +132,7 @@ def health():
     return {"status": "ok"}
 
 # ------------------------------
-# Custom OpenAPI
+# OpenAPI customization
 # ------------------------------
 def custom_openapi():
     if app.openapi_schema:
