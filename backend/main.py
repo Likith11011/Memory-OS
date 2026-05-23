@@ -1,10 +1,16 @@
 import os
 import logging
+import warnings
+
+# Suppress passlib bcrypt warning before anything loads
+warnings.filterwarnings("ignore", message=".*truncate_error.*")
+warnings.filterwarnings("ignore", message=".*72 bytes.*")
+warnings.filterwarnings("ignore", category=UserWarning, module="passlib")
 
 for noisy in ["httpx", "httpcore", "sentence_transformers", "huggingface_hub",
-              "transformers", "filelock", "urllib3", "chromadb", "uvicorn.access",
-              "passlib"]:
-    logging.getLogger(noisy).setLevel(logging.WARNING)
+              "transformers", "filelock", "urllib3", "chromadb",
+              "uvicorn.access", "passlib"]:
+    logging.getLogger(noisy).setLevel(logging.ERROR)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,7 +25,6 @@ os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 
 IS_PRODUCTION = bool(os.getenv("RENDER", False))
 
-# All imports use direct module names — NO "backend." prefix
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi

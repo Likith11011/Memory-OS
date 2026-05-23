@@ -1,16 +1,30 @@
 import re
 import hashlib
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from passlib.handlers.bcrypt import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from database import get_db
 import os
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Suppress passlib bcrypt warning
+import warnings
+warnings.filterwarnings("ignore", message=".*truncate_error.*")
+warnings.filterwarnings("ignore", message=".*72 bytes.*")
+logging.getLogger("passlib").setLevel(logging.ERROR)
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__rounds=12,
+    bcrypt__truncate_error=False,
+)
+
 security = HTTPBearer()
 
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-before-deployment")
@@ -37,17 +51,17 @@ def validate_password(password: str) -> tuple[bool, str]:
 
 def _prepare_password(password: str) -> str:
     """
-    Hash password with SHA-256 first to avoid bcrypt 72-byte limit.
-    This is safe and standard practice.
+    Pre-hash password with SHA-256 before passing to bcrypt.
+    This ensures the input is always exactly 64 chars (well under 72 bytes).
+    SHA-256 hex digest = 64 ASCII characters = 64 bytes, safe for bcrypt.
     """
-    return hashlib.sha256(password.encode()).hexdigest()
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
 def hash_password(password: str) -> str:
     valid, msg = validate_password(password)
     if not valid:
         raise ValueError(msg)
-    # Pre-hash to avoid bcrypt 72-byte truncation
     prepared = _prepare_password(password)
     return pwd_context.hash(prepared)
 
@@ -58,7 +72,8 @@ def verify_password(plain: str, hashed: str) -> bool:
     try:
         prepared = _prepare_password(plain)
         return pwd_context.verify(prepared, hashed)
-    except Exception:
+    except Exception as e:
+        logging.getLogger(__name__).error(f"Password verify error: {e}")
         return False
 
 
