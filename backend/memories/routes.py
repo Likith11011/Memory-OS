@@ -5,8 +5,6 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-
-# modules need '' prefix since main.py is in 
 from database import get_db
 from auth.utils import get_current_user
 from auth.models import User
@@ -21,12 +19,14 @@ router = APIRouter(prefix="/memories", tags=["memories"])
 
 ALLOWED_FILE_TYPES = [
     "text", "pdf", "docx", "pptx", "image",
-    "url", "youtube", "txt", "md", "code"
+    "url", "txt", "md", "code"
 ]
 IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "bmp", "tiff"]
-CODE_EXTENSIONS = ["py", "js", "ts", "jsx", "tsx", "java", "cpp", "c",
-                   "cs", "go", "rs", "rb", "php", "swift", "kt", "sql",
-                   "sh", "html", "css", "json", "yaml", "r"]
+CODE_EXTENSIONS = [
+    "py", "js", "ts", "jsx", "tsx", "java", "cpp", "c",
+    "cs", "go", "rs", "rb", "php", "swift", "kt", "sql",
+    "sh", "html", "css", "json", "yaml", "r"
+]
 
 
 def format_memory(memory: Memory, similarity: Optional[float] = None) -> dict:
@@ -43,27 +43,27 @@ def format_memory(memory: Memory, similarity: Optional[float] = None) -> dict:
         "project_status": memory.project_status or "",
         "difficulty": memory.difficulty or "",
         "subject": memory.subject or "",
-        "explanation": getattr(memory, 'explanation', '') or "",
+        "explanation": getattr(memory, "explanation", "") or "",
         "review_count": memory.review_count or 0,
         "last_reviewed": memory.last_reviewed,
     }
 
 
-def generate_tags_with_groq(title: str, file_type: str, content: str, category: str = "general") -> str:
+def generate_tags_with_groq(
+    title: str, file_type: str, content: str, category: str = "general"
+) -> str:
     try:
         from groq import Groq
         if not settings.GROQ_API_KEY:
             return ""
-
         groq_client = Groq(api_key=settings.GROQ_API_KEY)
         category_hints = {
-            "code": "This is a code snippet. Include the programming language, concepts, and algorithms.",
-            "research": "This is a research document. Include the research topic and key concepts.",
-            "exam": "This is exam study material. Include the subject, topic, and difficulty level.",
-            "project": "This is a project idea. Include the domain, technology, and project type.",
+            "code": "This is a code snippet.",
+            "research": "This is a research document.",
+            "exam": "This is exam study material.",
+            "project": "This is a project idea.",
             "general": "This is a general memory.",
         }
-
         tag_prompt = f"""Generate 3-5 short relevant tags for this memory.
 
 {category_hints.get(category, category_hints["general"])}
@@ -73,75 +73,68 @@ Content preview: {content[:500]}
 
 Rules:
 - Tags must be single words or short phrases (max 2 words)
-- Include abbreviations if relevant (e.g. "AU" for Alliance University, "AI" for Artificial Intelligence)
+- Include abbreviations if relevant
 - Return ONLY comma-separated tags, nothing else
 
 Tags:"""
-
         response = groq_client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": tag_prompt}],
             temperature=0.2,
             max_tokens=80,
         )
-
         if not response.choices or not response.choices[0].message.content:
             return ""
-
         raw = response.choices[0].message.content.strip().split("\n")[0]
         tag_list = [t.strip().lower() for t in raw.split(",") if t.strip()]
         tag_list = [t for t in tag_list if 0 < len(t) <= 30][:5]
         return ", ".join(tag_list)
-
     except Exception as e:
         logger.warning(f"Tag generation failed: {str(e)}")
         return ""
 
 
-def generate_explanation_with_groq(title: str, content: str, difficulty: str) -> str:
+def generate_explanation_with_groq(
+    title: str, content: str, difficulty: str
+) -> str:
     try:
         from groq import Groq
         if not settings.GROQ_API_KEY or not difficulty:
             return ""
-
         groq_client = Groq(api_key=settings.GROQ_API_KEY)
         style_map = {
-            "easy": "Explain in very simple layman terms. Use everyday analogies. Write like explaining to a complete beginner.",
-            "medium": "Explain at undergraduate level. Use proper terminology but explain clearly. Structure like a lecture.",
-            "hard": "Explain at advanced textbook level. Use precise technical terminology and formal definitions.",
+            "easy": "Explain in very simple layman terms.",
+            "medium": "Explain at undergraduate level.",
+            "hard": "Explain at advanced textbook level.",
         }
-
         prompt = f"""Generate a concise explanation for this study material.
 
 Title: {title}
 Content: {content[:1000]}
 Style: {style_map.get(difficulty, style_map["medium"])}
 
-Generate a clear explanation in 3-5 sentences. Start directly with the explanation.
+Generate a clear explanation in 3-5 sentences. Start directly.
 
 Explanation:"""
-
         response = groq_client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.4,
             max_tokens=200,
         )
-
         if not response.choices or not response.choices[0].message.content:
             return ""
-
         return response.choices[0].message.content.strip()
-
     except Exception as e:
         logger.warning(f"Explanation generation failed: {str(e)}")
         return ""
 
 
-def process_memory_async(memory_id: int, title: str, file_type: str,
-                          content: str, category: str, difficulty: str,
-                          db_url: str):
-    """Background task: generate tags and explanation after upload"""
+def process_memory_async(
+    memory_id: int, title: str, file_type: str,
+    content: str, category: str, difficulty: str,
+    db_url: str
+):
     try:
         from database import SessionLocal
         db = SessionLocal()
@@ -170,7 +163,7 @@ def process_memory_async(memory_id: int, title: str, file_type: str,
 
         if category == "exam" and difficulty:
             explanation = generate_explanation_with_groq(title, content, difficulty)
-            if hasattr(memory, 'explanation'):
+            if hasattr(memory, "explanation"):
                 memory.explanation = explanation
 
         db.commit()
@@ -203,6 +196,13 @@ def upload_memory(
     file_type = file_type.strip().lower()
     memory_category = memory_category.strip().lower() or "general"
 
+    # Block youtube explicitly
+    if file_type == "youtube":
+        raise HTTPException(
+            status_code=400,
+            detail="YouTube upload is not supported. Use URL type for web articles instead."
+        )
+
     if file_type not in ALLOWED_FILE_TYPES:
         raise HTTPException(status_code=400, detail=f"Unsupported file type: {file_type}")
 
@@ -214,13 +214,13 @@ def upload_memory(
             url = url_content or (text_content or "").strip()
             if not url:
                 raise HTTPException(status_code=400, detail="URL cannot be empty")
+            # Block YouTube URLs in URL type too
+            if "youtube.com" in url or "youtu.be" in url:
+                raise HTTPException(
+                    status_code=400,
+                    detail="YouTube URLs are not supported. Please use a regular webpage URL."
+                )
             content = extract_text(b"", "url", url=url)
-
-        elif file_type == "youtube":
-            url = url_content or (text_content or "").strip()
-            if not url:
-                raise HTTPException(status_code=400, detail="YouTube URL cannot be empty")
-            content = extract_text(b"", "youtube", url=url)
 
         elif file_type == "text":
             if not text_content or not text_content.strip():
@@ -242,7 +242,6 @@ def upload_memory(
                     detected_language = detect_language(content, filename)
             else:
                 raise HTTPException(status_code=400, detail="No code content provided")
-
             content = f"Language: {detected_language}\n\n{content}"
             memory_category = "code"
 
@@ -274,8 +273,10 @@ def upload_memory(
             content = extract_text(file_bytes, actual_type)
 
             if actual_type == "pdf" and memory_category == "general":
-                research_keywords = ["abstract", "introduction", "methodology",
-                                     "conclusion", "references", "doi", "arxiv", "journal"]
+                research_keywords = [
+                    "abstract", "introduction", "methodology",
+                    "conclusion", "references", "doi", "arxiv", "journal"
+                ]
                 content_lower = content.lower()
                 if sum(1 for kw in research_keywords if kw in content_lower) >= 3:
                     memory_category = "research"
@@ -327,12 +328,12 @@ def upload_memory(
             subject=subject.strip(),
             review_count=0,
         )
-        if hasattr(Memory, 'explanation'):
+        if hasattr(Memory, "explanation"):
             memory.explanation = ""
         db.add(memory)
         db.commit()
         db.refresh(memory)
-        logger.info(f"Memory {memory.id} saved to DB for user {current_user.id}")
+        logger.info(f"Memory {memory.id} saved for user {current_user.id}")
     except Exception as e:
         db.rollback()
         logger.error(f"DB save failed: {str(e)}")
@@ -350,7 +351,6 @@ def upload_memory(
         logger.error(f"ChromaDB save failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Vector store failed: {str(e)}")
 
-    # Process tags and explanation in background — don't block response
     background_tasks.add_task(
         process_memory_async,
         memory.id, title, file_type, content,
@@ -391,7 +391,6 @@ def search_memories(
     search_type = "semantic"
     is_short_query = len(q.split()) <= 1 and len(q) <= 4
 
-    # Semantic search
     try:
         query_embedding = get_search_embedding(q)
         n = min(10, total_memories)
@@ -400,31 +399,22 @@ def search_memories(
         if results and results.get("ids") and results["ids"][0]:
             distances = results["distances"][0]
 
-            if not distances:
-                pass
-            else:
+            if distances:
                 best_distance = min(distances)
 
-                # Strict thresholds — only return genuinely relevant results
                 if is_short_query:
-                    # Very strict for single words to avoid false positives
                     threshold = min(best_distance + 0.2, 0.5)
                 elif len(q.split()) == 2:
                     threshold = min(best_distance + 0.3, 0.7)
                 elif best_distance < 0.2:
-                    # Excellent match — allow some range
                     threshold = best_distance + 0.35
                 elif best_distance < 0.4:
-                    # Good match
                     threshold = best_distance + 0.3
                 elif best_distance < 0.6:
-                    # Mediocre — be strict
                     threshold = best_distance + 0.2
                 else:
-                    # Poor best match — only return if really close
                     threshold = min(best_distance + 0.1, 0.75)
 
-                # Batch query
                 memory_ids = []
                 distance_map = {}
                 for i, meta in enumerate(results["metadatas"][0]):
@@ -460,13 +450,10 @@ def search_memories(
         logger.warning(f"Semantic search failed: {str(e)}")
         memories = []
 
-    # Keyword search — only add results not already in semantic
     try:
         seen_ids = {m["id"] for m in memories}
         keyword_added = 0
 
-        # For short queries only search title and tags — not content
-        # to avoid false positives like searching "AI" matching everything
         if is_short_query:
             filter_conditions = [
                 Memory.title.ilike(f"%{q}%"),
@@ -502,7 +489,6 @@ def search_memories(
     except Exception as e:
         logger.warning(f"Keyword search failed: {str(e)}")
 
-    # Abbreviation fallback
     if not memories and len(q) <= 5 and q.isupper():
         try:
             abbr_results = db.query(Memory).filter(
@@ -521,13 +507,11 @@ def search_memories(
         except Exception as e:
             logger.warning(f"Abbreviation search failed: {str(e)}")
 
-    # Sort by similarity
     memories.sort(
         key=lambda x: x["similarity"] if x["similarity"] is not None else -1,
         reverse=True,
     )
 
-    # Deduplicate
     seen = set()
     unique_memories = []
     for m in memories:
@@ -536,6 +520,7 @@ def search_memories(
             unique_memories.append(m)
 
     return {"results": unique_memories, "search_type": search_type}
+
 
 @router.get("/")
 def list_memories(
@@ -575,7 +560,7 @@ def delete_memory(
     try:
         db.delete(memory)
         db.commit()
-        logger.info(f"Memory {memory_id} deleted by user {current_user.id}")
+        logger.info(f"Memory {memory_id} deleted")
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Delete failed: {str(e)}")
@@ -591,7 +576,7 @@ def get_by_category(
 ):
     valid_categories = ["general", "code", "research", "exam", "project"]
     if category not in valid_categories:
-        raise HTTPException(status_code=400, detail=f"Invalid category")
+        raise HTTPException(status_code=400, detail="Invalid category")
 
     memories = db.query(Memory).filter(
         Memory.user_id == current_user.id,
@@ -670,7 +655,7 @@ def update_project_status(
 ):
     valid_statuses = ["idea", "in-progress", "done", "abandoned"]
     if status not in valid_statuses:
-        raise HTTPException(status_code=400, detail=f"Invalid status")
+        raise HTTPException(status_code=400, detail="Invalid status")
 
     memory = db.query(Memory).filter(
         Memory.id == memory_id,

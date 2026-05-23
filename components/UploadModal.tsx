@@ -7,7 +7,7 @@ interface Props {
   onSuccess: () => void;
 }
 
-type TabType = "text" | "pdf" | "docx" | "pptx" | "image" | "url" | "youtube" | "code";
+type TabType = "text" | "pdf" | "docx" | "pptx" | "image" | "url" | "code";
 type CategoryType = "general" | "code" | "research" | "exam" | "project";
 
 interface TabConfig {
@@ -26,7 +26,6 @@ const TABS: TabConfig[] = [
   { id: "pptx", label: "PPT", icon: "📊", accept: ".pptx" },
   { id: "image", label: "Image", icon: "🖼️", accept: ".png,.jpg,.jpeg,.webp,.bmp,.tiff,image/*" },
   { id: "url", label: "URL", icon: "🌐", placeholder: "https://example.com/article..." },
-  { id: "youtube", label: "YouTube", icon: "▶️", placeholder: "https://youtube.com/watch?v=..." },
 ];
 
 const CATEGORIES: { id: CategoryType; label: string; icon: string; color: string }[] = [
@@ -62,7 +61,7 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
 
   const currentTab = TABS.find(t => t.id === tab)!;
   const isFileTab = ["pdf", "docx", "pptx", "image"].includes(tab);
-  const isUrlTab = ["url", "youtube"].includes(tab);
+  const isUrlTab = tab === "url";
   const isCodeTab = tab === "code";
 
   const validateFile = (f: File): string => {
@@ -70,10 +69,14 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
     if (tab === "pdf" && !f.name.toLowerCase().endsWith(".pdf")) return "Only PDF files supported";
     if (tab === "docx" && !f.name.toLowerCase().endsWith(".docx")) return "Only .docx files supported";
     if (tab === "pptx" && !f.name.toLowerCase().endsWith(".pptx")) return "Only .pptx files supported";
+    if (tab === "image") {
+      const validExts = ["png", "jpg", "jpeg", "webp", "bmp", "tiff"];
+      const ext = f.name.split(".").pop()?.toLowerCase() || "";
+      if (!validExts.includes(ext)) return "Supported: PNG, JPG, JPEG, WEBP, BMP, TIFF";
+    }
     return "";
   };
 
-  // Auto-set category based on tab
   const handleTabChange = (t: TabType) => {
     setTab(t);
     setError("");
@@ -96,6 +99,14 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
     if ((tab === "text" || isCodeTab) && !textContent.trim()) { setError("Content cannot be empty"); return; }
     if (isFileTab && !file) { setError("Please select a file"); return; }
     if (isUrlTab && !urlContent.trim()) { setError("URL cannot be empty"); return; }
+
+    if (isUrlTab) {
+      const u = urlContent.trim().toLowerCase();
+      if (u.includes("youtube.com") || u.includes("youtu.be")) {
+        setError("YouTube URLs are not supported. Please use a regular webpage URL.");
+        return;
+      }
+    }
 
     setLoading(true);
     try {
@@ -144,13 +155,9 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
   };
 
   const labelStyle = {
-    color: "#94a3b8",
-    fontSize: "11px",
-    fontWeight: 600 as const,
-    display: "block" as const,
-    marginBottom: "6px",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.06em",
+    color: "#94a3b8", fontSize: "11px", fontWeight: 600 as const,
+    display: "block" as const, marginBottom: "6px",
+    textTransform: "uppercase" as const, letterSpacing: "0.06em",
   };
 
   return (
@@ -167,14 +174,11 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
       <div style={{
         background: "#0f0f23",
         border: "1px solid rgba(99,102,241,0.2)",
-        borderRadius: "24px",
-        padding: "28px",
-        width: "100%",
-        maxWidth: "580px",
+        borderRadius: "24px", padding: "28px",
+        width: "100%", maxWidth: "580px",
         position: "relative",
         boxShadow: "0 25px 50px rgba(0,0,0,0.5)",
-        maxHeight: "90vh",
-        overflowY: "auto",
+        maxHeight: "90vh", overflowY: "auto",
       }}>
         {/* Header */}
         <div style={{ marginBottom: "20px", paddingRight: "40px" }}>
@@ -210,18 +214,13 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.id)}
                 style={{
-                  padding: "6px 12px",
-                  borderRadius: "8px",
+                  padding: "6px 12px", borderRadius: "8px",
                   border: `1px solid ${category === cat.id ? cat.color + "66" : "rgba(255,255,255,0.08)"}`,
                   background: category === cat.id ? cat.color + "22" : "transparent",
                   color: category === cat.id ? cat.color : "#475569",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  cursor: "pointer",
+                  fontSize: "12px", fontWeight: 600, cursor: "pointer",
                   transition: "all 0.2s",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
+                  display: "flex", alignItems: "center", gap: "4px",
                 }}
               >
                 {cat.icon} {cat.label}
@@ -233,12 +232,10 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
         {/* Source type tabs */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(8, 1fr)",
-          gap: "4px",
-          marginBottom: "20px",
+          gridTemplateColumns: "repeat(7, 1fr)",
+          gap: "4px", marginBottom: "20px",
           background: "rgba(255,255,255,0.02)",
-          borderRadius: "10px",
-          padding: "4px",
+          borderRadius: "10px", padding: "4px",
           border: "1px solid rgba(255,255,255,0.05)",
         }}>
           {TABS.map((t) => (
@@ -248,18 +245,12 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
               disabled={loading}
               title={t.label}
               style={{
-                padding: "6px 2px",
-                borderRadius: "6px",
-                border: "none",
+                padding: "6px 2px", borderRadius: "6px", border: "none",
                 background: tab === t.id ? "rgba(99,102,241,0.25)" : "transparent",
                 color: tab === t.id ? "#a5b4fc" : "#475569",
-                fontSize: "16px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "2px",
+                fontSize: "16px", cursor: "pointer", transition: "all 0.2s",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", gap: "2px",
               }}
             >
               <span>{t.icon}</span>
@@ -275,8 +266,7 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Give this memory a title..."
-            maxLength={255}
-            disabled={loading}
+            maxLength={255} disabled={loading}
             style={inputStyle}
             onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.5)"}
             onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
@@ -291,13 +281,10 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
               value={textContent}
               onChange={(e) => setTextContent(e.target.value)}
               placeholder={currentTab.placeholder}
-              rows={isCodeTab ? 8 : 5}
-              disabled={loading}
+              rows={isCodeTab ? 8 : 5} disabled={loading}
               style={{
-                ...inputStyle,
-                resize: "vertical",
+                ...inputStyle, resize: "vertical",
                 fontFamily: isCodeTab ? "monospace" : "inherit",
-                fontSize: isCodeTab ? "13px" : "14px",
               }}
               onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.5)"}
               onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
@@ -308,18 +295,18 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
         {/* URL input */}
         {isUrlTab && (
           <div style={{ marginBottom: "14px" }}>
-            <label style={labelStyle}>{tab === "youtube" ? "YouTube URL *" : "Website URL *"}</label>
+            <label style={labelStyle}>Website URL *</label>
             <input
               value={urlContent}
               onChange={(e) => setUrlContent(e.target.value)}
-              placeholder={currentTab.placeholder}
+              placeholder="https://example.com/article..."
               disabled={loading}
               style={inputStyle}
               onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.5)"}
               onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
             />
             <p style={{ color: "#475569", fontSize: "11px", marginTop: "4px" }}>
-              {tab === "youtube" ? "Extracts full video transcript" : "Extracts readable text from any webpage"}
+              Extracts readable text from any webpage or article
             </p>
           </div>
         )}
@@ -332,10 +319,8 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
               onClick={() => !loading && document.getElementById(`file-input-${tab}`)?.click()}
               style={{
                 border: `2px dashed ${file ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.1)"}`,
-                borderRadius: "10px",
-                padding: "20px",
-                textAlign: "center",
-                cursor: "pointer",
+                borderRadius: "10px", padding: "20px", textAlign: "center",
+                cursor: loading ? "not-allowed" : "pointer",
                 background: file ? "rgba(99,102,241,0.05)" : "transparent",
               }}
             >
@@ -351,16 +336,14 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
             </div>
             <input
               id={`file-input-${tab}`}
-              type="file"
-              accept={currentTab.accept}
+              type="file" accept={currentTab.accept}
               style={{ display: "none" }}
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) {
                   const err = validateFile(f);
                   if (err) { setError(err); return; }
-                  setError("");
-                  setFile(f);
+                  setError(""); setFile(f);
                 }
                 e.target.value = "";
               }}
@@ -368,7 +351,7 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
           </div>
         )}
 
-        {/* Category-specific fields */}
+        {/* Category specific fields */}
         {category === "code" && (
           <div style={{ marginBottom: "14px" }}>
             <label style={labelStyle}>Programming Language</label>
@@ -385,56 +368,48 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
           </div>
         )}
 
-{category === "exam" && (
-  <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "14px" }}>
-    <div>
-      <label style={labelStyle}>Subject</label>
-      <input
-        value={subject}
-        onChange={(e) => setSubject(e.target.value)}
-        placeholder="e.g. Data Structures, Machine Learning"
-        style={inputStyle}
-        onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.5)"}
-        onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
-      />
-    </div>
-    <div>
-      <label style={labelStyle}>Difficulty Level</label>
-      <div style={{ display: "flex", gap: "8px" }}>
-        {[
-          { id: "easy", label: "Easy", icon: "🟢", desc: "Simple language", color: "#10b981" },
-          { id: "medium", label: "Medium", icon: "🟡", desc: "Professor level", color: "#f59e0b" },
-          { id: "hard", label: "Hard", icon: "🔴", desc: "Textbook level", color: "#ef4444" },
-        ].map((d) => (
-          <button
-            key={d.id}
-            onClick={() => setDifficulty(d.id)}
-            style={{
-              flex: 1,
-              padding: "10px 6px",
-              borderRadius: "10px",
-              border: `1px solid ${difficulty === d.id ? d.color + "66" : "rgba(255,255,255,0.08)"}`,
-              background: difficulty === d.id ? d.color + "18" : "transparent",
-              color: difficulty === d.id ? d.color : "#475569",
-              fontSize: "12px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "4px",
-            }}
-          >
-            <span style={{ fontSize: "18px" }}>{d.icon}</span>
-            <span>{d.label}</span>
-            <span style={{ fontSize: "10px", opacity: 0.7, fontWeight: 400 }}>{d.desc}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+        {category === "exam" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "14px" }}>
+            <div>
+              <label style={labelStyle}>Subject</label>
+              <input
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="e.g. Data Structures, Machine Learning"
+                style={inputStyle}
+                onFocus={e => e.target.style.borderColor = "rgba(99,102,241,0.5)"}
+                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Difficulty Level</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                {[
+                  { id: "easy", label: "Easy", icon: "🟢", desc: "Simple language", color: "#10b981" },
+                  { id: "medium", label: "Medium", icon: "🟡", desc: "Professor level", color: "#f59e0b" },
+                  { id: "hard", label: "Hard", icon: "🔴", desc: "Textbook level", color: "#ef4444" },
+                ].map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => setDifficulty(d.id)}
+                    style={{
+                      flex: 1, padding: "10px 6px", borderRadius: "10px",
+                      border: `1px solid ${difficulty === d.id ? d.color + "66" : "rgba(255,255,255,0.08)"}`,
+                      background: difficulty === d.id ? d.color + "18" : "transparent",
+                      color: difficulty === d.id ? d.color : "#475569",
+                      fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
+                    }}
+                  >
+                    <span style={{ fontSize: "18px" }}>{d.icon}</span>
+                    <span>{d.label}</span>
+                    <span style={{ fontSize: "10px", opacity: 0.7, fontWeight: 400 }}>{d.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {category === "project" && (
           <div style={{ marginBottom: "14px" }}>
@@ -445,15 +420,11 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                   key={s}
                   onClick={() => setProjectStatus(s)}
                   style={{
-                    flex: 1,
-                    padding: "8px 4px",
-                    borderRadius: "8px",
+                    flex: 1, padding: "8px 4px", borderRadius: "8px",
                     border: `1px solid ${projectStatus === s ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.08)"}`,
                     background: projectStatus === s ? "rgba(99,102,241,0.2)" : "transparent",
                     color: projectStatus === s ? "#a5b4fc" : "#475569",
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    cursor: "pointer",
+                    fontSize: "11px", fontWeight: 600, cursor: "pointer",
                     textTransform: "capitalize",
                   }}
                 >
@@ -469,11 +440,8 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
           <div style={{
             background: "rgba(239,68,68,0.1)",
             border: "1px solid rgba(239,68,68,0.2)",
-            color: "#f87171",
-            borderRadius: "8px",
-            padding: "10px 14px",
-            fontSize: "13px",
-            marginBottom: "14px",
+            color: "#f87171", borderRadius: "8px",
+            padding: "10px 14px", fontSize: "13px", marginBottom: "14px",
           }}>
             ⚠ {error}
           </div>
@@ -481,17 +449,13 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
 
         {/* Upload button */}
         <button
-          onClick={handleUpload}
-          disabled={loading}
+          onClick={handleUpload} disabled={loading}
           style={{
             width: "100%",
             background: loading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #4f46e5)",
-            border: "none",
-            borderRadius: "12px",
-            padding: "13px",
+            border: "none", borderRadius: "12px", padding: "13px",
             color: loading ? "rgba(255,255,255,0.5)" : "white",
-            fontSize: "14px",
-            fontWeight: 600,
+            fontSize: "14px", fontWeight: 600,
             cursor: loading ? "not-allowed" : "pointer",
             boxShadow: !loading ? "0 0 20px rgba(99,102,241,0.3)" : "none",
           }}

@@ -105,15 +105,15 @@ export default function Dashboard() {
   const groupedMemories = groupByDate(filteredMemories);
 
   const stats = [
-    { label: "Total", value: memories.length, color: "#2563EB", glow: "rgba(37,99,235,0.4)" },
-    { label: "Notes", value: memories.filter(m => m.file_type === "text").length, color: "#10b981", glow: "rgba(16,185,129,0.3)" },
-    { label: "PDFs", value: memories.filter(m => m.file_type === "pdf").length, color: "#f59e0b", glow: "rgba(245,158,11,0.3)" },
-    { label: "Code", value: memories.filter(m => m.file_type === "code").length, color: "#10b981", glow: "rgba(16,185,129,0.3)" },
-    { label: "Docs", value: memories.filter(m => m.file_type === "docx").length, color: "#60A5FA", glow: "rgba(96,165,250,0.3)" },
-    { label: "Images", value: memories.filter(m => m.file_type === "image").length, color: "#ec4899", glow: "rgba(236,72,153,0.3)" },
-    { label: "URLs", value: memories.filter(m => m.file_type === "url").length, color: "#06b6d4", glow: "rgba(6,182,212,0.3)" },
-    { label: "Videos", value: memories.filter(m => m.file_type === "youtube").length, color: "#ef4444", glow: "rgba(239,68,68,0.3)" },
-  ];
+  { label: "Total", value: memories.length, color: "#2563EB", glow: "rgba(37,99,235,0.4)" },
+  { label: "Notes", value: memories.filter(m => m.file_type === "text").length, color: "#10b981", glow: "rgba(16,185,129,0.3)" },
+  { label: "PDFs", value: memories.filter(m => m.file_type === "pdf").length, color: "#f59e0b", glow: "rgba(245,158,11,0.3)" },
+  { label: "Code", value: memories.filter(m => m.file_type === "code").length, color: "#10b981", glow: "rgba(16,185,129,0.3)" },
+  { label: "Docs", value: memories.filter(m => m.file_type === "docx").length, color: "#60A5FA", glow: "rgba(96,165,250,0.3)" },
+  { label: "Slides", value: memories.filter(m => m.file_type === "pptx").length, color: "#8b5cf6", glow: "rgba(139,92,246,0.3)" },
+  { label: "Images", value: memories.filter(m => m.file_type === "image").length, color: "#ec4899", glow: "rgba(236,72,153,0.3)" },
+  { label: "URLs", value: memories.filter(m => m.file_type === "url").length, color: "#06b6d4", glow: "rgba(6,182,212,0.3)" },
+];
 
   return (
     <div style={{

@@ -12,8 +12,6 @@ def extract_text(file_bytes: bytes, file_type: str, url: Optional[str] = None) -
 
     if file_type == "url" or url:
         return _extract_from_url(url or file_bytes.decode("utf-8", errors="ignore").strip())
-    elif file_type == "youtube":
-        return _extract_from_youtube(file_bytes.decode("utf-8", errors="ignore").strip())
     elif file_type == "pdf":
         return _extract_from_pdf(file_bytes)
     elif file_type == "docx":
@@ -204,7 +202,6 @@ def _extract_from_image(file_bytes: bytes) -> str:
 
         text = pytesseract.image_to_string(image, config="--psm 3")
         result = text.strip()
-
         if not result:
             raise ValueError("No text found in image")
         return result
@@ -220,8 +217,14 @@ def _extract_from_url(url: str) -> str:
     url = url.strip()
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
+
+    # Block YouTube URLs since that feature is removed
     if _is_youtube_url(url):
-        return _extract_from_youtube(url)
+        raise ValueError(
+            "YouTube URLs are not supported. "
+            "Please paste the article or webpage URL directly."
+        )
+
     try:
         import trafilatura
         downloaded = trafilatura.fetch_url(url)
@@ -242,46 +245,6 @@ def _extract_from_url(url: str) -> str:
         raise ValueError(f"URL extraction failed: {str(e)}")
 
 
-def _extract_from_youtube(url: str) -> str:
-    if not url or not url.strip():
-        raise ValueError("YouTube URL cannot be empty")
-    url = url.strip()
-
-    video_id = _get_youtube_id(url)
-    if not video_id:
-        raise ValueError("Could not extract YouTube video ID from URL")
-
-    try:
-        from youtube_transcript_api import YouTubeTranscriptApi
-
-        api = YouTubeTranscriptApi()
-        fetched = api.fetch(video_id)
-
-        text_parts = []
-
-        for entry in fetched:
-            if hasattr(entry, "text"):
-                text = entry.text
-            elif isinstance(entry, dict):
-                text = entry.get("text", "")
-            else:
-                text = str(entry)
-
-            if text and text.strip():
-                text_parts.append(text.strip())
-
-        result = " ".join(text_parts).strip()
-
-        if not result:
-            raise ValueError("Transcript is empty")
-
-        return f"YouTube Video Transcript:\n\n{result}"
-
-    except Exception as e:
-        raise ValueError(
-            f"Could not fetch YouTube transcript. Make sure the video has captions enabled. Error: {str(e)}"
-        )
-
 def _extract_plain_text(file_bytes: bytes) -> str:
     for encoding in ["utf-8", "latin-1", "cp1252", "ascii"]:
         try:
@@ -295,23 +258,7 @@ def _extract_plain_text(file_bytes: bytes) -> str:
 
 def _is_youtube_url(url: str) -> bool:
     youtube_patterns = [
-        r"youtube\.com/watch",
-        r"youtu\.be/",
-        r"youtube\.com/shorts/",
-        r"youtube\.com/embed/",
+        r"youtube\.com",
+        r"youtu\.be",
     ]
     return any(re.search(p, url) for p in youtube_patterns)
-
-
-def _get_youtube_id(url: str) -> Optional[str]:
-    patterns = [
-        r"(?:v=)([a-zA-Z0-9_-]{11})",
-        r"(?:youtu\.be/)([a-zA-Z0-9_-]{11})",
-        r"(?:shorts/)([a-zA-Z0-9_-]{11})",
-        r"(?:embed/)([a-zA-Z0-9_-]{11})",
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return None
