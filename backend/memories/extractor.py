@@ -254,14 +254,19 @@ def _extract_from_youtube(url: str) -> str:
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
 
-        transcript_data = YouTubeTranscriptApi.get_transcript(
-            video_id,
-            languages=["en", "en-US", "en-GB"]
-        )
+        api = YouTubeTranscriptApi()
+        fetched = api.fetch(video_id)
 
         text_parts = []
-        for entry in transcript_data:
-            text = entry.get("text", "")
+
+        for entry in fetched:
+            if hasattr(entry, "text"):
+                text = entry.text
+            elif isinstance(entry, dict):
+                text = entry.get("text", "")
+            else:
+                text = str(entry)
+
             if text and text.strip():
                 text_parts.append(text.strip())
 
@@ -276,7 +281,6 @@ def _extract_from_youtube(url: str) -> str:
         raise ValueError(
             f"Could not fetch YouTube transcript. Make sure the video has captions enabled. Error: {str(e)}"
         )
-
 
 def _extract_plain_text(file_bytes: bytes) -> str:
     for encoding in ["utf-8", "latin-1", "cp1252", "ascii"]:
