@@ -376,7 +376,6 @@ def search_memories(
 
     q = q.strip()
 
-    # Input validation
     if len(q) > 500:
         raise HTTPException(status_code=400, detail="Query too long")
 
@@ -392,7 +391,7 @@ def search_memories(
     search_type = "semantic"
     is_short_query = len(q.split()) <= 1 and len(q) <= 4
 
-    # Semantic search with cached embeddings
+    # Semantic search
     try:
         query_embedding = get_search_embedding(q)
         n = min(10, total_memories)
@@ -400,61 +399,85 @@ def search_memories(
 
         if results and results.get("ids") and results["ids"][0]:
             distances = results["distances"][0]
-            best_distance = min(distances) if distances else 2.0
 
-            if is_short_query:
-                threshold = min(best_distance + 0.3, 0.6)
-            elif best_distance < 0.3:
-                threshold = best_distance + 0.4
-            elif best_distance < 0.6:
-                threshold = best_distance + 0.5
+            if not distances:
+                pass
             else:
-                threshold = 1.0
+                best_distance = min(distances)
 
-            # FIX: Batch query instead of N+1
-            memory_ids = []
-            distance_map = {}
-            for i, meta in enumerate(results["metadatas"][0]):
-                try:
-                    if meta and "memory_id" in meta:
-                        mid = meta["memory_id"]
-                        dist = distances[i]
-                        if dist <= threshold:
-                            memory_ids.append(mid)
-                            distance_map[mid] = dist
-                except (IndexError, KeyError, TypeError):
-                    continue
+                # Strict thresholds — only return genuinely relevant results
+                if is_short_query:
+                    # Very strict for single words to avoid false positives
+                    threshold = min(best_distance + 0.2, 0.5)
+                elif len(q.split()) == 2:
+                    threshold = min(best_distance + 0.3, 0.7)
+                elif best_distance < 0.2:
+                    # Excellent match — allow some range
+                    threshold = best_distance + 0.35
+                elif best_distance < 0.4:
+                    # Good match
+                    threshold = best_distance + 0.3
+                elif best_distance < 0.6:
+                    # Mediocre — be strict
+                    threshold = best_distance + 0.2
+                else:
+                    # Poor best match — only return if really close
+                    threshold = min(best_distance + 0.1, 0.75)
 
-            if memory_ids:
-                db_memories = db.query(Memory).filter(
-                    Memory.id.in_(memory_ids),
-                    Memory.user_id == current_user.id,
-                ).all()
-                memory_map = {m.id: m for m in db_memories}
-
-                for mid in memory_ids:
-                    memory = memory_map.get(mid)
-                    if not memory:
+                # Batch query
+                memory_ids = []
+                distance_map = {}
+                for i, meta in enumerate(results["metadatas"][0]):
+                    try:
+                        if meta and "memory_id" in meta:
+                            mid = meta["memory_id"]
+                            dist = distances[i]
+                            if dist <= threshold:
+                                memory_ids.append(mid)
+                                distance_map[mid] = dist
+                    except (IndexError, KeyError, TypeError):
                         continue
-                    if category and memory.memory_category != category:
-                        continue
-                    distance = distance_map[mid]
-                    similarity = round((1 - distance / 2) * 100, 1)
-                    similarity = max(0.0, min(100.0, similarity))
-                    memories.append(format_memory(memory, similarity))
+
+                if memory_ids:
+                    db_memories = db.query(Memory).filter(
+                        Memory.id.in_(memory_ids),
+                        Memory.user_id == current_user.id,
+                    ).all()
+                    memory_map = {m.id: m for m in db_memories}
+
+                    for mid in memory_ids:
+                        memory = memory_map.get(mid)
+                        if not memory:
+                            continue
+                        if category and memory.memory_category != category:
+                            continue
+                        distance = distance_map[mid]
+                        similarity = round((1 - distance / 2) * 100, 1)
+                        similarity = max(0.0, min(100.0, similarity))
+                        memories.append(format_memory(memory, similarity))
 
     except Exception as e:
         logger.warning(f"Semantic search failed: {str(e)}")
         memories = []
 
-    # Keyword search
+    # Keyword search — only add results not already in semantic
     try:
         seen_ids = {m["id"] for m in memories}
         keyword_added = 0
 
-        filter_conditions = [Memory.title.ilike(f"%{q}%"), Memory.tags.ilike(f"%{q}%")]
-        if not is_short_query:
-            filter_conditions.append(Memory.content.ilike(f"%{q}%"))
+        # For short queries only search title and tags — not content
+        # to avoid false positives like searching "AI" matching everything
+        if is_short_query:
+            filter_conditions = [
+                Memory.title.ilike(f"%{q}%"),
+                Memory.tags.ilike(f"%{q}%"),
+            ]
+        else:
+            filter_conditions = [
+                Memory.title.ilike(f"%{q}%"),
+                Memory.content.ilike(f"%{q}%"),
+                Memory.tags.ilike(f"%{q}%"),
+            ]
 
         kw_query = db.query(Memory).filter(
             Memory.user_id == current_user.id,
@@ -463,7 +486,7 @@ def search_memories(
         if category:
             kw_query = kw_query.filter(Memory.memory_category == category)
 
-        keyword_results = kw_query.order_by(Memory.created_at.desc()).limit(10).all()
+        keyword_results = kw_query.order_by(Memory.created_at.desc()).limit(5).all()
 
         for memory in keyword_results:
             if memory.id not in seen_ids:
@@ -484,7 +507,10 @@ def search_memories(
         try:
             abbr_results = db.query(Memory).filter(
                 Memory.user_id == current_user.id,
-                or_(Memory.title.ilike(f"%{q}%"), Memory.tags.ilike(f"%{q}%"))
+                or_(
+                    Memory.title.ilike(f"%{q}%"),
+                    Memory.tags.ilike(f"%{q}%"),
+                )
             ).limit(5).all()
             seen_ids = {m["id"] for m in memories}
             for memory in abbr_results:
@@ -495,11 +521,13 @@ def search_memories(
         except Exception as e:
             logger.warning(f"Abbreviation search failed: {str(e)}")
 
+    # Sort by similarity
     memories.sort(
         key=lambda x: x["similarity"] if x["similarity"] is not None else -1,
         reverse=True,
     )
 
+    # Deduplicate
     seen = set()
     unique_memories = []
     for m in memories:
@@ -508,7 +536,6 @@ def search_memories(
             unique_memories.append(m)
 
     return {"results": unique_memories, "search_type": search_type}
-
 
 @router.get("/")
 def list_memories(

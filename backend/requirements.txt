@@ -15,7 +15,6 @@ resend
 trafilatura
 python-docx
 python-pptx
-pytesseract
 Pillow
 youtube-transcript-api
 slowapi

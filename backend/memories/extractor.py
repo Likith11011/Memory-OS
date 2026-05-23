@@ -165,22 +165,56 @@ def _extract_from_pptx(file_bytes: bytes) -> str:
 
 
 def _extract_from_image(file_bytes: bytes) -> str:
+    """
+    OCR extraction — works locally with Tesseract installed.
+    On production (Render) Tesseract is not available, so we
+    extract any embedded text metadata instead.
+    """
+    IS_PRODUCTION = bool(os.getenv("RENDER", False))
+
+    if IS_PRODUCTION:
+        # On production, try to get basic image info without OCR
+        try:
+            from PIL import Image
+            import base64
+            image = Image.open(io.BytesIO(file_bytes))
+            width, height = image.size
+            mode = image.mode
+            # Return basic metadata as text
+            result = (
+                f"Image uploaded successfully.\n"
+                f"Dimensions: {width}x{height}\n"
+                f"Mode: {mode}\n"
+                f"Note: OCR text extraction is not available in production. "
+                f"Please describe the image content in the title field."
+            )
+            return result
+        except Exception:
+            return "Image uploaded. OCR not available in production environment."
+
+    # Local OCR with Tesseract
     try:
         import pytesseract
         from PIL import Image
+
         tesseract_paths = [
             r"C:\Program Files\Tesseract-OCR\tesseract.exe",
             r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+            "/usr/bin/tesseract",
+            "/usr/local/bin/tesseract",
         ]
         for path in tesseract_paths:
             if os.path.exists(path):
                 pytesseract.pytesseract.tesseract_cmd = path
                 break
+
         image = Image.open(io.BytesIO(file_bytes))
         if image.mode not in ("RGB", "L"):
             image = image.convert("RGB")
+
         text = pytesseract.image_to_string(image, config="--psm 3")
         result = text.strip()
+
         if not result:
             raise ValueError("No text found in image")
         return result
@@ -202,7 +236,7 @@ def _extract_from_url(url: str) -> str:
         import trafilatura
         downloaded = trafilatura.fetch_url(url)
         if not downloaded:
-            raise ValueError("Could not fetch URL")
+            raise ValueError("Could not fetch URL — check if it is accessible")
         text = trafilatura.extract(
             downloaded,
             include_comments=False,
@@ -222,29 +256,73 @@ def _extract_from_youtube(url: str) -> str:
     if not url or not url.strip():
         raise ValueError("YouTube URL cannot be empty")
     url = url.strip()
+
+    video_id = _get_youtube_id(url)
+    if not video_id:
+        raise ValueError("Could not extract YouTube video ID from URL")
+
     try:
-        video_id = _get_youtube_id(url)
-        if not video_id:
-            raise ValueError("Could not extract YouTube video ID")
-        from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
+        from youtube_transcript_api import YouTubeTranscriptApi
+
+        # New API (v0.6+) uses fetch() method
         try:
-            transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=["en"])
-        except NoTranscriptFound:
+            # Try new API first
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+
+            # Try English first
             try:
-                transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
-                transcript = transcripts.find_transcript(["en", "en-US", "en-GB"])
-                transcript_list = transcript.fetch()
+                transcript = transcript_list.find_transcript(["en", "en-US", "en-GB", "en-AU"])
+                fetched = transcript.fetch()
             except Exception:
-                raise ValueError("No English transcript available")
-        except TranscriptsDisabled:
-            raise ValueError("Transcripts are disabled for this video")
-        if not transcript_list:
-            raise ValueError("Empty transcript returned")
-        text_parts = [entry.get("text", "").strip() for entry in transcript_list if entry.get("text", "").strip()]
-        result = " ".join(text_parts).strip()
-        if not result:
-            raise ValueError("Transcript is empty")
-        return f"YouTube Video Transcript:\n\n{result}"
+                # Fall back to first available transcript
+                transcript = next(iter(transcript_list))
+                fetched = transcript.fetch()
+
+            # Handle both old and new API response formats
+            text_parts = []
+            for entry in fetched:
+                # New API returns FetchedTranscriptSnippet objects
+                if hasattr(entry, 'text'):
+                    text = entry.text
+                elif isinstance(entry, dict):
+                    text = entry.get("text", "")
+                else:
+                    text = str(entry)
+
+                if text and text.strip():
+                    text_parts.append(text.strip())
+
+            result = " ".join(text_parts).strip()
+            if not result:
+                raise ValueError("Transcript is empty")
+            return f"YouTube Video Transcript:\n\n{result}"
+
+        except Exception as new_api_error:
+            # Try old API style as fallback
+            try:
+                transcript_data = YouTubeTranscriptApi.get_transcript(
+                    video_id,
+                    languages=["en", "en-US", "en-GB"]
+                )
+                text_parts = []
+                for entry in transcript_data:
+                    if isinstance(entry, dict):
+                        text = entry.get("text", "")
+                    elif hasattr(entry, 'text'):
+                        text = entry.text
+                    else:
+                        text = str(entry)
+                    if text and text.strip():
+                        text_parts.append(text.strip())
+
+                result = " ".join(text_parts).strip()
+                if not result:
+                    raise ValueError("Transcript is empty")
+                return f"YouTube Video Transcript:\n\n{result}"
+
+            except Exception:
+                raise ValueError(f"Could not fetch transcript: {str(new_api_error)}")
+
     except ValueError:
         raise
     except Exception as e:
@@ -264,8 +342,10 @@ def _extract_plain_text(file_bytes: bytes) -> str:
 
 def _is_youtube_url(url: str) -> bool:
     youtube_patterns = [
-        r"youtube\.com/watch", r"youtu\.be/",
-        r"youtube\.com/shorts/", r"youtube\.com/embed/",
+        r"youtube\.com/watch",
+        r"youtu\.be/",
+        r"youtube\.com/shorts/",
+        r"youtube\.com/embed/",
     ]
     return any(re.search(p, url) for p in youtube_patterns)
 
