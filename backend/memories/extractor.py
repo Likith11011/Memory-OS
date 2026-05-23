@@ -242,122 +242,39 @@ def _extract_from_url(url: str) -> str:
         raise ValueError(f"URL extraction failed: {str(e)}")
 
 
-def _extract_text_from_transcript_entries(entries) -> str:
-    """
-    Handle both old dict format and new object format
-    from youtube_transcript_api across versions.
-    """
-    text_parts = []
-    for entry in entries:
-        text = ""
-        if isinstance(entry, dict):
-            text = entry.get("text", "")
-        elif hasattr(entry, "text"):
-            text = entry.text
-        elif hasattr(entry, "get"):
-            text = entry.get("text", "")
-        else:
-            try:
-                text = str(entry)
-            except Exception:
-                continue
-        if text and str(text).strip():
-            text_parts.append(str(text).strip())
-    return " ".join(text_parts).strip()
-
-
 def _extract_from_youtube(url: str) -> str:
     if not url or not url.strip():
         raise ValueError("YouTube URL cannot be empty")
-
     url = url.strip()
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
 
     video_id = _get_youtube_id(url)
     if not video_id:
-        raise ValueError(
-            "Could not extract YouTube video ID. "
-            "Make sure URL is in format: https://youtube.com/watch?v=VIDEO_ID"
-        )
+        raise ValueError("Could not extract YouTube video ID from URL")
 
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
-    except ImportError:
-        raise ValueError("youtube-transcript-api package is not installed")
 
-    last_error = None
-
-    # Strategy 1: get_transcript with English
-    try:
-        entries = YouTubeTranscriptApi.get_transcript(
+        transcript_data = YouTubeTranscriptApi.get_transcript(
             video_id,
-            languages=["en", "en-US", "en-GB", "en-AU", "en-CA"]
+            languages=["en", "en-US", "en-GB"]
         )
-        result = _extract_text_from_transcript_entries(entries)
-        if result:
-            return f"YouTube Video Transcript:\n\n{result}"
+
+        text_parts = []
+        for entry in transcript_data:
+            text = entry.get("text", "")
+            if text and text.strip():
+                text_parts.append(text.strip())
+
+        result = " ".join(text_parts).strip()
+
+        if not result:
+            raise ValueError("Transcript is empty")
+
+        return f"YouTube Video Transcript:\n\n{result}"
+
     except Exception as e:
-        last_error = e
-
-    # Strategy 2: get_transcript without language preference
-    try:
-        entries = YouTubeTranscriptApi.get_transcript(video_id)
-        result = _extract_text_from_transcript_entries(entries)
-        if result:
-            return f"YouTube Video Transcript:\n\n{result}"
-    except Exception as e:
-        last_error = e
-
-    # Strategy 3: fetch() method (newer API versions)
-    try:
-        ytt_api = YouTubeTranscriptApi()
-        fetched = ytt_api.fetch(video_id)
-        result = _extract_text_from_transcript_entries(fetched)
-        if result:
-            return f"YouTube Video Transcript:\n\n{result}"
-    except Exception as e:
-        last_error = e
-
-    # Strategy 4: fetch with language snippets
-    try:
-        ytt_api = YouTubeTranscriptApi()
-        fetched = ytt_api.fetch(video_id, languages=["en", "en-US"])
-        result = _extract_text_from_transcript_entries(fetched)
-        if result:
-            return f"YouTube Video Transcript:\n\n{result}"
-    except Exception as e:
-        last_error = e
-
-    # Strategy 5: list and pick first available
-    try:
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-        for transcript in transcript_list:
-            try:
-                entries = transcript.fetch()
-                result = _extract_text_from_transcript_entries(entries)
-                if result:
-                    return f"YouTube Video Transcript:\n\n{result}"
-            except Exception:
-                continue
-    except Exception as e:
-        last_error = e
-
-    # All strategies failed
-    error_msg = str(last_error) if last_error else "Unknown error"
-
-    if "disabled" in error_msg.lower():
-        raise ValueError("Transcripts are disabled for this YouTube video")
-    elif "private" in error_msg.lower():
-        raise ValueError("This YouTube video is private")
-    elif "unavailable" in error_msg.lower() or "not available" in error_msg.lower():
-        raise ValueError("No transcript available for this video. Try a video with captions enabled")
-    elif "no transcript" in error_msg.lower():
-        raise ValueError("No English transcript found. Try a video with English captions")
-    else:
         raise ValueError(
-            f"Could not fetch YouTube transcript. "
-            f"Make sure the video has captions enabled. Error: {error_msg}"
+            f"Could not fetch YouTube transcript. Make sure the video has captions enabled. Error: {str(e)}"
         )
 
 
