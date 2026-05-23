@@ -16,5 +16,5 @@ trafilatura
 python-docx
 python-pptx
 Pillow
-youtube-transcript-api==0.6.3
+youtube-transcript-api==1.2.4
 slowapi
