@@ -165,34 +165,24 @@ def _extract_from_pptx(file_bytes: bytes) -> str:
 
 
 def _extract_from_image(file_bytes: bytes) -> str:
-    """
-    OCR extraction — works locally with Tesseract installed.
-    On production (Render) Tesseract is not available, so we
-    extract any embedded text metadata instead.
-    """
     IS_PRODUCTION = bool(os.getenv("RENDER", False))
 
     if IS_PRODUCTION:
-        # On production, try to get basic image info without OCR
         try:
             from PIL import Image
-            import base64
             image = Image.open(io.BytesIO(file_bytes))
             width, height = image.size
             mode = image.mode
-            # Return basic metadata as text
-            result = (
+            return (
                 f"Image uploaded successfully.\n"
                 f"Dimensions: {width}x{height}\n"
                 f"Mode: {mode}\n"
                 f"Note: OCR text extraction is not available in production. "
                 f"Please describe the image content in the title field."
             )
-            return result
         except Exception:
-            return "Image uploaded. OCR not available in production environment."
+            return "Image uploaded. Please describe the content in the title field."
 
-    # Local OCR with Tesseract
     try:
         import pytesseract
         from PIL import Image
@@ -252,81 +242,123 @@ def _extract_from_url(url: str) -> str:
         raise ValueError(f"URL extraction failed: {str(e)}")
 
 
+def _extract_text_from_transcript_entries(entries) -> str:
+    """
+    Handle both old dict format and new object format
+    from youtube_transcript_api across versions.
+    """
+    text_parts = []
+    for entry in entries:
+        text = ""
+        if isinstance(entry, dict):
+            text = entry.get("text", "")
+        elif hasattr(entry, "text"):
+            text = entry.text
+        elif hasattr(entry, "get"):
+            text = entry.get("text", "")
+        else:
+            try:
+                text = str(entry)
+            except Exception:
+                continue
+        if text and str(text).strip():
+            text_parts.append(str(text).strip())
+    return " ".join(text_parts).strip()
+
+
 def _extract_from_youtube(url: str) -> str:
     if not url or not url.strip():
         raise ValueError("YouTube URL cannot be empty")
+
     url = url.strip()
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
 
     video_id = _get_youtube_id(url)
     if not video_id:
-        raise ValueError("Could not extract YouTube video ID from URL")
+        raise ValueError(
+            "Could not extract YouTube video ID. "
+            "Make sure URL is in format: https://youtube.com/watch?v=VIDEO_ID"
+        )
 
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
+    except ImportError:
+        raise ValueError("youtube-transcript-api package is not installed")
 
-        # New API (v0.6+) uses fetch() method
-        try:
-            # Try new API first
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+    last_error = None
 
-            # Try English first
-            try:
-                transcript = transcript_list.find_transcript(["en", "en-US", "en-GB", "en-AU"])
-                fetched = transcript.fetch()
-            except Exception:
-                # Fall back to first available transcript
-                transcript = next(iter(transcript_list))
-                fetched = transcript.fetch()
-
-            # Handle both old and new API response formats
-            text_parts = []
-            for entry in fetched:
-                # New API returns FetchedTranscriptSnippet objects
-                if hasattr(entry, 'text'):
-                    text = entry.text
-                elif isinstance(entry, dict):
-                    text = entry.get("text", "")
-                else:
-                    text = str(entry)
-
-                if text and text.strip():
-                    text_parts.append(text.strip())
-
-            result = " ".join(text_parts).strip()
-            if not result:
-                raise ValueError("Transcript is empty")
+    # Strategy 1: get_transcript with English
+    try:
+        entries = YouTubeTranscriptApi.get_transcript(
+            video_id,
+            languages=["en", "en-US", "en-GB", "en-AU", "en-CA"]
+        )
+        result = _extract_text_from_transcript_entries(entries)
+        if result:
             return f"YouTube Video Transcript:\n\n{result}"
-
-        except Exception as new_api_error:
-            # Try old API style as fallback
-            try:
-                transcript_data = YouTubeTranscriptApi.get_transcript(
-                    video_id,
-                    languages=["en", "en-US", "en-GB"]
-                )
-                text_parts = []
-                for entry in transcript_data:
-                    if isinstance(entry, dict):
-                        text = entry.get("text", "")
-                    elif hasattr(entry, 'text'):
-                        text = entry.text
-                    else:
-                        text = str(entry)
-                    if text and text.strip():
-                        text_parts.append(text.strip())
-
-                result = " ".join(text_parts).strip()
-                if not result:
-                    raise ValueError("Transcript is empty")
-                return f"YouTube Video Transcript:\n\n{result}"
-
-            except Exception:
-                raise ValueError(f"Could not fetch transcript: {str(new_api_error)}")
-
-    except ValueError:
-        raise
     except Exception as e:
-        raise ValueError(f"YouTube extraction failed: {str(e)}")
+        last_error = e
+
+    # Strategy 2: get_transcript without language preference
+    try:
+        entries = YouTubeTranscriptApi.get_transcript(video_id)
+        result = _extract_text_from_transcript_entries(entries)
+        if result:
+            return f"YouTube Video Transcript:\n\n{result}"
+    except Exception as e:
+        last_error = e
+
+    # Strategy 3: fetch() method (newer API versions)
+    try:
+        ytt_api = YouTubeTranscriptApi()
+        fetched = ytt_api.fetch(video_id)
+        result = _extract_text_from_transcript_entries(fetched)
+        if result:
+            return f"YouTube Video Transcript:\n\n{result}"
+    except Exception as e:
+        last_error = e
+
+    # Strategy 4: fetch with language snippets
+    try:
+        ytt_api = YouTubeTranscriptApi()
+        fetched = ytt_api.fetch(video_id, languages=["en", "en-US"])
+        result = _extract_text_from_transcript_entries(fetched)
+        if result:
+            return f"YouTube Video Transcript:\n\n{result}"
+    except Exception as e:
+        last_error = e
+
+    # Strategy 5: list and pick first available
+    try:
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        for transcript in transcript_list:
+            try:
+                entries = transcript.fetch()
+                result = _extract_text_from_transcript_entries(entries)
+                if result:
+                    return f"YouTube Video Transcript:\n\n{result}"
+            except Exception:
+                continue
+    except Exception as e:
+        last_error = e
+
+    # All strategies failed
+    error_msg = str(last_error) if last_error else "Unknown error"
+
+    if "disabled" in error_msg.lower():
+        raise ValueError("Transcripts are disabled for this YouTube video")
+    elif "private" in error_msg.lower():
+        raise ValueError("This YouTube video is private")
+    elif "unavailable" in error_msg.lower() or "not available" in error_msg.lower():
+        raise ValueError("No transcript available for this video. Try a video with captions enabled")
+    elif "no transcript" in error_msg.lower():
+        raise ValueError("No English transcript found. Try a video with English captions")
+    else:
+        raise ValueError(
+            f"Could not fetch YouTube transcript. "
+            f"Make sure the video has captions enabled. Error: {error_msg}"
+        )
 
 
 def _extract_plain_text(file_bytes: bytes) -> str:
