@@ -30,13 +30,13 @@ Upload notes, PDFs, code snippets, images, and web articles. Retrieve them later
 ![Chat](Screenshots/Chat.png)
 
 ### Upload Modal
-![Upload](Screenshots/Upload.png)
+![Upload](Screenshots/upload.png)
 
 ### Exam Revision Flashcards
-![Exam](screenshots/exam.png)
+![Exam](screenshots/Exam.png)
 
 ### Project Ideas Kanban
-![Projects](Screenshots/Projects.png)
+![Projects](Screenshots/Projetcs.png)
 
 ---
 
