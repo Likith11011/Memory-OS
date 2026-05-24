@@ -44,7 +44,7 @@ except Exception as e:
     logger.error(f"Database init failed: {e}")
 
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(title="MemoryOS Lite API", version="1.0.0")
+app = FastAPI(title="MemoryOS  API", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -96,7 +96,7 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     schema = get_openapi(
-        title="MemoryOS Lite API",
+        title="MemoryOS API",
         version="1.0.0",
         routes=app.routes,
     )

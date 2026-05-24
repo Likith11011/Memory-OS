@@ -6,7 +6,7 @@ import { AuthProvider } from "@/lib/auth";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MemoryOS Lite",
+  title: "MemoryOS",
   description: "AI-powered contextual memory retrieval system",
 };
 

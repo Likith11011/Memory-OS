@@ -27,7 +27,7 @@ def send_confirmation_email(to_email: str, username: str) -> bool:
                     <span style="font-size:24px;">🧠</span>
                   </div>
                   <h1 style="color:#ffffff;font-size:28px;font-weight:800;margin:0;letter-spacing:-0.5px;">
-                    MemoryOS Lite
+                    MemoryOS 
                   </h1>
                   <p style="color:#818cf8;font-size:13px;margin:6px 0 0;letter-spacing:0.05em;">
                     AI-POWERED SECOND BRAIN
@@ -84,11 +84,11 @@ def send_confirmation_email(to_email: str, username: str) -> bool:
               <tr>
                 <td style="background:rgba(0,0,0,0.3);padding:24px 40px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;">
                   <p style="color:#475569;font-size:12px;margin:0;line-height:1.6;">
-                    This email was sent because you signed up for MemoryOS Lite.<br>
+                    This email was sent because you signed up for MemoryOS .<br>
                     If you didn't create this account, you can safely ignore this email.
                   </p>
                   <p style="color:#334155;font-size:11px;margin:12px 0 0;">
-                    © 2026 MemoryOS Lite. Built with ❤️ by Likith
+                    © 2026 MemoryOS . Built with ❤️ by Likith
                   </p>
                 </td>
               </tr>
