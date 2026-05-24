@@ -150,7 +150,7 @@ pip install -r requirements.txt
 
 Create `backend/.env`:
 SECRET_KEY=your-secret-key
-DATABASE_URL=sqlite:///./memoryos.db
+DATABASE_URL=your-database-url
 GROQ_API_KEY=your-groq-key
 
 
