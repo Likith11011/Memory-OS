@@ -18,25 +18,25 @@ Upload notes, PDFs, code snippets, images, and web articles. Retrieve them later
 ## Screenshots
 
 ### Landing Page
-![Landing Page](screenshots/landing.png)
+![Landing Page](Screenshots/Landing.png)
 
 ### Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](Screenshots/Dashboard.png)
 
 ### Semantic Search
-![Search](screenshots/search.png)
+![Search](Screenshots/Search.png)
 
 ### Chat with Memories (RAG)
-![Chat](screenshots/chat.png)
+![Chat](Screenshots/Chat.png)
 
 ### Upload Modal
-![Upload](screenshots/upload.png)
+![Upload](Screenshots/Upload.png)
 
 ### Exam Revision Flashcards
 ![Exam](screenshots/exam.png)
 
 ### Project Ideas Kanban
-![Projects](screenshots/projects.png)
+![Projects](Screenshots/Projects.png)
 
 ---
 
