@@ -217,12 +217,5 @@ The goal was to go beyond tutorial projects and implement real production AI tec
 
 This project demonstrates practical knowledge of the same AI retrieval stack used by companies like Notion, Perplexity, and Anthropic.
 
----
-
-## License
-
-MIT
-
----
 
 *Built by [Likith B](https://github.com/Likith11011) — B.Tech AIML, Alliance University*
