@@ -1,23 +1,42 @@
-# MemoryOS  🧠
-![Landing Page](Screenshots/Landing.png)
+# MemoryOS 🧠
+
+**An AI-Powered Contextual Semantic Memory Retrieval System**
+
+> Most note apps let you search by keywords. MemoryOS understands meaning.
+
+Upload notes, PDFs, code snippets, images, and web articles. Retrieve them later using natural language — your AI second brain remembers everything.
+
+---
+
+## Live Demo
+
+- **Frontend:** https://memory-os-4pyc.vercel.app
+- **Backend API:** https://memory-os-aid4.onrender.com/docs
+
+---
+
+## Screenshots
+
+### Landing Page
+![Landing Page](screenshots/landing.png)
 
 ### Dashboard
-![Dashboard](Screenshots/Dashboard.png)
+![Dashboard](screenshots/dashboard.png)
 
 ### Semantic Search
-![Search](Screenshots/Search.png)
+![Search](screenshots/search.png)
 
 ### Chat with Memories (RAG)
-![Chat](Screenshots/Chat.png)
+![Chat](screenshots/chat.png)
 
 ### Upload Modal
-![Upload](Screenshots/Upload.png)
+![Upload](screenshots/upload.png)
 
 ### Exam Revision Flashcards
-![Exam](Screenshots/Exam.png)
+![Exam](screenshots/exam.png)
 
 ### Project Ideas Kanban
-![Projects](Screenshots/Projects.png)
+![Projects](screenshots/projects.png)
 
 ---
 
@@ -80,6 +99,129 @@ Return semantically matched memories with similarity scores
 RAG Chat: top memories fed to LLaMA as context → AI answer
 
 
+
+---
+
+## Architecture
+┌─────────────────────────────────────────────────┐
+│                  Next.js Frontend                │
+│         (Vercel — memory-os-4pyc.vercel.app)     │
+└──────────────────────┬──────────────────────────┘
+│ REST API
+┌──────────────────────▼──────────────────────────┐
+│              FastAPI Backend (Render)            │
+│  ┌─────────┐  ┌──────────┐  ┌────────────────┐  │
+│  │  Auth   │  │ Memories │  │   Chat (RAG)   │  │
+│  │  JWT    │  │  Routes  │  │  Groq LLaMA    │  │
+│  └─────────┘  └────┬─────┘  └───────┬────────┘  │
+└───────────────────┼─────────────────┼───────────┘
+│                 │
+┌───────────▼───┐     ┌───────▼────────┐
+│  PostgreSQL   │     │   ChromaDB     │
+│    (Neon)     │     │ Vector Store   │
+│ Users/Memories│     │  Embeddings    │
+└───────────────┘     └────────────────┘
+
+
+
+---
+
+## Getting Started Locally
+
+### Prerequisites
+- Node.js 20+
+- Python 3.11+
+- Git
+
+### 1. Clone
+```bash
+git clone https://github.com/Likith11011/Memory-OS.git
+cd Memory-OS
+```
+
+### 2. Backend
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # Mac/Linux
+pip install -r requirements.txt
+```
+
+Create `backend/.env`:
+SECRET_KEY=your-secret-key
+DATABASE_URL=sqlite:///./memoryos.db
+GROQ_API_KEY=your-groq-key
+
+
+
+```bash
+uvicorn main:app --reload
+```
+
+API runs at `http://localhost:8000`
+Docs at `http://localhost:8000/docs`
+
+### 3. Frontend
+```bash
+cd ..
+npm install
+```
+
+Create `.env.local`:
+NEXT_PUBLIC_API_URL=http://localhost:8000
+
+
+
+```bash
+npm run dev
+```
+
+App runs at `http://localhost:3000`
+
+---
+
+## API Overview
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/auth/signup` | Create account |
+| POST | `/auth/login` | Login, receive JWT |
+| POST | `/memories/upload` | Upload a memory |
+| GET | `/memories/` | List all memories |
+| GET | `/memories/search?q=` | Semantic search |
+| POST | `/chat/` | Chat with memories (RAG) |
+| DELETE | `/memories/{id}` | Delete a memory |
+
+---
+
+## AI Concepts Used
+
+**Embeddings** — Text converted to 384-dimensional vectors that capture semantic meaning. Similar concepts produce similar vectors.
+
+**Cosine Similarity** — Mathematical measure of angle between vectors. Used to find memories semantically close to the search query.
+
+**Vector Database (ChromaDB)** — Optimized database for storing and searching high-dimensional vectors efficiently.
+
+**RAG (Retrieval-Augmented Generation)** — Retrieve relevant memories → feed as context to LLaMA → generate grounded answers. Same technique used by Perplexity, Notion AI, and Google NotebookLM.
+
+**Hybrid Search** — Combines semantic (vector) search with keyword search for best results.
+
+---
+
+## Why I Built This
+
+Built as a 30-day AI engineering project during my 3rd year B.Tech AIML at Alliance University, Bengaluru.
+
+The goal was to go beyond tutorial projects and implement real production AI techniques — vector databases, semantic embeddings, and RAG — in a complete, deployed system.
+
+This project demonstrates practical knowledge of the same AI retrieval stack used by companies like Notion, Perplexity, and Anthropic.
+
+---
+
+## License
+
+MIT
 
 ---
 
