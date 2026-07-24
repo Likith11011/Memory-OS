@@ -688,3 +688,88 @@ def get_memory(
         raise HTTPException(status_code=404, detail="Memory not found")
 
     return format_memory(memory)
+# ── Insights ────────────────────────────────────────────────────────────────
+@router.get("/insights/stats")
+def get_insights(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.insights import get_memory_insights
+    return get_memory_insights(current_user.id, db)
+
+
+@router.get("/insights/weekly-summary")
+def weekly_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.insights import get_weekly_summary
+    return get_weekly_summary(current_user.id, db)
+
+
+# ── Quiz ────────────────────────────────────────────────────────────────────
+@router.post("/{memory_id}/quiz")
+def generate_quiz_route(
+    memory_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.insights import generate_quiz
+    result = generate_quiz(memory_id, current_user.id, db)
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=result["error"])
+    return result
+
+
+# ── Duplicate check ─────────────────────────────────────────────────────────
+@router.post("/check-duplicate")
+def check_duplicate_route(
+    content: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.insights import check_duplicate
+    return check_duplicate(content, current_user.id, db)
+
+
+# ── Memory Graph ─────────────────────────────────────────────────────────────
+@router.get("/graph")
+def memory_graph(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.graph import get_memory_graph
+    return get_memory_graph(current_user.id, db)
+
+
+# ── Export ───────────────────────────────────────────────────────────────────
+@router.get("/export/json")
+def export_json(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.export import export_as_json
+    from fastapi.responses import Response
+    data = export_as_json(current_user.id, db)
+    filename = f"memoryos-export-{datetime.now(timezone.utc).strftime('%Y%m%d')}.json"
+    return Response(
+        content=data,
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@router.get("/export/markdown")
+def export_markdown(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from memories.export import export_as_markdown
+    from fastapi.responses import Response
+    data = export_as_markdown(current_user.id, db)
+    filename = f"memoryos-export-{datetime.now(timezone.utc).strftime('%Y%m%d')}.md"
+    return Response(
+        content=data,
+        media_type="text/markdown",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
