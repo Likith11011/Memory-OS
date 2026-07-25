@@ -35,6 +35,7 @@ export default function ExamPage() {
   const [flipped, setFlipped] = useState(false);
   const [mode, setMode] = useState<"cards" | "flashcard">("cards");
   const [reviewedIds, setReviewedIds] = useState<Set<number>>(new Set());
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -42,16 +43,21 @@ export default function ExamPage() {
     fetchExamMemories();
   }, []);
 
-  const fetchExamMemories = async () => {
-    try {
-      const data = await getExamRevision();
-      setMemories(data.memories || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+const fetchExamMemories = async () => {
+  try {
+    const data = await getExamRevision();
+    setMemories(data.memories || []);
+  } catch (err: any) {
+    if (err.code === "ERR_NETWORK" || err.message?.includes("Network")) {
+      setError("Server is waking up. Please wait 30 seconds and refresh.");
+    } else {
+      setError("Failed to load exam memories.");
     }
-  };
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleReview = async (id: number) => {
     try {

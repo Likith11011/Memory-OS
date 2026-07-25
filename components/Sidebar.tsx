@@ -18,14 +18,15 @@ export default function Sidebar() {
   // Close mobile sidebar on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
-const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: "⊞" },
-  { label: "Search", href: "/search", icon: "⌕" },
-  { label: "Chat", href: "/chat", icon: "◈" },
-  { label: "Exam", href: "/exam", icon: "📚" },
-  { label: "Projects", href: "/projects", icon: "🚀" },
-  { label: "Insights", href: "/insights", icon: "📊" },
-];
+  const navItems = [
+    { label: "Dashboard", href: "/dashboard", icon: "⊞" },
+    { label: "Search", href: "/search", icon: "⌕" },
+    { label: "Chat", href: "/chat", icon: "◈" },
+    { label: "Exam", href: "/exam", icon: "📚" },
+    { label: "Projects", href: "/projects", icon: "🚀" },
+    { label: "Insights", href: "/insights", icon: "📊" },
+    { label: "Roadmap", href: "/roadmap", icon: "🗺️" },
+  ];
 
   const handleLogout = () => {
     try { localStorage.removeItem("token"); } catch {}

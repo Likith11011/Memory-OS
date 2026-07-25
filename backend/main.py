@@ -36,7 +36,7 @@ from database import Base, engine
 from auth.routes import router as auth_router
 from memories.routes import router as memories_router
 from chat.routes import router as chat_router
-
+from roadmap.routes import router as roadmap_router
 try:
     Base.metadata.create_all(bind=engine)
     logger.info("Database initialized successfully")
@@ -59,7 +59,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/auth")
 app.include_router(memories_router)
 app.include_router(chat_router)
-
+app.include_router(roadmap_router)
 @app.on_event("startup")
 async def startup_event():
     logger.info("MemoryOS API starting...")

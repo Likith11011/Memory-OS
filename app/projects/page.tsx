@@ -35,16 +35,21 @@ export default function ProjectsPage() {
     fetchProjects();
   }, []);
 
-  const fetchProjects = async () => {
-    try {
-      const data = await getProjects();
-      setMemories(data.memories || []);
-    } catch (err) {
+const fetchProjects = async () => {
+  try {
+    const data = await getProjects();
+    setMemories(data.memories || []);
+  } catch (err: any) {
+    if (err.code === "ERR_NETWORK" || err.message?.includes("Network")) {
+      console.warn("Server waking up, retrying in 10s...");
+      setTimeout(() => fetchProjects(), 10000);
+    } else {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleStatusChange = async (id: number, status: string) => {
     try {
