@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getExamRevision, markReviewed } from "@/lib/api";
 import Sidebar from "@/components/Sidebar";
-import api from "@/lib/api";
 
 interface Memory {
   id: number;
@@ -29,13 +28,13 @@ export default function ExamPage() {
   const router = useRouter();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [activeSubject, setActiveSubject] = useState<string | null>(null);
   const [activeDifficulty, setActiveDifficulty] = useState<string | null>(null);
   const [flashcardIndex, setFlashcardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [mode, setMode] = useState<"cards" | "flashcard">("cards");
   const [reviewedIds, setReviewedIds] = useState<Set<number>>(new Set());
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -43,21 +42,22 @@ export default function ExamPage() {
     fetchExamMemories();
   }, []);
 
-const fetchExamMemories = async () => {
-  try {
-    const data = await getExamRevision();
-    setMemories(data.memories || []);
-  } catch (err: any) {
-    if (err.code === "ERR_NETWORK" || err.message?.includes("Network")) {
-      setError("Server is waking up. Please wait 30 seconds and refresh.");
-    } else {
-      setError("Failed to load exam memories.");
+  const fetchExamMemories = async () => {
+    try {
+      setError("");
+      const data = await getExamRevision();
+      setMemories(data.memories || []);
+    } catch (err: any) {
+      if (err.code === "ERR_NETWORK" || err.message?.includes("Network")) {
+        setError("Server is waking up. Please wait 30 seconds and try again.");
+      } else {
+        setError("Failed to load exam memories.");
+      }
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleReview = async (id: number) => {
     try {
@@ -91,17 +91,19 @@ const fetchExamMemories = async () => {
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "linear-gradient(135deg, #0A1224 0%, #0d1530 100%)", fontFamily: "'Inter', sans-serif" }}>
       <Sidebar />
-      <main style={{ marginLeft: "240px", flex: 1, padding: "32px" }}>
+      <main style={{ marginLeft: "240px", flex: 1, padding: "32px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
 
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px", flexWrap: "wrap", gap: "12px" }}>
           <div>
             <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#F8FAFC", marginBottom: "4px", letterSpacing: "-0.02em" }}>
               📚 Exam Revision
             </h2>
             <p style={{ color: "#475569", fontSize: "14px" }}>
               {filtered.length} memories to review
-              {reviewedIds.size > 0 && <span style={{ color: "#10b981", marginLeft: "8px" }}>• {reviewedIds.size} reviewed today</span>}
+              {reviewedIds.size > 0 && (
+                <span style={{ color: "#10b981", marginLeft: "8px" }}>• {reviewedIds.size} reviewed today</span>
+              )}
             </p>
           </div>
 
@@ -125,9 +127,31 @@ const fetchExamMemories = async () => {
           </div>
         </div>
 
+        {/* Error banner */}
+        {error && (
+          <div style={{
+            background: "rgba(245,158,11,0.1)",
+            border: "1px solid rgba(245,158,11,0.3)",
+            borderRadius: "12px", padding: "14px 20px",
+            color: "#f59e0b", fontSize: "14px", marginBottom: "20px",
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+          }}>
+            <span>⚠ {error}</span>
+            <button
+              onClick={() => { setError(""); setLoading(true); fetchExamMemories(); }}
+              style={{
+                background: "rgba(245,158,11,0.2)", border: "1px solid rgba(245,158,11,0.3)",
+                borderRadius: "8px", padding: "5px 14px", color: "#f59e0b",
+                cursor: "pointer", fontSize: "12px", fontWeight: 600,
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Filters */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "28px", flexWrap: "wrap" }}>
-          {/* Subject filter */}
           {subjects.length > 0 && (
             <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ color: "#334155", fontSize: "12px", fontWeight: 600 }}>Subject:</span>
@@ -150,7 +174,6 @@ const fetchExamMemories = async () => {
             </div>
           )}
 
-          {/* Difficulty filter */}
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             <span style={{ color: "#334155", fontSize: "12px", fontWeight: 600 }}>Difficulty:</span>
             <button onClick={() => setActiveDifficulty(null)} style={{
@@ -165,8 +188,7 @@ const fetchExamMemories = async () => {
                 <button key={d} onClick={() => setActiveDifficulty(activeDifficulty === d ? null : d)} style={{
                   background: activeDifficulty === d ? `${dc.color}18` : "rgba(255,255,255,0.03)",
                   border: `1px solid ${activeDifficulty === d ? dc.color + "44" : "rgba(255,255,255,0.08)"}`,
-                  borderRadius: "999px",
-                  color: activeDifficulty === d ? dc.color : "#475569",
+                  borderRadius: "999px", color: activeDifficulty === d ? dc.color : "#475569",
                   padding: "4px 12px", fontSize: "12px", cursor: "pointer",
                 }}>
                   {dc.icon} {dc.label}
@@ -176,16 +198,14 @@ const fetchExamMemories = async () => {
           </div>
         </div>
 
+        {/* Content */}
         {loading ? (
           <div style={{ textAlign: "center", color: "#475569", padding: "80px" }}>
             <div style={{ fontSize: "32px", marginBottom: "12px" }}>⏳</div>
             Loading revision materials...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{
-            textAlign: "center", padding: "80px",
-            ...glass,
-          }}>
+          <div style={{ textAlign: "center", padding: "80px", ...glass }}>
             <div style={{ fontSize: "52px", marginBottom: "16px" }}>📚</div>
             <p style={{ fontSize: "18px", fontWeight: 600, color: "#64748b", marginBottom: "8px" }}>
               No exam memories yet
@@ -195,19 +215,15 @@ const fetchExamMemories = async () => {
             </p>
           </div>
         ) : mode === "cards" ? (
-          // Card view
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
             {filtered.map((memory) => {
               const dc = difficultyConfig[memory.difficulty as keyof typeof difficultyConfig];
               const isReviewed = reviewedIds.has(memory.id);
               return (
                 <div key={memory.id} style={{
-                  ...glass,
-                  padding: "22px",
-                  transition: "all 0.3s",
-                  position: "relative",
-                  overflow: "hidden",
-                  opacity: isReviewed ? 0.7 : 1,
+                  ...glass, padding: "22px",
+                  transition: "all 0.3s", position: "relative",
+                  overflow: "hidden", opacity: isReviewed ? 0.75 : 1,
                 }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(37,99,235,0.3)";
@@ -226,25 +242,23 @@ const fetchExamMemories = async () => {
                     background: dc ? `linear-gradient(90deg, ${dc.color}, transparent)` : "linear-gradient(90deg, #2563EB, transparent)",
                   }} />
 
-                  {/* Header */}
+                  {/* Header badges */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                       {memory.subject && (
                         <span style={{
-                          background: "rgba(37,99,235,0.12)",
-                          border: "1px solid rgba(37,99,235,0.25)",
-                          color: "#60A5FA", fontSize: "11px",
-                          padding: "2px 8px", borderRadius: "999px", fontWeight: 600,
+                          background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)",
+                          color: "#60A5FA", fontSize: "11px", padding: "2px 8px",
+                          borderRadius: "999px", fontWeight: 600,
                         }}>
                           📖 {memory.subject}
                         </span>
                       )}
                       {dc && (
                         <span style={{
-                          background: `${dc.color}15`,
-                          border: `1px solid ${dc.color}33`,
-                          color: dc.color, fontSize: "11px",
-                          padding: "2px 8px", borderRadius: "999px", fontWeight: 600,
+                          background: `${dc.color}15`, border: `1px solid ${dc.color}33`,
+                          color: dc.color, fontSize: "11px", padding: "2px 8px",
+                          borderRadius: "999px", fontWeight: 600,
                         }}>
                           {dc.icon} {dc.label}
                         </span>
@@ -252,10 +266,8 @@ const fetchExamMemories = async () => {
                     </div>
                     {isReviewed && (
                       <span style={{
-                        background: "rgba(16,185,129,0.12)",
-                        border: "1px solid rgba(16,185,129,0.25)",
-                        color: "#10b981", fontSize: "10px",
-                        padding: "2px 8px", borderRadius: "999px",
+                        background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)",
+                        color: "#10b981", fontSize: "10px", padding: "2px 8px", borderRadius: "999px",
                       }}>✓ Reviewed</span>
                     )}
                   </div>
@@ -275,10 +287,8 @@ const fetchExamMemories = async () => {
                   {/* AI Explanation */}
                   {memory.explanation && (
                     <div style={{
-                      background: "rgba(37,99,235,0.06)",
-                      border: "1px solid rgba(37,99,235,0.15)",
-                      borderRadius: "10px", padding: "12px",
-                      marginBottom: "14px",
+                      background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)",
+                      borderRadius: "10px", padding: "12px", marginBottom: "14px",
                     }}>
                       <p style={{ color: "#475569", fontSize: "10px", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         🤖 AI Explanation ({memory.difficulty})
@@ -290,32 +300,51 @@ const fetchExamMemories = async () => {
                   )}
 
                   {/* Footer */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
                     <span style={{ color: "#334155", fontSize: "11px" }}>
                       {(memory.review_count || 0) > 0 ? `reviewed ${memory.review_count}×` : "not reviewed yet"}
                     </span>
-                    <button
-                      onClick={() => handleReview(memory.id)}
-                      disabled={isReviewed}
-                      style={{
-                        background: isReviewed ? "rgba(16,185,129,0.12)" : "rgba(37,99,235,0.15)",
-                        border: `1px solid ${isReviewed ? "rgba(16,185,129,0.3)" : "rgba(37,99,235,0.3)"}`,
-                        color: isReviewed ? "#10b981" : "#60A5FA",
-                        borderRadius: "8px", padding: "6px 14px",
-                        fontSize: "12px", fontWeight: 600,
-                        cursor: isReviewed ? "default" : "pointer",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      {isReviewed ? "✓ Done" : "Mark reviewed"}
-                    </button>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {/* Quiz button */}
+                      <button
+                        onClick={() => router.push(`/quiz?id=${memory.id}`)}
+                        style={{
+                          background: "rgba(124,58,237,0.12)",
+                          border: "1px solid rgba(124,58,237,0.3)",
+                          color: "#a78bfa", borderRadius: "8px",
+                          padding: "6px 12px", fontSize: "12px",
+                          fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                        }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.22)"}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.12)"}
+                      >
+                        🧠 Quiz
+                      </button>
+
+                      {/* Review button */}
+                      <button
+                        onClick={() => handleReview(memory.id)}
+                        disabled={isReviewed}
+                        style={{
+                          background: isReviewed ? "rgba(16,185,129,0.12)" : "rgba(37,99,235,0.15)",
+                          border: `1px solid ${isReviewed ? "rgba(16,185,129,0.3)" : "rgba(37,99,235,0.3)"}`,
+                          color: isReviewed ? "#10b981" : "#60A5FA",
+                          borderRadius: "8px", padding: "6px 12px",
+                          fontSize: "12px", fontWeight: 600,
+                          cursor: isReviewed ? "default" : "pointer",
+                          transition: "all 0.2s",
+                        }}
+                      >
+                        {isReviewed ? "✓ Done" : "Mark reviewed"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          // Flashcard mode
+          /* Flashcard mode */
           <div style={{ maxWidth: "640px", margin: "0 auto" }}>
             {/* Progress */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -362,7 +391,6 @@ const fetchExamMemories = async () => {
                     borderColor: flipped ? "rgba(37,99,235,0.3)" : "rgba(255,255,255,0.08)",
                   }}
                 >
-                  {/* Card indicator */}
                   <div style={{
                     position: "absolute", top: "16px", right: "16px",
                     background: flipped ? "rgba(37,99,235,0.15)" : "rgba(255,255,255,0.05)",
@@ -374,7 +402,6 @@ const fetchExamMemories = async () => {
                     {flipped ? "Answer" : "Question"}
                   </div>
 
-                  {/* Difficulty */}
                   {currentCard.difficulty && (
                     <span style={{
                       background: `${difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.color || "#2563EB"}15`,
@@ -405,10 +432,8 @@ const fetchExamMemories = async () => {
                       </p>
                       {currentCard.explanation && (
                         <div style={{
-                          background: "rgba(37,99,235,0.06)",
-                          border: "1px solid rgba(37,99,235,0.15)",
-                          borderRadius: "10px", padding: "14px",
-                          maxWidth: "500px", width: "100%",
+                          background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)",
+                          borderRadius: "10px", padding: "14px", maxWidth: "500px", width: "100%",
                         }}>
                           <p style={{ color: "#475569", fontSize: "10px", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>
                             🤖 AI Explanation
@@ -423,14 +448,13 @@ const fetchExamMemories = async () => {
                 </div>
 
                 {/* Navigation */}
-                <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+                <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
                   <button
                     onClick={() => { setFlashcardIndex(Math.max(0, flashcardIndex - 1)); setFlipped(false); }}
                     disabled={flashcardIndex === 0}
                     style={{
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: "12px", padding: "12px 24px",
+                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "12px", padding: "12px 20px",
                       color: flashcardIndex === 0 ? "#334155" : "#94A3B8",
                       fontSize: "14px", cursor: flashcardIndex === 0 ? "not-allowed" : "pointer",
                       fontWeight: 500, transition: "all 0.2s",
@@ -439,15 +463,30 @@ const fetchExamMemories = async () => {
                     ← Previous
                   </button>
 
+                  {/* Quiz button in flashcard mode */}
+                  <button
+                    onClick={() => router.push(`/quiz?id=${currentCard.id}`)}
+                    style={{
+                      background: "rgba(124,58,237,0.15)",
+                      border: "1px solid rgba(124,58,237,0.35)",
+                      borderRadius: "12px", padding: "12px 20px",
+                      color: "#a78bfa", fontSize: "14px",
+                      cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
+                    }}
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.25)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.15)"}
+                  >
+                    🧠 Quiz
+                  </button>
+
                   <button
                     onClick={() => handleReview(currentCard.id)}
                     style={{
                       background: reviewedIds.has(currentCard.id) ? "rgba(16,185,129,0.12)" : "rgba(37,99,235,0.15)",
                       border: `1px solid ${reviewedIds.has(currentCard.id) ? "rgba(16,185,129,0.3)" : "rgba(37,99,235,0.3)"}`,
-                      borderRadius: "12px", padding: "12px 24px",
+                      borderRadius: "12px", padding: "12px 20px",
                       color: reviewedIds.has(currentCard.id) ? "#10b981" : "#60A5FA",
-                      fontSize: "14px", cursor: "pointer", fontWeight: 600,
-                      transition: "all 0.2s",
+                      fontSize: "14px", cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
                     }}
                   >
                     {reviewedIds.has(currentCard.id) ? "✓ Reviewed" : "✓ Mark reviewed"}
@@ -462,8 +501,10 @@ const fetchExamMemories = async () => {
                     }}
                     disabled={flashcardIndex === filtered.length - 1}
                     style={{
-                      background: flashcardIndex === filtered.length - 1 ? "rgba(255,255,255,0.02)" : "linear-gradient(135deg, #2563EB, #1d4ed8)",
-                      border: "none", borderRadius: "12px", padding: "12px 24px",
+                      background: flashcardIndex === filtered.length - 1
+                        ? "rgba(255,255,255,0.02)"
+                        : "linear-gradient(135deg, #2563EB, #1d4ed8)",
+                      border: "none", borderRadius: "12px", padding: "12px 20px",
                       color: flashcardIndex === filtered.length - 1 ? "#334155" : "white",
                       fontSize: "14px",
                       cursor: flashcardIndex === filtered.length - 1 ? "not-allowed" : "pointer",
