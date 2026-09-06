@@ -24,8 +24,8 @@ interface WeeklySummary {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  general: "#6366f1", code: "#10b981",
-  research: "#3b82f6", exam: "#f59e0b", project: "#8b5cf6",
+  general: "#059669", code: "#065F46",
+  research: "#0284C7", exam: "#D97706", project: "#7C3AED",
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -91,117 +91,122 @@ export default function InsightsPage() {
     }
   };
 
-  const glass = {
-    background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "16px",
-  };
-
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "linear-gradient(135deg, #0A1224, #0d1530)", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#F8FAF9", fontFamily: "'Inter', sans-serif" }}>
       <Sidebar />
-      <main style={{ marginLeft: "240px", flex: 1, padding: "28px", boxSizing: "border-box", width: "calc(100% - 240px)", overflowX: "hidden" }}>
+      <main style={{ marginLeft: "240px", flex: 1, padding: "32px 40px", boxSizing: "border-box", width: "calc(100% - 240px)", overflowX: "hidden" }}>
 
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px", flexWrap: "wrap", gap: "12px" }}>
           <div>
-            <h2 style={{ fontSize: "26px", fontWeight: 700, color: "#F8FAFC", letterSpacing: "-0.02em" }}>
-              📊 Insights
+            <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#10231D", letterSpacing: "-0.02em", marginBottom: "4px" }}>
+              📊 Insights & Knowledge Analytics
             </h2>
-            <p style={{ color: "#475569", fontSize: "14px" }}>
-              Your knowledge base at a glance
+            <p style={{ color: "#52635C", fontSize: "14px" }}>
+              Your digital knowledge forest at a glance
             </p>
           </div>
 
           {/* Export buttons */}
           <div style={{ display: "flex", gap: "8px" }}>
             <button onClick={() => handleExport("json")} style={{
-              background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)",
-              borderRadius: "10px", padding: "8px 16px", color: "#60A5FA",
+              background: "#FFFFFF", border: "1px solid #DDE7E2",
+              borderRadius: "10px", padding: "8px 16px", color: "#065F46",
               fontSize: "13px", fontWeight: 600, cursor: "pointer",
-            }}>
+              boxShadow: "0 1px 3px rgba(0,0,0,0.03)", transition: "all 0.2s",
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "#059669")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "#DDE7E2")}
+            >
               ⬇ Export JSON
             </button>
             <button onClick={() => handleExport("markdown")} style={{
-              background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)",
-              borderRadius: "10px", padding: "8px 16px", color: "#10b981",
+              background: "#ECFDF5", border: "1px solid #A7F3D0",
+              borderRadius: "10px", padding: "8px 16px", color: "#059669",
               fontSize: "13px", fontWeight: 600, cursor: "pointer",
-            }}>
+              boxShadow: "0 1px 3px rgba(5,150,105,0.1)", transition: "all 0.2s",
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#D1FAE5")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#ECFDF5")}
+            >
               ⬇ Export Markdown
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: "4px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "4px", marginBottom: "24px", width: "fit-content" }}>
+        <div style={{ display: "flex", gap: "4px", background: "#F1F5F3", border: "1px solid #DDE7E2", borderRadius: "12px", padding: "4px", marginBottom: "24px", width: "fit-content" }}>
           {(["overview", "summary", "graph"] as const).map(t => (
             <button key={t} onClick={() => { setTab(t); if (t === "graph") fetchGraph(); }} style={{
               padding: "8px 20px", borderRadius: "8px", border: "none",
-              background: tab === t ? "rgba(37,99,235,0.25)" : "transparent",
-              color: tab === t ? "#60A5FA" : "#475569",
+              background: tab === t ? "#FFFFFF" : "transparent",
+              color: tab === t ? "#064E3B" : "#52635C",
               fontSize: "13px", fontWeight: 600, cursor: "pointer", textTransform: "capitalize",
+              boxShadow: tab === t ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+              transition: "all 0.2s",
             }}>
-              {t === "overview" ? "⊞ Overview" : t === "summary" ? "📋 Weekly" : "🕸️ Graph"}
+              {t === "overview" ? "⊞ Overview" : t === "summary" ? "📋 Weekly Summary" : "🕸️ Knowledge Graph"}
             </button>
           ))}
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", color: "#475569", padding: "80px" }}>Loading insights...</div>
+          <div style={{ textAlign: "center", color: "#52635C", padding: "80px" }}>Loading insights...</div>
         ) : tab === "overview" && stats ? (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Stats row */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px" }}>
               {[
-                { label: "Total Memories", value: stats.total, color: "#2563EB", icon: "🧠" },
-                { label: "Reviewed", value: stats.review_stats.total_reviewed, color: "#10b981", icon: "✓" },
-                { label: "Never Reviewed", value: stats.review_stats.never_reviewed, color: "#f59e0b", icon: "⚠" },
-                { label: "Avg Reviews", value: stats.review_stats.avg_review_count, color: "#8b5cf6", icon: "🔄" },
+                { label: "Total Memories", value: stats.total, color: "#059669", icon: "🧠" },
+                { label: "Reviewed", value: stats.review_stats.total_reviewed, color: "#065F46", icon: "✓" },
+                { label: "Never Reviewed", value: stats.review_stats.never_reviewed, color: "#D97706", icon: "⚠" },
+                { label: "Avg Reviews", value: stats.review_stats.avg_review_count, color: "#7C3AED", icon: "🔄" },
               ].map(s => (
-                <div key={s.label} style={{ ...glass, padding: "20px", textAlign: "center" }}>
+                <div key={s.label} style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "20px", textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
                   <div style={{ fontSize: "24px", marginBottom: "8px" }}>{s.icon}</div>
-                  <p style={{ color: "#475569", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{s.label}</p>
-                  <p style={{ color: s.color, fontSize: "28px", fontWeight: 700 }}>{s.value}</p>
+                  <p style={{ color: "#7A8A84", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px", fontWeight: 600 }}>{s.label}</p>
+                  <p style={{ color: s.color, fontSize: "28px", fontWeight: 700, margin: 0 }}>{s.value}</p>
                 </div>
               ))}
             </div>
 
             {/* By category + By type */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-              <div style={{ ...glass, padding: "20px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, marginBottom: "16px" }}>By Category</h3>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "16px" }}>By Category</h3>
                 {Object.entries(stats.by_category).map(([cat, count]) => {
                   const pct = Math.round((count / stats.total) * 100);
+                  const color = CATEGORY_COLORS[cat] || "#059669";
                   return (
                     <div key={cat} style={{ marginBottom: "12px" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                        <span style={{ color: "#94A3B8", fontSize: "12px", textTransform: "capitalize" }}>{cat}</span>
-                        <span style={{ color: CATEGORY_COLORS[cat] || "#6366f1", fontSize: "12px", fontWeight: 600 }}>{count}</span>
+                        <span style={{ color: "#52635C", fontSize: "13px", textTransform: "capitalize", fontWeight: 500 }}>{cat}</span>
+                        <span style={{ color: color, fontSize: "13px", fontWeight: 600 }}>{count} ({pct}%)</span>
                       </div>
-                      <div style={{ height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "999px", overflow: "hidden" }}>
-                        <div style={{ height: "100%", width: `${pct}%`, background: CATEGORY_COLORS[cat] || "#6366f1", borderRadius: "999px", transition: "width 0.5s ease" }} />
+                      <div style={{ height: "7px", background: "#F1F5F3", borderRadius: "999px", overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: "999px", transition: "width 0.5s ease" }} />
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div style={{ ...glass, padding: "20px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, marginBottom: "16px" }}>By File Type</h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "16px" }}>By File Type</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                   {Object.entries(stats.by_type).map(([type, count]) => (
                     <div key={type} style={{
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "10px", padding: "10px 14px",
-                      display: "flex", alignItems: "center", gap: "8px",
+                      background: "#F8FAF9",
+                      border: "1px solid #DDE7E2",
+                      borderRadius: "12px", padding: "12px 16px",
+                      display: "flex", alignItems: "center", gap: "10px",
+                      minWidth: "100px",
                     }}>
-                      <span style={{ fontSize: "18px" }}>{TYPE_ICONS[type] || "📄"}</span>
+                      <span style={{ fontSize: "20px" }}>{TYPE_ICONS[type] || "📄"}</span>
                       <div>
-                        <p style={{ color: "#F8FAFC", fontSize: "16px", fontWeight: 700, margin: 0 }}>{count}</p>
-                        <p style={{ color: "#475569", fontSize: "10px", textTransform: "uppercase", margin: 0 }}>{type}</p>
+                        <p style={{ color: "#10231D", fontSize: "16px", fontWeight: 700, margin: 0 }}>{count}</p>
+                        <p style={{ color: "#7A8A84", fontSize: "10px", textTransform: "uppercase", margin: 0, fontWeight: 600 }}>{type}</p>
                       </div>
                     </div>
                   ))}
@@ -211,18 +216,19 @@ export default function InsightsPage() {
 
             {/* Top tags */}
             {stats.most_used_tags.length > 0 && (
-              <div style={{ ...glass, padding: "20px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, marginBottom: "16px" }}>🏷️ Most Used Tags</h3>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "16px" }}>🏷️ Most Used Tags</h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {stats.most_used_tags.map(({ tag, count }) => (
                     <span key={tag} style={{
-                      background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)",
-                      color: "#60A5FA", borderRadius: "999px",
-                      padding: "4px 12px", fontSize: "12px",
+                      background: "#ECFDF5", border: "1px solid #A7F3D0",
+                      color: "#065F46", borderRadius: "999px",
+                      padding: "5px 14px", fontSize: "12px",
                       display: "flex", alignItems: "center", gap: "6px",
+                      fontWeight: 500,
                     }}>
                       #{tag}
-                      <span style={{ background: "rgba(37,99,235,0.3)", borderRadius: "999px", padding: "0 5px", fontSize: "10px" }}>{count}</span>
+                      <span style={{ background: "#059669", color: "white", borderRadius: "999px", padding: "0 6px", fontSize: "10px", fontWeight: 700 }}>{count}</span>
                     </span>
                   ))}
                 </div>
@@ -231,21 +237,20 @@ export default function InsightsPage() {
 
             {/* Knowledge growth */}
             {stats.knowledge_growth.length > 1 && (
-              <div style={{ ...glass, padding: "20px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, marginBottom: "16px" }}>📈 Knowledge Growth</h3>
-                <div style={{ display: "flex", alignItems: "flex-end", gap: "6px", height: "80px" }}>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "16px" }}>📈 Knowledge Growth</h3>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: "8px", height: "100px", paddingBottom: "10px" }}>
                   {stats.knowledge_growth.slice(-12).map((g, i, arr) => {
                     const max = Math.max(...arr.map(x => x.total));
                     const pct = max > 0 ? (g.total / max) * 100 : 0;
                     return (
-                      <div key={g.week} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+                      <div key={g.week} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
                         <div style={{
-                          width: "100%", height: `${Math.max(pct, 8)}%`,
-                          background: "linear-gradient(180deg, #2563EB, #1d4ed8)",
-                          borderRadius: "4px 4px 0 0", minHeight: "6px",
-                          boxShadow: "0 0 8px rgba(37,99,235,0.4)",
+                          width: "100%", height: `${Math.max(pct, 10)}%`,
+                          background: "linear-gradient(180deg, #10B981, #059669)",
+                          borderRadius: "4px 4px 0 0", minHeight: "8px",
                         }} />
-                        <span style={{ color: "#334155", fontSize: "8px", whiteSpace: "nowrap" }}>
+                        <span style={{ color: "#7A8A84", fontSize: "10px", whiteSpace: "nowrap", fontWeight: 500 }}>
                           {g.week.split("W")[1] ? `W${g.week.split("W")[1]}` : ""}
                         </span>
                       </div>
@@ -260,34 +265,35 @@ export default function InsightsPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
             {/* Summary card */}
-            <div style={{ ...glass, padding: "24px", background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                <span style={{ fontSize: "24px" }}>📋</span>
+            <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "28px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <span style={{ fontSize: "28px" }}>📋</span>
                 <div>
-                  <h3 style={{ color: "#F8FAFC", fontSize: "16px", fontWeight: 700, margin: 0 }}>This Week's Summary</h3>
-                  <p style={{ color: "#475569", fontSize: "12px", margin: 0 }}>{summary.count} memories uploaded</p>
+                  <h3 style={{ color: "#10231D", fontSize: "18px", fontWeight: 700, margin: 0 }}>This Week's Summary</h3>
+                  <p style={{ color: "#52635C", fontSize: "13px", margin: 0 }}>{summary.count} memories uploaded</p>
                 </div>
               </div>
-              <p style={{ color: "#94A3B8", fontSize: "14px", lineHeight: 1.7, marginBottom: "16px" }}>
+              <p style={{ color: "#52635C", fontSize: "14px", lineHeight: 1.7, marginBottom: "20px" }}>
                 {summary.summary}
               </p>
               {summary.insight && (
-                <div style={{ background: "rgba(37,99,235,0.08)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: "10px", padding: "12px 16px" }}>
-                  <p style={{ color: "#60A5FA", fontSize: "12px", fontWeight: 600, marginBottom: "4px" }}>💡 Insight for next week</p>
-                  <p style={{ color: "#94A3B8", fontSize: "13px", margin: 0 }}>{summary.insight}</p>
+                <div style={{ background: "#ECFDF5", border: "1px solid #A7F3D0", borderRadius: "12px", padding: "14px 18px" }}>
+                  <p style={{ color: "#065F46", fontSize: "12px", fontWeight: 700, marginBottom: "4px" }}>💡 Insight for next week</p>
+                  <p style={{ color: "#064E3B", fontSize: "13px", margin: 0, lineHeight: 1.5 }}>{summary.insight}</p>
                 </div>
               )}
             </div>
 
             {/* Topics covered */}
             {summary.topics.length > 0 && (
-              <div style={{ ...glass, padding: "20px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, marginBottom: "12px" }}>Topics Covered This Week</h3>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "14px" }}>Topics Covered This Week</h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {summary.topics.map(t => (
                     <span key={t} style={{
-                      background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)",
-                      color: "#10b981", borderRadius: "999px", padding: "4px 12px", fontSize: "12px",
+                      background: "#ECFDF5", border: "1px solid #A7F3D0",
+                      color: "#065F46", borderRadius: "999px", padding: "5px 14px", fontSize: "12px",
+                      fontWeight: 500,
                     }}>
                       {t}
                     </span>
@@ -298,20 +304,20 @@ export default function InsightsPage() {
 
             {/* Suggested review */}
             {summary.suggested_review.length > 0 && (
-              <div style={{ ...glass, padding: "20px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, marginBottom: "12px" }}>⏰ Due for Review</h3>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "14px" }}>⏰ Due for Review</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {summary.suggested_review.map(m => (
                     <div key={m.id} style={{
-                      background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)",
+                      background: "#FEF3C7", border: "1px solid #FDE68A",
                       borderRadius: "10px", padding: "12px 16px",
                       display: "flex", justifyContent: "space-between", alignItems: "center",
                     }}>
                       <div>
-                        <p style={{ color: "#F8FAFC", fontSize: "13px", fontWeight: 600, margin: 0 }}>{m.title}</p>
-                        {m.subject && <p style={{ color: "#475569", fontSize: "11px", margin: 0 }}>{m.subject}</p>}
+                        <p style={{ color: "#92400E", fontSize: "13px", fontWeight: 600, margin: 0 }}>{m.title}</p>
+                        {m.subject && <p style={{ color: "#B45309", fontSize: "11px", margin: 0 }}>{m.subject}</p>}
                       </div>
-                      <span style={{ color: "#f59e0b", fontSize: "11px", fontWeight: 600 }}>Review now →</span>
+                      <button onClick={() => router.push(`/exam`)} style={{ background: "none", border: "none", color: "#B45309", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}>Review now →</button>
                     </div>
                   ))}
                 </div>
@@ -320,17 +326,17 @@ export default function InsightsPage() {
           </div>
 
         ) : tab === "graph" ? (
-          <div style={{ ...glass, padding: "20px", minHeight: "500px" }}>
+          <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "24px", minHeight: "520px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-              <h3 style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600, margin: 0 }}>🕸️ Memory Knowledge Graph</h3>
-              <p style={{ color: "#475569", fontSize: "12px", margin: 0 }}>Lines show semantic connections between memories</p>
+              <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, margin: 0 }}>🕸️ Memory Knowledge Graph</h3>
+              <p style={{ color: "#52635C", fontSize: "12px", margin: 0 }}>Lines show semantic connections between memories</p>
             </div>
 
             {graphLoading ? (
-              <div style={{ textAlign: "center", color: "#475569", padding: "80px" }}>Building your knowledge graph...</div>
+              <div style={{ textAlign: "center", color: "#52635C", padding: "80px" }}>Building your knowledge graph...</div>
             ) : graphData ? (
               <div style={{ position: "relative", height: "480px", overflow: "hidden" }}>
-                <svg width="100%" height="100%" style={{ background: "rgba(255,255,255,0.02)", borderRadius: "12px" }}>
+                <svg width="100%" height="100%" style={{ background: "#F8FAF9", borderRadius: "12px", border: "1px solid #DDE7E2" }}>
                   {/* Edges */}
                   {graphData.edges.map((edge, i) => {
                     const sourceNode = graphData.nodes.find(n => n.id === edge.source);
@@ -350,8 +356,8 @@ export default function InsightsPage() {
                       <line key={i}
                         x1={`${sx}%`} y1={`${sy}%`}
                         x2={`${tx}%`} y2={`${ty}%`}
-                        stroke={sourceNode.color}
-                        strokeOpacity={0.2 + edge.strength * 0.4}
+                        stroke="#059669"
+                        strokeOpacity={0.25 + edge.strength * 0.4}
                         strokeWidth={edge.strength * 2 + 0.5}
                       />
                     );
@@ -363,21 +369,22 @@ export default function InsightsPage() {
                     const x = ((idx % cols) + 0.5) / cols * 100;
                     const y = (Math.floor(idx / cols) + 0.5) / Math.ceil(graphData.nodes.length / cols) * 100;
                     const isSelected = selectedNode?.id === node.id;
+                    const nodeColor = CATEGORY_COLORS[node.category] || node.color || "#059669";
 
                     return (
                       <g key={node.id} style={{ cursor: "pointer" }}
                         onClick={() => setSelectedNode(isSelected ? null : node)}>
                         <circle
                           cx={`${x}%`} cy={`${y}%`} r={isSelected ? 14 : 10}
-                          fill={node.color}
-                          fillOpacity={0.3}
-                          stroke={node.color}
+                          fill={nodeColor}
+                          fillOpacity={0.2}
+                          stroke={nodeColor}
                           strokeWidth={isSelected ? 3 : 1.5}
                         />
                         <text
                           x={`${x}%`} y={`${y}%`}
                           textAnchor="middle" dominantBaseline="middle"
-                          fill="#F8FAFC" fontSize="9"
+                          fill="#10231D" fontSize="9" fontWeight="600"
                           style={{ pointerEvents: "none", userSelect: "none" }}
                         >
                           {node.title.length > 12 ? node.title.slice(0, 12) + "…" : node.title}
@@ -391,38 +398,41 @@ export default function InsightsPage() {
                 {selectedNode && (
                   <div style={{
                     position: "absolute", top: "16px", right: "16px",
-                    ...glass, padding: "16px", maxWidth: "220px",
-                    background: "rgba(15,26,46,0.95)",
+                    padding: "16px", maxWidth: "240px",
+                    background: "#FFFFFF",
+                    border: "1.5px solid #DDE7E2",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
                   }}>
-                    <p style={{ color: selectedNode.color, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>
+                    <p style={{ color: CATEGORY_COLORS[selectedNode.category] || "#059669", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>
                       {selectedNode.category}
                     </p>
-                    <p style={{ color: "#F8FAFC", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>
+                    <p style={{ color: "#10231D", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>
                       {selectedNode.title}
                     </p>
                     {selectedNode.tags && (
-                      <p style={{ color: "#475569", fontSize: "11px" }}>
+                      <p style={{ color: "#52635C", fontSize: "11px", marginBottom: "4px" }}>
                         Tags: {selectedNode.tags}
                       </p>
                     )}
-                    <p style={{ color: "#334155", fontSize: "10px" }}>
+                    <p style={{ color: "#7A8A84", fontSize: "10px", margin: 0 }}>
                       {selectedNode.created_at?.slice(0, 10)}
                     </p>
                   </div>
                 )}
 
                 {/* Legend */}
-                <div style={{ position: "absolute", bottom: "16px", left: "16px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <div style={{ position: "absolute", bottom: "16px", left: "16px", display: "flex", gap: "12px", flexWrap: "wrap", background: "rgba(255,255,255,0.9)", padding: "6px 12px", borderRadius: "8px", border: "1px solid #DDE7E2" }}>
                   {Object.entries(CATEGORY_COLORS).map(([cat, color]) => (
-                    <div key={cat} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <div key={cat} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                       <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: color }} />
-                      <span style={{ color: "#475569", fontSize: "10px", textTransform: "capitalize" }}>{cat}</span>
+                      <span style={{ color: "#52635C", fontSize: "11px", textTransform: "capitalize", fontWeight: 500 }}>{cat}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div style={{ textAlign: "center", color: "#475569", padding: "80px" }}>
+              <div style={{ textAlign: "center", color: "#52635C", padding: "80px" }}>
                 No graph data available
               </div>
             )}

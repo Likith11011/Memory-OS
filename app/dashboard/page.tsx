@@ -105,21 +105,22 @@ export default function Dashboard() {
   const groupedMemories = groupByDate(filteredMemories);
 
   const stats = [
-  { label: "Total", value: memories.length, color: "#2563EB", glow: "rgba(37,99,235,0.4)" },
-  { label: "Notes", value: memories.filter(m => m.file_type === "text").length, color: "#10b981", glow: "rgba(16,185,129,0.3)" },
-  { label: "PDFs", value: memories.filter(m => m.file_type === "pdf").length, color: "#f59e0b", glow: "rgba(245,158,11,0.3)" },
-  { label: "Code", value: memories.filter(m => m.file_type === "code").length, color: "#10b981", glow: "rgba(16,185,129,0.3)" },
-  { label: "Docs", value: memories.filter(m => m.file_type === "docx").length, color: "#60A5FA", glow: "rgba(96,165,250,0.3)" },
-  { label: "Slides", value: memories.filter(m => m.file_type === "pptx").length, color: "#8b5cf6", glow: "rgba(139,92,246,0.3)" },
-  { label: "Images", value: memories.filter(m => m.file_type === "image").length, color: "#ec4899", glow: "rgba(236,72,153,0.3)" },
-  { label: "URLs", value: memories.filter(m => m.file_type === "url").length, color: "#06b6d4", glow: "rgba(6,182,212,0.3)" },
-];
+    { label: "Total", value: memories.length, color: "#064E3B", bg: "#ECFDF5" },
+    { label: "Notes", value: memories.filter(m => m.file_type === "text").length, color: "#059669", bg: "#ECFDF5" },
+    { label: "PDFs", value: memories.filter(m => m.file_type === "pdf").length, color: "#D97706", bg: "#FEF3C7" },
+    { label: "Code", value: memories.filter(m => m.file_type === "code").length, color: "#059669", bg: "#ECFDF5" },
+    { label: "Docs", value: memories.filter(m => m.file_type === "docx").length, color: "#2563EB", bg: "#EFF6FF" },
+    { label: "Slides", value: memories.filter(m => m.file_type === "pptx").length, color: "#7C3AED", bg: "#F5F3FF" },
+    { label: "Images", value: memories.filter(m => m.file_type === "image").length, color: "#DB2777", bg: "#FDF2F8" },
+    { label: "URLs", value: memories.filter(m => m.file_type === "url").length, color: "#0891B2", bg: "#ECFEFF" },
+  ];
 
   return (
     <div style={{
       display: "flex",
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #0A1224 0%, #0d1530 100%)",
+      background: "#F8FAF9",
+      color: "#10231D",
       fontFamily: "'Inter', sans-serif",
     }}>
       <Sidebar />
@@ -127,7 +128,7 @@ export default function Dashboard() {
       <main style={{
         marginLeft: "240px",
         flex: 1,
-        padding: "28px",
+        padding: "32px",
         boxSizing: "border-box",
         width: "calc(100% - 240px)",
         overflowX: "hidden",
@@ -140,18 +141,18 @@ export default function Dashboard() {
           alignItems: "center",
           marginBottom: "24px",
           flexWrap: "wrap",
-          gap: "12px",
+          gap: "14px",
         }}>
           <div>
             <h2 style={{
-              fontSize: "26px", fontWeight: 700, color: "#F8FAFC",
+              fontSize: "26px", fontWeight: 800, color: "#064E3B",
               marginBottom: "4px", letterSpacing: "-0.02em",
             }}>
-              Your Memories
+              Your Knowledge Base
             </h2>
-            <p style={{ color: "#475569", fontSize: "14px" }}>
-              {filteredMemories.length} of {memories.length} memories
-              {activeTag && <span style={{ color: "#60A5FA" }}> tagged "{activeTag}"</span>}
+            <p style={{ color: "#52635C", fontSize: "13.5px" }}>
+              {filteredMemories.length} of {memories.length} memories stored
+              {activeTag && <span style={{ color: "#059669", fontWeight: 600 }}> • tagged "#{activeTag}"</span>}
             </p>
           </div>
 
@@ -159,15 +160,15 @@ export default function Dashboard() {
             <div style={{ position: "relative" }}>
               <span style={{
                 position: "absolute", left: "12px", top: "50%",
-                transform: "translateY(-50%)", color: "#334155", fontSize: "14px",
+                transform: "translateY(-50%)", color: "#7A8A84", fontSize: "14px",
               }}>⌕</span>
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Quick filter..."
-                className="input-glow"
+                placeholder="Filter notes..."
+                className="input-field"
                 style={{
-                  borderRadius: "10px", padding: "8px 14px 8px 34px",
+                  padding: "8px 14px 8px 34px",
                   fontSize: "13px", width: "160px",
                 }}
               />
@@ -175,38 +176,42 @@ export default function Dashboard() {
 
             <div style={{
               display: "flex",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: "12px", padding: "4px",
+              background: "#F1F5F3",
+              border: "1px solid #DDE7E2",
+              borderRadius: "10px", padding: "3px",
             }}>
-              {(["grid", "timeline"] as ViewMode[]).map((mode) => (
-                <button key={mode} onClick={() => setViewMode(mode)} style={{
-                  padding: "6px 12px", borderRadius: "8px", border: "none",
-                  background: viewMode === mode ? "rgba(37,99,235,0.25)" : "transparent",
-                  color: viewMode === mode ? "#60A5FA" : "#475569",
-                  fontSize: "12px", fontWeight: 600, cursor: "pointer",
-                  transition: "all 0.2s",
-                }}>
-                  {mode === "grid" ? "⊞ Grid" : "☰ Timeline"}
-                </button>
-              ))}
+              {(["grid", "timeline"] as ViewMode[]).map((mode) => {
+                const active = viewMode === mode;
+                return (
+                  <button key={mode} onClick={() => setViewMode(mode)} style={{
+                    padding: "6px 12px", borderRadius: "7px", border: "none",
+                    background: active ? "#FFFFFF" : "transparent",
+                    color: active ? "#064E3B" : "#52635C",
+                    fontSize: "12px", fontWeight: active ? 700 : 500, cursor: "pointer",
+                    transition: "all 0.15s",
+                    boxShadow: active ? "0 1px 3px rgba(16,35,29,0.06)" : "none",
+                  }}>
+                    {mode === "grid" ? "⊞ Grid" : "☰ Timeline"}
+                  </button>
+                );
+              })}
             </div>
 
             <button
               onClick={() => setShowModal(true)}
               className="btn-primary"
-              style={{ borderRadius: "12px", padding: "10px 20px", fontSize: "14px" }}
+              style={{ padding: "9px 18px", fontSize: "13.5px" }}
             >
               + Add Memory
             </button>
           </div>
         </div>
 
-        {/* Stats - 4 columns x 2 rows */}
+        {/* Stats Grid */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "10px",
+          gap: "12px",
           marginBottom: "24px",
           width: "100%",
           boxSizing: "border-box",
@@ -215,38 +220,36 @@ export default function Dashboard() {
             ? Array(8).fill(0).map((_, i) => <StatSkeleton key={i} />)
             : stats.map((stat) => (
               <div key={stat.label} style={{
-                background: "rgba(255,255,255,0.04)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                background: "#FFFFFF",
+                border: "1px solid #DDE7E2",
                 borderRadius: "14px",
-                padding: "14px 8px",
+                padding: "14px 10px",
                 textAlign: "center",
-                transition: "all 0.25s ease",
+                transition: "all 0.2s ease",
                 cursor: "default",
                 boxSizing: "border-box",
+                boxShadow: "0 1px 3px rgba(16, 35, 29, 0.02)",
               }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.07)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = `${stat.color}33`;
-                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-3px)";
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 25px rgba(0,0,0,0.25)`;
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "#B5D1C5";
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 16px rgba(6,78,59,0.05)";
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)";
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.07)";
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "#DDE7E2";
                   (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(16, 35, 29, 0.02)";
                 }}
               >
                 <p style={{
-                  color: "#475569", fontSize: "10px", marginBottom: "6px",
-                  textTransform: "uppercase", letterSpacing: "0.06em",
+                  color: "#7A8A84", fontSize: "11px", marginBottom: "4px",
+                  textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600,
                 }}>
                   {stat.label}
                 </p>
                 <p style={{
-                  color: stat.color, fontSize: "22px", fontWeight: 700,
-                  textShadow: `0 0 20px ${stat.glow}`,
+                  color: stat.color, fontSize: "22px", fontWeight: 800,
+                  lineHeight: 1.1,
                 }}>
                   {stat.value}
                 </p>
@@ -259,9 +262,9 @@ export default function Dashboard() {
         {!loading && allTags.length > 0 && (
           <div style={{
             display: "flex", gap: "8px",
-            flexWrap: "wrap", marginBottom: "20px", alignItems: "center",
+            flexWrap: "wrap", marginBottom: "22px", alignItems: "center",
           }}>
-            <span style={{ color: "#334155", fontSize: "12px", fontWeight: 600 }}>Filter:</span>
+            <span style={{ color: "#7A8A84", fontSize: "12px", fontWeight: 600 }}>Filter by tag:</span>
             <button
               onClick={() => setActiveTag(null)}
               className={`tag-pill ${!activeTag ? "active" : ""}`}
@@ -284,7 +287,7 @@ export default function Dashboard() {
         {loading ? (
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))",
             gap: "16px",
           }}>
             {Array(6).fill(0).map((_, i) => (
@@ -293,25 +296,26 @@ export default function Dashboard() {
           </div>
         ) : filteredMemories.length === 0 ? (
           <div style={{
-            textAlign: "center", padding: "80px 20px",
-            background: "rgba(255,255,255,0.02)",
-            border: "1px dashed rgba(255,255,255,0.08)",
+            textAlign: "center", padding: "70px 20px",
+            background: "#FFFFFF",
+            border: "1px dashed #DDE7E2",
             borderRadius: "20px",
+            boxShadow: "0 1px 3px rgba(16, 35, 29, 0.02)",
           }}>
-            <div style={{ fontSize: "52px", marginBottom: "16px" }} className="animate-float">
-              🧠
+            <div style={{ fontSize: "48px", marginBottom: "14px" }} className="animate-float">
+              🌲
             </div>
-            <p style={{ fontSize: "18px", fontWeight: 600, color: "#475569", marginBottom: "8px" }}>
-              {activeTag ? `No memories tagged "${activeTag}"` : searchQuery ? `No results for "${searchQuery}"` : "No memories yet"}
+            <p style={{ fontSize: "18px", fontWeight: 700, color: "#064E3B", marginBottom: "6px" }}>
+              {activeTag ? `No memories tagged "${activeTag}"` : searchQuery ? `No results for "${searchQuery}"` : "Your digital knowledge forest is empty"}
             </p>
-            <p style={{ fontSize: "14px", color: "#334155", marginBottom: "24px" }}>
-              {activeTag || searchQuery ? "Try a different filter" : "Upload notes, PDFs, code, images, URLs or YouTube videos"}
+            <p style={{ fontSize: "13.5px", color: "#52635C", marginBottom: "22px", maxWidth: "460px", margin: "0 auto 22px" }}>
+              {activeTag || searchQuery ? "Try adjusting your search query or tag filter" : "Upload notes, PDFs, code snippets, research articles, or links to get started."}
             </p>
             {!activeTag && !searchQuery && (
               <button
                 onClick={() => setShowModal(true)}
                 className="btn-primary"
-                style={{ borderRadius: "12px", padding: "12px 28px", fontSize: "14px" }}
+                style={{ padding: "12px 28px", fontSize: "14px" }}
               >
                 + Add your first memory
               </button>
@@ -320,7 +324,7 @@ export default function Dashboard() {
         ) : viewMode === "grid" ? (
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))",
             gap: "16px",
           }}>
             {filteredMemories.map((memory, i) => (
@@ -328,52 +332,52 @@ export default function Dashboard() {
                 key={memory.id}
                 memory={memory}
                 onDelete={handleDelete}
-                animationDelay={i * 0.05}
+                animationDelay={i * 0.04}
               />
             ))}
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
             {Object.entries(groupedMemories).map(([group, groupMemories]) => (
               <div key={group}>
                 <div style={{
                   display: "flex", alignItems: "center",
-                  gap: "12px", marginBottom: "16px",
+                  gap: "12px", marginBottom: "14px",
                 }}>
                   <div style={{
                     width: "8px", height: "8px", borderRadius: "50%",
-                    background: "#2563EB",
-                    boxShadow: "0 0 10px rgba(37,99,235,0.7)",
+                    background: "#059669",
+                    boxShadow: "0 0 6px rgba(5,150,105,0.6)",
                     flexShrink: 0,
                   }} />
                   <h3 style={{
-                    color: "#60A5FA", fontSize: "12px", fontWeight: 700,
-                    textTransform: "uppercase", letterSpacing: "0.1em", margin: 0,
+                    color: "#064E3B", fontSize: "12px", fontWeight: 700,
+                    textTransform: "uppercase", letterSpacing: "0.08em", margin: 0,
                   }}>
                     {group}
                   </h3>
-                  <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                  <span style={{ color: "#334155", fontSize: "12px" }}>
+                  <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
+                  <span style={{ color: "#7A8A84", fontSize: "12px", fontWeight: 500 }}>
                     {groupMemories.length} {groupMemories.length === 1 ? "memory" : "memories"}
                   </span>
                 </div>
                 <div style={{
                   display: "flex", flexDirection: "column", gap: "12px",
-                  paddingLeft: "20px",
-                  borderLeft: "1px solid rgba(37,99,235,0.2)",
+                  paddingLeft: "18px",
+                  borderLeft: "2px solid #D1FAE5",
                 }}>
                   {groupMemories.map((memory, i) => (
                     <div key={memory.id} style={{ position: "relative" }}>
                       <div style={{
-                        position: "absolute", left: "-25px", top: "22px",
-                        width: "6px", height: "6px", borderRadius: "50%",
-                        background: "rgba(37,99,235,0.6)",
-                        border: "1px solid rgba(37,99,235,0.9)",
+                        position: "absolute", left: "-23px", top: "24px",
+                        width: "8px", height: "8px", borderRadius: "50%",
+                        background: "#FFFFFF",
+                        border: "2px solid #059669",
                       }} />
                       <MemoryCard
                         memory={memory}
                         onDelete={handleDelete}
-                        animationDelay={i * 0.04}
+                        animationDelay={i * 0.03}
                       />
                     </div>
                   ))}

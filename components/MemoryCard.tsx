@@ -31,33 +31,35 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
 
   if (!memory) return null;
 
-  const typeConfig: Record<string, { color: string; icon: string; label: string }> = {
-    text: { color: "#6366f1", icon: "📝", label: "Note" },
-    pdf: { color: "#f59e0b", icon: "📄", label: "PDF" },
-    docx: { color: "#3b82f6", icon: "📘", label: "Word" },
-    pptx: { color: "#8b5cf6", icon: "📊", label: "Slides" },
-    image: { color: "#ec4899", icon: "🖼️", label: "Image" },
-    url: { color: "#06b6d4", icon: "🌐", label: "URL" },
-    code: { color: "#10b981", icon: "💻", label: "Code" },
+  const typeConfig: Record<string, { color: string; bg: string; icon: string; label: string }> = {
+    text: { color: "#059669", bg: "#ECFDF5", icon: "📝", label: "Note" },
+    pdf: { color: "#D97706", bg: "#FEF3C7", icon: "📄", label: "PDF" },
+    docx: { color: "#2563EB", bg: "#EFF6FF", icon: "📘", label: "Word" },
+    pptx: { color: "#7C3AED", bg: "#F5F3FF", icon: "📊", label: "Slides" },
+    image: { color: "#DB2777", bg: "#FDF2F8", icon: "🖼️", label: "Image" },
+    url: { color: "#0891B2", bg: "#ECFEFF", icon: "🌐", label: "URL" },
+    code: { color: "#059669", bg: "#ECFDF5", icon: "💻", label: "Code" },
   };
 
-  const categoryConfig: Record<string, { color: string; icon: string }> = {
-    general: { color: "#6366f1", icon: "📌" },
-    code: { color: "#10b981", icon: "💻" },
-    research: { color: "#3b82f6", icon: "🔬" },
-    exam: { color: "#f59e0b", icon: "📚" },
-    project: { color: "#8b5cf6", icon: "🚀" },
+  const categoryConfig: Record<string, { color: string; bg: string; icon: string }> = {
+    general: { color: "#059669", bg: "#ECFDF5", icon: "📌" },
+    code: { color: "#059669", bg: "#ECFDF5", icon: "💻" },
+    research: { color: "#2563EB", bg: "#EFF6FF", icon: "🔬" },
+    exam: { color: "#D97706", bg: "#FEF3C7", icon: "📚" },
+    project: { color: "#7C3AED", bg: "#F5F3FF", icon: "🚀" },
   };
 
-  const difficultyColors: Record<string, string> = {
-    easy: "#10b981", medium: "#f59e0b", hard: "#ef4444",
+  const difficultyColors: Record<string, { color: string; bg: string; border: string }> = {
+    easy: { color: "#059669", bg: "#ECFDF5", border: "#D1FAE5" },
+    medium: { color: "#D97706", bg: "#FFFBEB", border: "#FDE68A" },
+    hard: { color: "#DC2626", bg: "#FEF2F2", border: "#FEE2E2" },
   };
 
-  const projectStatusConfig: Record<string, { color: string; label: string }> = {
-    "idea": { color: "#6366f1", label: "💡 Idea" },
-    "in-progress": { color: "#f59e0b", label: "🔨 In Progress" },
-    "done": { color: "#10b981", label: "✅ Done" },
-    "abandoned": { color: "#64748b", label: "🚫 Abandoned" },
+  const projectStatusConfig: Record<string, { color: string; bg: string; label: string }> = {
+    "idea": { color: "#2563EB", bg: "#EFF6FF", label: "💡 Idea" },
+    "in-progress": { color: "#D97706", bg: "#FFFBEB", label: "🔨 In Progress" },
+    "done": { color: "#059669", bg: "#ECFDF5", label: "✅ Done" },
+    "abandoned": { color: "#7A8A84", bg: "#F1F5F3", label: "🚫 Abandoned" },
   };
 
   const fileType = memory.file_type?.toLowerCase() || "text";
@@ -97,68 +99,60 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
     <div
       className="memory-card animate-fadeInUp"
       style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: "18px", padding: "20px",
-        position: "relative", overflow: "hidden",
+        background: "#FFFFFF",
+        border: "1px solid #DDE7E2",
+        borderRadius: "16px",
+        padding: "20px",
+        position: "relative",
+        overflow: "hidden",
         opacity: deleting ? 0 : 1,
-        transition: "opacity 0.3s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
+        transition: "opacity 0.25s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease",
         animationDelay: `${animationDelay}s`,
       }}
-      onMouseEnter={e => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = `${config.color}44`;
-        (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.055)";
-        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 32px rgba(0,0,0,0.3)`;
-      }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.07)";
-        (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)";
-        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
-      }}
     >
-      {/* Top accent */}
+      {/* Top subtle emerald border accent */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-        background: `linear-gradient(90deg, ${config.color}, ${catConfig.color}66, transparent)`,
+        position: "absolute", top: 0, left: 0, right: 0, height: "3px",
+        background: `linear-gradient(90deg, ${config.color}99, #10B981 40%, transparent)`,
       }} />
 
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "7px", flexWrap: "wrap", flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", flex: 1 }}>
           <span style={{
-            background: `${config.color}18`,
-            border: `1px solid ${config.color}33`,
-            borderRadius: "8px", padding: "4px 8px", fontSize: "14px",
+            background: config.bg,
+            border: `1px solid ${config.color}22`,
+            borderRadius: "7px", padding: "3px 7px", fontSize: "13px",
           }}>
             {config.icon}
           </span>
-          <span style={{ color: config.color, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          <span style={{ color: config.color, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
             {config.label}
           </span>
           {category !== "general" && (
             <span style={{
-              background: `${catConfig.color}12`,
-              border: `1px solid ${catConfig.color}28`,
-              color: catConfig.color, fontSize: "10px", fontWeight: 600,
-              padding: "2px 7px", borderRadius: "999px",
+              background: catConfig.bg,
+              border: `1px solid ${catConfig.color}22`,
+              color: catConfig.color, fontSize: "11px", fontWeight: 600,
+              padding: "2px 8px", borderRadius: "999px",
             }}>
               {catConfig.icon} {category}
             </span>
           )}
           {memory.language && (
             <span style={{
-              background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)",
-              color: "#10b981", fontSize: "10px", fontWeight: 600,
-              padding: "2px 7px", borderRadius: "999px",
+              background: "#ECFDF5", border: "1px solid #D1FAE5",
+              color: "#065F46", fontSize: "11px", fontWeight: 600,
+              padding: "2px 8px", borderRadius: "999px",
             }}>
               {memory.language}
             </span>
           )}
           {typeof memory.similarity === "number" && (
             <span style={{
-              background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)",
-              color: "#60A5FA", fontSize: "10px", fontWeight: 600,
-              padding: "2px 7px", borderRadius: "999px",
+              background: "#ECFDF5", border: "1px solid #A7F3D0",
+              color: "#059669", fontSize: "11px", fontWeight: 700,
+              padding: "2px 8px", borderRadius: "999px",
             }}>
               {memory.similarity.toFixed(1)}% match
             </span>
@@ -169,12 +163,24 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
           <button
             onClick={handleDelete}
             style={{
-              background: confirmDelete ? "rgba(239,68,68,0.2)" : "rgba(239,68,68,0.08)",
-              border: `1px solid ${confirmDelete ? "rgba(239,68,68,0.5)" : "rgba(239,68,68,0.15)"}`,
-              color: "#ef4444", borderRadius: "8px",
-              padding: "4px 10px", fontSize: "11px",
+              background: confirmDelete ? "#FEE2E2" : "transparent",
+              border: `1px solid ${confirmDelete ? "#FCA5A5" : "transparent"}`,
+              color: "#DC2626", borderRadius: "8px",
+              padding: "3px 8px", fontSize: "11px",
               cursor: "pointer", flexShrink: 0, marginLeft: "8px",
-              transition: "all 0.2s", fontWeight: confirmDelete ? 700 : 400,
+              transition: "all 0.15s", fontWeight: confirmDelete ? 700 : 500,
+            }}
+            onMouseEnter={e => {
+              if (!confirmDelete) {
+                e.currentTarget.style.background = "#FEF2F2";
+                e.currentTarget.style.borderColor = "#FEE2E2";
+              }
+            }}
+            onMouseLeave={e => {
+              if (!confirmDelete) {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.borderColor = "transparent";
+              }
             }}
           >
             {confirmDelete ? "Confirm?" : "Delete"}
@@ -184,38 +190,41 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
 
       {/* Title */}
       <h3 style={{
-        color: "#F8FAFC", fontSize: "14px", fontWeight: 600,
-        marginBottom: "8px", lineHeight: 1.4, wordBreak: "break-word",
+        color: "#064E3B", fontSize: "15px", fontWeight: 700,
+        marginBottom: "8px", lineHeight: 1.35, wordBreak: "break-word",
       }}>
         {memory.title || "Untitled"}
       </h3>
 
       {/* Exam info */}
       {category === "exam" && (memory.subject || memory.difficulty) && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "10px" }}>
           <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
             {memory.subject && (
               <span style={{
-                background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)",
-                color: "#f59e0b", fontSize: "10px", padding: "2px 8px", borderRadius: "999px",
+                background: "#FEF3C7", border: "1px solid #FDE68A",
+                color: "#92400E", fontSize: "11px", padding: "2px 8px", borderRadius: "999px",
+                fontWeight: 500,
               }}>
                 📖 {memory.subject}
               </span>
             )}
             {memory.difficulty && (
               <span style={{
-                background: `${difficultyColors[memory.difficulty] || "#64748b"}15`,
-                border: `1px solid ${difficultyColors[memory.difficulty] || "#64748b"}30`,
-                color: difficultyColors[memory.difficulty] || "#64748b",
-                fontSize: "10px", padding: "2px 8px", borderRadius: "999px", textTransform: "capitalize",
+                background: difficultyColors[memory.difficulty]?.bg || "#F1F5F3",
+                border: `1px solid ${difficultyColors[memory.difficulty]?.border || "#DDE7E2"}`,
+                color: difficultyColors[memory.difficulty]?.color || "#52635C",
+                fontSize: "11px", padding: "2px 8px", borderRadius: "999px", textTransform: "capitalize",
+                fontWeight: 600,
               }}>
                 {memory.difficulty === "easy" ? "🟢" : memory.difficulty === "medium" ? "🟡" : "🔴"} {memory.difficulty}
               </span>
             )}
             {(memory.review_count || 0) > 0 && (
               <span style={{
-                background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)",
-                color: "#818cf8", fontSize: "10px", padding: "2px 8px", borderRadius: "999px",
+                background: "#ECFDF5", border: "1px solid #D1FAE5",
+                color: "#059669", fontSize: "11px", padding: "2px 8px", borderRadius: "999px",
+                fontWeight: 500,
               }}>
                 reviewed {memory.review_count}×
               </span>
@@ -223,13 +232,13 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
           </div>
           {memory.explanation && (
             <div style={{
-              background: "rgba(37,99,235,0.05)", border: "1px solid rgba(37,99,235,0.12)",
-              borderRadius: "8px", padding: "10px 12px",
+              background: "#F8FAF9", border: "1px solid #DDE7E2",
+              borderRadius: "10px", padding: "10px 12px",
             }}>
-              <p style={{ color: "#334155", fontSize: "10px", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase" }}>
+              <p style={{ color: "#064E3B", fontSize: "11px", fontWeight: 700, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                 🤖 AI Explanation
               </p>
-              <p style={{ color: "#94A3B8", fontSize: "12px", lineHeight: 1.6, margin: 0 }}>
+              <p style={{ color: "#52635C", fontSize: "12px", lineHeight: 1.55, margin: 0 }}>
                 {memory.explanation}
               </p>
             </div>
@@ -241,10 +250,10 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
       {category === "project" && memory.project_status && (
         <div style={{ marginBottom: "8px" }}>
           <span style={{
-            background: `${projectStatusConfig[memory.project_status]?.color || "#64748b"}15`,
-            border: `1px solid ${projectStatusConfig[memory.project_status]?.color || "#64748b"}30`,
-            color: projectStatusConfig[memory.project_status]?.color || "#64748b",
-            fontSize: "10px", fontWeight: 600, padding: "2px 10px", borderRadius: "999px",
+            background: projectStatusConfig[memory.project_status]?.bg || "#F1F5F3",
+            border: `1px solid #DDE7E2`,
+            color: projectStatusConfig[memory.project_status]?.color || "#52635C",
+            fontSize: "11px", fontWeight: 600, padding: "2px 10px", borderRadius: "999px",
           }}>
             {projectStatusConfig[memory.project_status]?.label || memory.project_status}
           </span>
@@ -253,17 +262,21 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
 
       {/* Content */}
       <p style={{
-        color: "#64748b", fontSize: "12px", lineHeight: 1.65, marginBottom: "14px",
+        color: "#52635C", fontSize: "13px", lineHeight: 1.6, marginBottom: "14px",
         display: "-webkit-box", WebkitLineClamp: category === "code" ? 4 : 3,
         WebkitBoxOrient: "vertical", overflow: "hidden", wordBreak: "break-word",
         fontFamily: category === "code" ? "'Fira Code', 'Courier New', monospace" : "inherit",
+        background: category === "code" ? "#F8FAF9" : "transparent",
+        padding: category === "code" ? "8px 10px" : 0,
+        borderRadius: category === "code" ? "8px" : 0,
+        border: category === "code" ? "1px solid #DDE7E2" : "none",
       }}>
         {memory.content || "No content"}
       </p>
 
       {/* Footer */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
-        <span style={{ color: "#334155", fontSize: "11px" }}>
+        <span style={{ color: "#7A8A84", fontSize: "11px", fontWeight: 500 }}>
           {formatDate(memory.created_at)}
         </span>
         <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", alignItems: "center" }}>
@@ -273,16 +286,19 @@ export default function MemoryCard({ memory, onDelete, onReview, animationDelay 
             </span>
           ))}
           {tags.length > 2 && (
-            <span style={{ color: "#334155", fontSize: "10px" }}>+{tags.length - 2}</span>
+            <span style={{ color: "#7A8A84", fontSize: "11px", fontWeight: 500 }}>+{tags.length - 2}</span>
           )}
           {category === "exam" && onReview && (
             <button
               onClick={(e) => { e.stopPropagation(); onReview(memory.id); }}
               style={{
-                background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)",
-                color: "#f59e0b", borderRadius: "6px", padding: "3px 8px",
-                fontSize: "10px", cursor: "pointer", fontWeight: 600,
+                background: "#ECFDF5", border: "1px solid #D1FAE5",
+                color: "#059669", borderRadius: "6px", padding: "3px 8px",
+                fontSize: "11px", cursor: "pointer", fontWeight: 600,
+                transition: "all 0.15s",
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = "#D1FAE5"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#ECFDF5"; }}
             >
               ✓ Reviewed
             </button>

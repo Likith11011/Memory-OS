@@ -81,64 +81,69 @@ function QuizContent() {
   const q = quiz?.questions[current];
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "linear-gradient(135deg, #0A1224, #0d1530)", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#F8FAF9", fontFamily: "'Inter', sans-serif" }}>
       <Sidebar />
-      <main style={{ marginLeft: "240px", flex: 1, padding: "28px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
+      <main style={{ marginLeft: "240px", flex: 1, padding: "32px 40px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
         <div style={{ maxWidth: "680px", margin: "0 auto" }}>
 
           {/* Back button + header */}
           <div style={{ marginBottom: "24px" }}>
             <button
               onClick={() => router.back()}
-              style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: "13px", padding: 0, marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}
+              style={{ background: "none", border: "none", color: "#52635C", cursor: "pointer", fontSize: "13px", padding: 0, marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px", fontWeight: 500 }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#10231D")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#52635C")}
             >
               ← Back to Exam
             </button>
-            <h2 style={{ fontSize: "24px", fontWeight: 700, color: "#F8FAFC", marginBottom: "4px" }}>
-              🧠 AI Quiz
+            <h2 style={{ fontSize: "26px", fontWeight: 700, color: "#10231D", marginBottom: "4px" }}>
+              🧠 AI Knowledge Quiz
             </h2>
             {quiz && (
-              <p style={{ color: "#475569", fontSize: "13px" }}>
-                Based on: <span style={{ color: "#60A5FA" }}>{quiz.memory_title}</span>
+              <p style={{ color: "#52635C", fontSize: "14px" }}>
+                Based on: <span style={{ color: "#065F46", fontWeight: 600 }}>{quiz.memory_title}</span>
               </p>
             )}
           </div>
 
           {/* Loading */}
           {loading && (
-            <div style={{ ...glass, padding: "60px", textAlign: "center" }}>
+            <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "60px", textAlign: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
               <div style={{ fontSize: "36px", marginBottom: "16px" }}>⚡</div>
-              <p style={{ color: "#60A5FA", fontSize: "15px", fontWeight: 600, marginBottom: "8px" }}>
+              <p style={{ color: "#064E3B", fontSize: "16px", fontWeight: 600, marginBottom: "8px" }}>
                 Generating your quiz...
               </p>
-              <p style={{ color: "#475569", fontSize: "13px" }}>
-                AI is reading your memory and creating questions
+              <p style={{ color: "#52635C", fontSize: "13px" }}>
+                AI is reading your memory and creating targeted assessment questions
               </p>
             </div>
           )}
 
           {/* Error */}
           {!loading && error && (
-            <div style={{ ...glass, padding: "40px", textAlign: "center" }}>
-              <div style={{ fontSize: "36px", marginBottom: "16px" }}>❌</div>
-              <p style={{ color: "#f87171", fontSize: "15px", marginBottom: "20px" }}>{error}</p>
+            <div style={{ background: "#FFFFFF", border: "1px solid #FECACA", borderRadius: "16px", padding: "40px", textAlign: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
+              <div style={{ fontSize: "36px", marginBottom: "16px" }}>🍃</div>
+              <p style={{ color: "#DC2626", fontSize: "15px", marginBottom: "20px" }}>{error}</p>
               <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
                 <button
                   onClick={() => { setError(""); setLoading(true); fetchQuiz(); }}
                   style={{
-                    background: "linear-gradient(135deg, #2563EB, #1d4ed8)",
+                    background: "#059669",
                     border: "none", borderRadius: "10px", padding: "10px 22px",
                     color: "white", fontSize: "14px", fontWeight: 600, cursor: "pointer",
+                    boxShadow: "0 2px 8px rgba(5,150,105,0.2)",
                   }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#047857")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "#059669")}
                 >
                   Try Again
                 </button>
                 <button
                   onClick={() => router.back()}
                   style={{
-                    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                    background: "#F1F5F3", border: "1px solid #DDE7E2",
                     borderRadius: "10px", padding: "10px 22px",
-                    color: "#94A3B8", fontSize: "14px", cursor: "pointer",
+                    color: "#52635C", fontSize: "14px", cursor: "pointer", fontWeight: 500,
                   }}
                 >
                   Go Back
@@ -149,28 +154,28 @@ function QuizContent() {
 
           {/* Finished screen */}
           {!loading && !error && finished && quiz && (
-            <div style={{ ...glass, padding: "48px 40px", textAlign: "center" }}>
+            <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "20px", padding: "48px 40px", textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
               <div style={{ fontSize: "56px", marginBottom: "20px" }}>
                 {score === quiz.total ? "🏆" : score >= quiz.total * 0.7 ? "🎉" : score >= quiz.total * 0.5 ? "📚" : "💪"}
               </div>
-              <h3 style={{ color: "#F8FAFC", fontSize: "24px", fontWeight: 700, marginBottom: "8px" }}>
+              <h3 style={{ color: "#10231D", fontSize: "24px", fontWeight: 700, marginBottom: "8px" }}>
                 Quiz Complete!
               </h3>
               <div style={{
                 display: "flex", alignItems: "baseline", gap: "8px",
                 justifyContent: "center", marginBottom: "12px",
               }}>
-                <span style={{ color: "#60A5FA", fontSize: "48px", fontWeight: 800 }}>{score}</span>
-                <span style={{ color: "#334155", fontSize: "24px" }}>/ {quiz.total}</span>
+                <span style={{ color: "#059669", fontSize: "48px", fontWeight: 800 }}>{score}</span>
+                <span style={{ color: "#7A8A84", fontSize: "24px" }}>/ {quiz.total}</span>
               </div>
-              <p style={{ color: "#475569", fontSize: "14px", marginBottom: "8px" }}>
+              <p style={{ color: "#52635C", fontSize: "14px", marginBottom: "8px" }}>
                 {Math.round((score / quiz.total) * 100)}% correct
               </p>
               <p style={{
-                color: score === quiz.total ? "#10b981"
-                  : score >= quiz.total * 0.7 ? "#60A5FA"
-                  : "#f59e0b",
-                fontSize: "15px", fontWeight: 500, marginBottom: "32px",
+                color: score === quiz.total ? "#059669"
+                  : score >= quiz.total * 0.7 ? "#065F46"
+                  : "#D97706",
+                fontSize: "15px", fontWeight: 600, marginBottom: "32px",
               }}>
                 {score === quiz.total
                   ? "Perfect score! You have mastered this topic."
@@ -187,18 +192,18 @@ function QuizContent() {
                 marginBottom: "28px",
               }}>
                 <div style={{
-                  background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)",
-                  borderRadius: "12px", padding: "12px 20px", textAlign: "center",
+                  background: "#ECFDF5", border: "1px solid #A7F3D0",
+                  borderRadius: "12px", padding: "12px 24px", textAlign: "center",
                 }}>
-                  <p style={{ color: "#10b981", fontSize: "22px", fontWeight: 700, margin: 0 }}>{score}</p>
-                  <p style={{ color: "#475569", fontSize: "11px", margin: 0 }}>Correct</p>
+                  <p style={{ color: "#059669", fontSize: "24px", fontWeight: 700, margin: 0 }}>{score}</p>
+                  <p style={{ color: "#065F46", fontSize: "11px", margin: 0, fontWeight: 600 }}>Correct</p>
                 </div>
                 <div style={{
-                  background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)",
-                  borderRadius: "12px", padding: "12px 20px", textAlign: "center",
+                  background: "#FEF2F2", border: "1px solid #FECACA",
+                  borderRadius: "12px", padding: "12px 24px", textAlign: "center",
                 }}>
-                  <p style={{ color: "#ef4444", fontSize: "22px", fontWeight: 700, margin: 0 }}>{quiz.total - score}</p>
-                  <p style={{ color: "#475569", fontSize: "11px", margin: 0 }}>Wrong</p>
+                  <p style={{ color: "#DC2626", fontSize: "24px", fontWeight: 700, margin: 0 }}>{quiz.total - score}</p>
+                  <p style={{ color: "#991B1B", fontSize: "11px", margin: 0, fontWeight: 600 }}>Wrong</p>
                 </div>
               </div>
 
@@ -206,21 +211,27 @@ function QuizContent() {
                 <button
                   onClick={() => { setCurrent(0); setSelected(null); setRevealed(false); setScore(0); setFinished(false); }}
                   style={{
-                    background: "linear-gradient(135deg, #2563EB, #1d4ed8)",
+                    background: "#059669",
                     border: "none", borderRadius: "12px", padding: "12px 28px",
                     color: "white", fontSize: "14px", fontWeight: 600, cursor: "pointer",
-                    boxShadow: "0 0 20px rgba(37,99,235,0.3)",
+                    boxShadow: "0 2px 8px rgba(5,150,105,0.25)",
+                    transition: "all 0.2s",
                   }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#047857")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "#059669")}
                 >
                   🔄 Retry Quiz
                 </button>
                 <button
                   onClick={() => router.push("/exam")}
                   style={{
-                    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                    background: "#F1F5F3", border: "1px solid #DDE7E2",
                     borderRadius: "12px", padding: "12px 28px",
-                    color: "#94A3B8", fontSize: "14px", cursor: "pointer",
+                    color: "#52635C", fontSize: "14px", cursor: "pointer", fontWeight: 600,
+                    transition: "all 0.2s",
                   }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#E2E8E5"; e.currentTarget.style.color = "#10231D"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "#F1F5F3"; e.currentTarget.style.color = "#52635C"; }}
                 >
                   📚 Back to Exam
                 </button>
@@ -234,33 +245,33 @@ function QuizContent() {
               {/* Progress bar */}
               <div style={{ marginBottom: "24px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                  <span style={{ color: "#475569", fontSize: "13px" }}>
+                  <span style={{ color: "#52635C", fontSize: "13px", fontWeight: 500 }}>
                     Question {current + 1} of {quiz!.total}
                   </span>
-                  <span style={{ color: "#60A5FA", fontSize: "13px", fontWeight: 600 }}>
+                  <span style={{ color: "#065F46", fontSize: "13px", fontWeight: 600 }}>
                     Score: {score} / {current}
                   </span>
                 </div>
-                <div style={{ height: "5px", background: "rgba(255,255,255,0.06)", borderRadius: "999px", overflow: "hidden" }}>
+                <div style={{ height: "6px", background: "#E2E8E5", borderRadius: "999px", overflow: "hidden" }}>
                   <div style={{
                     height: "100%",
                     width: `${((current + 1) / quiz!.total) * 100}%`,
-                    background: "linear-gradient(90deg, #2563EB, #60A5FA)",
+                    background: "linear-gradient(90deg, #059669, #10B981)",
                     borderRadius: "999px", transition: "width 0.4s ease",
                   }} />
                 </div>
               </div>
 
               {/* Question card */}
-              <div style={{ ...glass, padding: "28px", marginBottom: "16px" }}>
-                <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "28px", marginBottom: "16px", boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
+                <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
                   <span style={{
                     width: "32px", height: "32px", borderRadius: "8px",
-                    background: "rgba(37,99,235,0.2)", border: "1px solid rgba(37,99,235,0.3)",
+                    background: "#ECFDF5", border: "1px solid #A7F3D0",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    color: "#60A5FA", fontSize: "14px", fontWeight: 700, flexShrink: 0,
+                    color: "#065F46", fontSize: "13px", fontWeight: 700, flexShrink: 0,
                   }}>Q{current + 1}</span>
-                  <p style={{ color: "#F8FAFC", fontSize: "16px", lineHeight: 1.65, margin: 0 }}>
+                  <p style={{ color: "#10231D", fontSize: "16px", lineHeight: 1.65, margin: 0, fontWeight: 500 }}>
                     {q.question}
                   </p>
                 </div>
@@ -272,28 +283,36 @@ function QuizContent() {
                   const value = q.options[key];
                   const isCorrect = key === q.correct;
                   const isSelected = key === selected;
-                  let bg = "rgba(255,255,255,0.04)";
-                  let border = "rgba(255,255,255,0.08)";
-                  let labelColor = "#94A3B8";
-                  let textColor = "#94A3B8";
+                  let bg = "#FFFFFF";
+                  let border = "#DDE7E2";
+                  let labelBg = "#F1F5F3";
+                  let labelBorder = "#DDE7E2";
+                  let labelColor = "#52635C";
+                  let textColor = "#10231D";
 
                   if (revealed) {
                     if (isCorrect) {
-                      bg = "rgba(16,185,129,0.12)";
-                      border = "rgba(16,185,129,0.4)";
-                      labelColor = "#10b981";
-                      textColor = "#D1FAE5";
+                      bg = "#ECFDF5";
+                      border = "#10B981";
+                      labelBg = "#059669";
+                      labelBorder = "#059669";
+                      labelColor = "#FFFFFF";
+                      textColor = "#064E3B";
                     } else if (isSelected) {
-                      bg = "rgba(239,68,68,0.1)";
-                      border = "rgba(239,68,68,0.3)";
-                      labelColor = "#ef4444";
-                      textColor = "#FCA5A5";
+                      bg = "#FEF2F2";
+                      border = "#F87171";
+                      labelBg = "#DC2626";
+                      labelBorder = "#DC2626";
+                      labelColor = "#FFFFFF";
+                      textColor = "#991B1B";
                     }
                   } else if (isSelected) {
-                    bg = "rgba(37,99,235,0.15)";
-                    border = "rgba(37,99,235,0.4)";
-                    labelColor = "#60A5FA";
-                    textColor = "#DBEAFE";
+                    bg = "#ECFDF5";
+                    border = "#059669";
+                    labelBg = "#059669";
+                    labelBorder = "#059669";
+                    labelColor = "#FFFFFF";
+                    textColor = "#064E3B";
                   }
 
                   return (
@@ -302,32 +321,39 @@ function QuizContent() {
                       onClick={() => handleAnswer(key)}
                       disabled={revealed}
                       style={{
-                        background: bg, border: `1px solid ${border}`,
+                        background: bg, border: `1.5px solid ${border}`,
                         borderRadius: "12px", padding: "14px 18px",
                         display: "flex", gap: "12px", alignItems: "center",
                         cursor: revealed ? "default" : "pointer",
                         transition: "all 0.2s", textAlign: "left", width: "100%",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
                       }}
                       onMouseEnter={e => {
-                        if (!revealed) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)";
+                        if (!revealed) {
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = "#059669";
+                          (e.currentTarget as HTMLButtonElement).style.background = "#F9FBFA";
+                        }
                       }}
                       onMouseLeave={e => {
-                        if (!revealed) (e.currentTarget as HTMLButtonElement).style.background = bg;
+                        if (!revealed) {
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = isSelected ? "#059669" : "#DDE7E2";
+                          (e.currentTarget as HTMLButtonElement).style.background = isSelected ? "#ECFDF5" : "#FFFFFF";
+                        }
                       }}
                     >
                       <span style={{
                         width: "30px", height: "30px", borderRadius: "8px",
-                        background: `${labelColor}20`,
-                        border: `1px solid ${labelColor}44`,
+                        background: labelBg,
+                        border: `1px solid ${labelBorder}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "12px", fontWeight: 700, color: labelColor, flexShrink: 0,
                       }}>{key}</span>
-                      <span style={{ color: textColor, fontSize: "14px", flex: 1 }}>{value}</span>
+                      <span style={{ color: textColor, fontSize: "14px", flex: 1, fontWeight: isSelected || (revealed && isCorrect) ? 600 : 400 }}>{value}</span>
                       {revealed && isCorrect && (
-                        <span style={{ color: "#10b981", fontSize: "18px", flexShrink: 0 }}>✓</span>
+                        <span style={{ color: "#059669", fontSize: "18px", fontWeight: 700, flexShrink: 0 }}>✓</span>
                       )}
                       {revealed && isSelected && !isCorrect && (
-                        <span style={{ color: "#ef4444", fontSize: "18px", flexShrink: 0 }}>✗</span>
+                        <span style={{ color: "#DC2626", fontSize: "18px", fontWeight: 700, flexShrink: 0 }}>✗</span>
                       )}
                     </button>
                   );
@@ -337,17 +363,15 @@ function QuizContent() {
               {/* Explanation */}
               {revealed && (
                 <div style={{
-                  ...glass, padding: "18px",
-                  background: "rgba(37,99,235,0.06)",
-                  borderColor: "rgba(37,99,235,0.2)",
-                  marginBottom: "16px",
+                  background: "#F1F5F3", border: "1px solid #DDE7E2", borderRadius: "14px",
+                  padding: "18px", marginBottom: "16px",
                   animation: "fadeIn 0.3s ease",
                 }}>
                   <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
-                  <p style={{ color: "#60A5FA", fontSize: "11px", fontWeight: 700, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <p style={{ color: "#064E3B", fontSize: "11px", fontWeight: 700, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     💡 Explanation
                   </p>
-                  <p style={{ color: "#94A3B8", fontSize: "14px", lineHeight: 1.7, margin: 0 }}>
+                  <p style={{ color: "#52635C", fontSize: "14px", lineHeight: 1.7, margin: 0 }}>
                     {q.explanation}
                   </p>
                 </div>
@@ -359,13 +383,15 @@ function QuizContent() {
                   onClick={handleNext}
                   style={{
                     width: "100%",
-                    background: "linear-gradient(135deg, #2563EB, #1d4ed8)",
+                    background: "#059669",
                     border: "none", borderRadius: "12px", padding: "15px",
                     color: "white", fontSize: "15px", fontWeight: 600,
                     cursor: "pointer", transition: "all 0.2s",
-                    boxShadow: "0 0 20px rgba(37,99,235,0.35)",
+                    boxShadow: "0 2px 8px rgba(5,150,105,0.25)",
                     animation: "fadeIn 0.3s ease",
                   }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#047857")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "#059669")}
                 >
                   {current + 1 >= quiz!.total ? "🏁 See Final Results" : "Next Question →"}
                 </button>
@@ -383,12 +409,12 @@ export default function QuizPage() {
     <Suspense fallback={
       <div style={{
         display: "flex", minHeight: "100vh",
-        background: "#0A1224",
+        background: "#F8FAF9",
         alignItems: "center", justifyContent: "center",
         flexDirection: "column", gap: "16px",
       }}>
         <div style={{ fontSize: "32px" }}>⚡</div>
-        <p style={{ color: "#475569", fontSize: "14px" }}>Loading quiz...</p>
+        <p style={{ color: "#52635C", fontSize: "14px" }}>Loading quiz...</p>
       </div>
     }>
       <QuizContent />

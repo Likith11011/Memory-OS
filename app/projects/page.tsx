@@ -16,10 +16,10 @@ interface Memory {
 }
 
 const columns = [
-  { id: "idea", label: "💡 Ideas", color: "#6366f1", glow: "rgba(99,102,241,0.3)" },
-  { id: "in-progress", label: "🔨 In Progress", color: "#f59e0b", glow: "rgba(245,158,11,0.3)" },
-  { id: "done", label: "✅ Done", color: "#10b981", glow: "rgba(16,185,129,0.3)" },
-  { id: "abandoned", label: "🚫 Abandoned", color: "#64748b", glow: "rgba(100,116,139,0.3)" },
+  { id: "idea", label: "💡 Ideas", color: "#065F46", badgeBg: "#ECFDF5", badgeBorder: "#A7F3D0" },
+  { id: "in-progress", label: "🔨 In Progress", color: "#D97706", badgeBg: "#FEF3C7", badgeBorder: "#FDE68A" },
+  { id: "done", label: "✅ Done", color: "#059669", badgeBg: "#ECFDF5", badgeBorder: "#A7F3D0" },
+  { id: "abandoned", label: "🚫 Abandoned", color: "#6B7280", badgeBg: "#F3F4F6", badgeBorder: "#E5E7EB" },
 ];
 
 export default function ProjectsPage() {
@@ -35,21 +35,21 @@ export default function ProjectsPage() {
     fetchProjects();
   }, []);
 
-const fetchProjects = async () => {
-  try {
-    const data = await getProjects();
-    setMemories(data.memories || []);
-  } catch (err: any) {
-    if (err.code === "ERR_NETWORK" || err.message?.includes("Network")) {
-      console.warn("Server waking up, retrying in 10s...");
-      setTimeout(() => fetchProjects(), 10000);
-    } else {
-      console.error(err);
+  const fetchProjects = async () => {
+    try {
+      const data = await getProjects();
+      setMemories(data.memories || []);
+    } catch (err: any) {
+      if (err.code === "ERR_NETWORK" || err.message?.includes("Network")) {
+        console.warn("Server waking up, retrying in 10s...");
+        setTimeout(() => fetchProjects(), 10000);
+      } else {
+        console.error(err);
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleStatusChange = async (id: number, status: string) => {
     try {
@@ -78,46 +78,43 @@ const fetchProjects = async () => {
   const getColumnMemories = (status: string) =>
     memories.filter(m => (m.project_status || "idea") === status);
 
-  const glass = {
-    background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "16px",
-  };
-
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "linear-gradient(135deg, #0A1224 0%, #0d1530 100%)", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#F8FAF9", fontFamily: "'Inter', sans-serif" }}>
       <Sidebar />
-      <main style={{ marginLeft: "240px", flex: 1, padding: "32px", overflowX: "auto" }}>
+      <main style={{ marginLeft: "240px", flex: 1, padding: "32px 40px", overflowX: "auto" }}>
 
         {/* Header */}
         <div style={{ marginBottom: "28px" }}>
-          <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#F8FAFC", marginBottom: "4px", letterSpacing: "-0.02em" }}>
+          <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#10231D", marginBottom: "4px", letterSpacing: "-0.02em" }}>
             🚀 Project Ideas
           </h2>
-          <p style={{ color: "#475569", fontSize: "14px" }}>
+          <p style={{ color: "#52635C", fontSize: "14px" }}>
             {memories.length} projects tracked — drag cards between columns to update status
           </p>
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", color: "#475569", padding: "80px" }}>
+          <div style={{ textAlign: "center", color: "#52635C", padding: "80px" }}>
             <div style={{ fontSize: "32px", marginBottom: "12px" }}>⏳</div>
             Loading projects...
           </div>
         ) : memories.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px", ...glass }}>
+          <div style={{
+            textAlign: "center", padding: "80px",
+            background: "#FFFFFF", border: "1.5px dashed #DDE7E2", borderRadius: "20px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
+          }}>
             <div style={{ fontSize: "52px", marginBottom: "16px" }}>🚀</div>
-            <p style={{ fontSize: "18px", fontWeight: 600, color: "#64748b", marginBottom: "8px" }}>
+            <p style={{ fontSize: "18px", fontWeight: 600, color: "#10231D", marginBottom: "8px" }}>
               No project ideas yet
             </p>
-            <p style={{ fontSize: "14px", color: "#334155" }}>
+            <p style={{ fontSize: "14px", color: "#52635C" }}>
               Upload memories with "Project Idea" category to track them here
             </p>
           </div>
         ) : (
           // Kanban board
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", minWidth: "900px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", minWidth: "920px" }}>
             {columns.map((col) => {
               const colMemories = getColumnMemories(col.id);
               const isOver = dragOver === col.id;
@@ -127,22 +124,22 @@ const fetchProjects = async () => {
                   onDragOver={(e) => handleDragOver(e, col.id)}
                   onDrop={(e) => handleDrop(e, col.id)}
                   style={{
-                    background: isOver ? `${col.color}08` : "rgba(255,255,255,0.02)",
-                    border: `1px solid ${isOver ? col.color + "44" : "rgba(255,255,255,0.06)"}`,
-                    borderRadius: "20px",
+                    background: isOver ? "#ECFDF5" : "#F1F5F3",
+                    border: `1.5px solid ${isOver ? "#059669" : "#DDE7E2"}`,
+                    borderRadius: "16px",
                     padding: "16px",
-                    minHeight: "500px",
+                    minHeight: "520px",
                     transition: "all 0.2s",
                   }}
                 >
                   {/* Column header */}
                   <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h3 style={{ color: col.color, fontSize: "13px", fontWeight: 700, margin: 0, textShadow: `0 0 10px ${col.glow}` }}>
+                    <h3 style={{ color: col.color, fontSize: "13px", fontWeight: 700, margin: 0 }}>
                       {col.label}
                     </h3>
                     <span style={{
-                      background: `${col.color}15`,
-                      border: `1px solid ${col.color}33`,
+                      background: col.badgeBg,
+                      border: `1px solid ${col.badgeBorder}`,
                       color: col.color,
                       fontSize: "11px", fontWeight: 700,
                       padding: "2px 8px", borderRadius: "999px",
@@ -160,41 +157,41 @@ const fetchProjects = async () => {
                         onDragStart={() => handleDragStart(memory.id)}
                         onDragEnd={handleDragEnd}
                         style={{
-                          background: dragging === memory.id ? "rgba(37,99,235,0.15)" : "rgba(255,255,255,0.04)",
-                          backdropFilter: "blur(10px)",
-                          border: `1px solid ${dragging === memory.id ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`,
+                          background: "#FFFFFF",
+                          border: `1px solid ${dragging === memory.id ? "#059669" : "#DDE7E2"}`,
                           borderRadius: "12px",
                           padding: "14px",
                           cursor: "grab",
                           transition: "all 0.2s",
-                          opacity: dragging === memory.id ? 0.6 : 1,
+                          opacity: dragging === memory.id ? 0.5 : 1,
                           position: "relative",
                           overflow: "hidden",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
                         }}
                         onMouseEnter={e => {
                           if (dragging !== memory.id) {
-                            (e.currentTarget as HTMLDivElement).style.borderColor = `${col.color}44`;
+                            (e.currentTarget as HTMLDivElement).style.borderColor = col.color;
                             (e.currentTarget as HTMLDivElement).style.transform = "translateY(-1px)";
-                            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 15px rgba(0,0,0,0.2)`;
+                            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 12px rgba(0,0,0,0.05)`;
                           }
                         }}
                         onMouseLeave={e => {
-                          (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
+                          (e.currentTarget as HTMLDivElement).style.borderColor = "#DDE7E2";
                           (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                          (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+                          (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(0,0,0,0.03)";
                         }}
                       >
-                        {/* Top accent */}
+                        {/* Top accent line */}
                         <div style={{
-                          position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-                          background: `linear-gradient(90deg, ${col.color}, transparent)`,
+                          position: "absolute", top: 0, left: 0, right: 0, height: "2.5px",
+                          background: col.color,
                         }} />
 
-                        <h4 style={{ color: "#F8FAFC", fontSize: "13px", fontWeight: 600, marginBottom: "6px", lineHeight: 1.3 }}>
+                        <h4 style={{ color: "#10231D", fontSize: "13px", fontWeight: 600, marginBottom: "6px", lineHeight: 1.3 }}>
                           {memory.title}
                         </h4>
                         <p style={{
-                          color: "#475569", fontSize: "12px", lineHeight: 1.5,
+                          color: "#52635C", fontSize: "12px", lineHeight: 1.5,
                           marginBottom: "10px",
                           display: "-webkit-box", WebkitLineClamp: 2,
                           WebkitBoxOrient: "vertical", overflow: "hidden",
@@ -207,10 +204,11 @@ const fetchProjects = async () => {
                           <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "10px" }}>
                             {memory.tags.split(",").slice(0, 2).map(t => (
                               <span key={t} style={{
-                                background: "rgba(37,99,235,0.1)",
-                                border: "1px solid rgba(37,99,235,0.2)",
-                                color: "#60A5FA",
+                                background: "#ECFDF5",
+                                border: "1px solid #A7F3D0",
+                                color: "#065F46",
                                 padding: "1px 6px", borderRadius: "999px", fontSize: "10px",
+                                fontWeight: 500,
                               }}>#{t.trim()}</span>
                             ))}
                           </div>
@@ -223,9 +221,9 @@ const fetchProjects = async () => {
                               key={c.id}
                               onClick={() => handleStatusChange(memory.id, c.id)}
                               style={{
-                                background: memory.project_status === c.id ? `${c.color}20` : "transparent",
-                                border: `1px solid ${memory.project_status === c.id ? c.color + "44" : "rgba(255,255,255,0.06)"}`,
-                                color: memory.project_status === c.id ? c.color : "#334155",
+                                background: memory.project_status === c.id ? c.badgeBg : "#F8FAF9",
+                                border: `1px solid ${memory.project_status === c.id ? c.color : "#DDE7E2"}`,
+                                color: memory.project_status === c.id ? c.color : "#7A8A84",
                                 padding: "2px 6px", borderRadius: "6px",
                                 fontSize: "10px", cursor: "pointer",
                                 fontWeight: memory.project_status === c.id ? 600 : 400,
@@ -242,10 +240,11 @@ const fetchProjects = async () => {
                     {/* Drop zone hint */}
                     {isOver && (
                       <div style={{
-                        border: `2px dashed ${col.color}44`,
+                        border: `2px dashed ${col.color}`,
                         borderRadius: "12px", padding: "20px",
                         textAlign: "center", color: col.color,
-                        fontSize: "12px", fontWeight: 500,
+                        fontSize: "12px", fontWeight: 600,
+                        background: "#FFFFFF",
                       }}>
                         Drop here
                       </div>

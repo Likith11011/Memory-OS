@@ -19,9 +19,9 @@ interface Memory {
 }
 
 const difficultyConfig = {
-  easy: { color: "#10b981", glow: "rgba(16,185,129,0.3)", icon: "🟢", label: "Easy" },
-  medium: { color: "#f59e0b", glow: "rgba(245,158,11,0.3)", icon: "🟡", label: "Medium" },
-  hard: { color: "#ef4444", glow: "rgba(239,68,68,0.3)", icon: "🔴", label: "Hard" },
+  easy: { color: "#059669", bg: "#ECFDF5", border: "#A7F3D0", icon: "🟢", label: "Easy" },
+  medium: { color: "#D97706", bg: "#FEF3C7", border: "#FDE68A", icon: "🟡", label: "Medium" },
+  hard: { color: "#DC2626", bg: "#FEF2F2", border: "#FECACA", icon: "🔴", label: "Hard" },
 };
 
 export default function ExamPage() {
@@ -81,44 +81,38 @@ export default function ExamPage() {
 
   const currentCard = filtered[flashcardIndex];
 
-  const glass = {
-    background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "20px",
-  };
-
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "linear-gradient(135deg, #0A1224 0%, #0d1530 100%)", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#F8FAF9", fontFamily: "'Inter', sans-serif" }}>
       <Sidebar />
-      <main style={{ marginLeft: "240px", flex: 1, padding: "32px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
+      <main style={{ marginLeft: "240px", flex: 1, padding: "32px 40px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px", flexWrap: "wrap", gap: "12px" }}>
           <div>
-            <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#F8FAFC", marginBottom: "4px", letterSpacing: "-0.02em" }}>
+            <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#10231D", marginBottom: "4px", letterSpacing: "-0.02em" }}>
               📚 Exam Revision
             </h2>
-            <p style={{ color: "#475569", fontSize: "14px" }}>
+            <p style={{ color: "#52635C", fontSize: "14px" }}>
               {filtered.length} memories to review
               {reviewedIds.size > 0 && (
-                <span style={{ color: "#10b981", marginLeft: "8px" }}>• {reviewedIds.size} reviewed today</span>
+                <span style={{ color: "#059669", marginLeft: "8px", fontWeight: 600 }}>• {reviewedIds.size} reviewed today</span>
               )}
             </p>
           </div>
 
           {/* Mode toggle */}
           <div style={{
-            display: "flex", background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            display: "flex", background: "#F1F5F3",
+            border: "1px solid #DDE7E2",
             borderRadius: "12px", padding: "4px",
           }}>
             {(["cards", "flashcard"] as const).map((m) => (
               <button key={m} onClick={() => { setMode(m); setFlashcardIndex(0); setFlipped(false); }} style={{
                 padding: "8px 18px", borderRadius: "8px", border: "none",
-                background: mode === m ? "rgba(37,99,235,0.25)" : "transparent",
-                color: mode === m ? "#60A5FA" : "#475569",
+                background: mode === m ? "#FFFFFF" : "transparent",
+                color: mode === m ? "#064E3B" : "#52635C",
                 fontSize: "13px", fontWeight: 600, cursor: "pointer",
+                boxShadow: mode === m ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
                 transition: "all 0.2s", textTransform: "capitalize",
               }}>
                 {m === "cards" ? "⊞ Cards" : "🃏 Flashcard"}
@@ -130,18 +124,18 @@ export default function ExamPage() {
         {/* Error banner */}
         {error && (
           <div style={{
-            background: "rgba(245,158,11,0.1)",
-            border: "1px solid rgba(245,158,11,0.3)",
+            background: "#FEF3C7",
+            border: "1px solid #FDE68A",
             borderRadius: "12px", padding: "14px 20px",
-            color: "#f59e0b", fontSize: "14px", marginBottom: "20px",
+            color: "#92400E", fontSize: "14px", marginBottom: "20px",
             display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
             <span>⚠ {error}</span>
             <button
               onClick={() => { setError(""); setLoading(true); fetchExamMemories(); }}
               style={{
-                background: "rgba(245,158,11,0.2)", border: "1px solid rgba(245,158,11,0.3)",
-                borderRadius: "8px", padding: "5px 14px", color: "#f59e0b",
+                background: "#FDE68A", border: "1px solid #F59E0B",
+                borderRadius: "8px", padding: "5px 14px", color: "#78350F",
                 cursor: "pointer", fontSize: "12px", fontWeight: 600,
               }}
             >
@@ -151,22 +145,26 @@ export default function ExamPage() {
         )}
 
         {/* Filters */}
-        <div style={{ display: "flex", gap: "20px", marginBottom: "28px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "20px", marginBottom: "28px", flexWrap: "wrap", alignItems: "center" }}>
           {subjects.length > 0 && (
             <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-              <span style={{ color: "#334155", fontSize: "12px", fontWeight: 600 }}>Subject:</span>
+              <span style={{ color: "#7A8A84", fontSize: "12px", fontWeight: 600 }}>Subject:</span>
               <button onClick={() => setActiveSubject(null)} style={{
-                background: !activeSubject ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.03)",
-                border: `1px solid ${!activeSubject ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`,
-                borderRadius: "999px", color: !activeSubject ? "#60A5FA" : "#475569",
-                padding: "4px 12px", fontSize: "12px", cursor: "pointer",
+                background: !activeSubject ? "#ECFDF5" : "#FFFFFF",
+                border: `1px solid ${!activeSubject ? "#059669" : "#DDE7E2"}`,
+                borderRadius: "999px", color: !activeSubject ? "#065F46" : "#52635C",
+                fontWeight: !activeSubject ? 600 : 500,
+                padding: "4px 14px", fontSize: "12px", cursor: "pointer",
+                transition: "all 0.2s",
               }}>All</button>
               {subjects.map(s => (
                 <button key={s} onClick={() => setActiveSubject(activeSubject === s ? null : s)} style={{
-                  background: activeSubject === s ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${activeSubject === s ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`,
-                  borderRadius: "999px", color: activeSubject === s ? "#60A5FA" : "#475569",
-                  padding: "4px 12px", fontSize: "12px", cursor: "pointer",
+                  background: activeSubject === s ? "#ECFDF5" : "#FFFFFF",
+                  border: `1px solid ${activeSubject === s ? "#059669" : "#DDE7E2"}`,
+                  borderRadius: "999px", color: activeSubject === s ? "#065F46" : "#52635C",
+                  fontWeight: activeSubject === s ? 600 : 500,
+                  padding: "4px 14px", fontSize: "12px", cursor: "pointer",
+                  transition: "all 0.2s",
                 }}>
                   {s}
                 </button>
@@ -175,21 +173,26 @@ export default function ExamPage() {
           )}
 
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            <span style={{ color: "#334155", fontSize: "12px", fontWeight: 600 }}>Difficulty:</span>
+            <span style={{ color: "#7A8A84", fontSize: "12px", fontWeight: 600 }}>Difficulty:</span>
             <button onClick={() => setActiveDifficulty(null)} style={{
-              background: !activeDifficulty ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.03)",
-              border: `1px solid ${!activeDifficulty ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`,
-              borderRadius: "999px", color: !activeDifficulty ? "#60A5FA" : "#475569",
-              padding: "4px 12px", fontSize: "12px", cursor: "pointer",
+              background: !activeDifficulty ? "#ECFDF5" : "#FFFFFF",
+              border: `1px solid ${!activeDifficulty ? "#059669" : "#DDE7E2"}`,
+              borderRadius: "999px", color: !activeDifficulty ? "#065F46" : "#52635C",
+              fontWeight: !activeDifficulty ? 600 : 500,
+              padding: "4px 14px", fontSize: "12px", cursor: "pointer",
+              transition: "all 0.2s",
             }}>All</button>
             {["easy", "medium", "hard"].map(d => {
               const dc = difficultyConfig[d as keyof typeof difficultyConfig];
+              const isSel = activeDifficulty === d;
               return (
-                <button key={d} onClick={() => setActiveDifficulty(activeDifficulty === d ? null : d)} style={{
-                  background: activeDifficulty === d ? `${dc.color}18` : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${activeDifficulty === d ? dc.color + "44" : "rgba(255,255,255,0.08)"}`,
-                  borderRadius: "999px", color: activeDifficulty === d ? dc.color : "#475569",
-                  padding: "4px 12px", fontSize: "12px", cursor: "pointer",
+                <button key={d} onClick={() => setActiveDifficulty(isSel ? null : d)} style={{
+                  background: isSel ? dc.bg : "#FFFFFF",
+                  border: `1px solid ${isSel ? dc.color : "#DDE7E2"}`,
+                  borderRadius: "999px", color: isSel ? dc.color : "#52635C",
+                  fontWeight: isSel ? 600 : 500,
+                  padding: "4px 14px", fontSize: "12px", cursor: "pointer",
+                  transition: "all 0.2s",
                 }}>
                   {dc.icon} {dc.label}
                 </button>
@@ -200,17 +203,21 @@ export default function ExamPage() {
 
         {/* Content */}
         {loading ? (
-          <div style={{ textAlign: "center", color: "#475569", padding: "80px" }}>
+          <div style={{ textAlign: "center", color: "#52635C", padding: "80px" }}>
             <div style={{ fontSize: "32px", marginBottom: "12px" }}>⏳</div>
             Loading revision materials...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px", ...glass }}>
+          <div style={{
+            textAlign: "center", padding: "80px",
+            background: "#FFFFFF", border: "1.5px dashed #DDE7E2", borderRadius: "20px",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
+          }}>
             <div style={{ fontSize: "52px", marginBottom: "16px" }}>📚</div>
-            <p style={{ fontSize: "18px", fontWeight: 600, color: "#64748b", marginBottom: "8px" }}>
+            <p style={{ fontSize: "18px", fontWeight: 600, color: "#10231D", marginBottom: "8px" }}>
               No exam memories yet
             </p>
-            <p style={{ fontSize: "14px", color: "#334155" }}>
+            <p style={{ fontSize: "14px", color: "#52635C" }}>
               Upload notes with "Exam Revision" category to get started
             </p>
           </div>
@@ -221,25 +228,29 @@ export default function ExamPage() {
               const isReviewed = reviewedIds.has(memory.id);
               return (
                 <div key={memory.id} style={{
-                  ...glass, padding: "22px",
-                  transition: "all 0.3s", position: "relative",
-                  overflow: "hidden", opacity: isReviewed ? 0.75 : 1,
+                  background: "#FFFFFF",
+                  border: "1px solid #DDE7E2",
+                  borderRadius: "16px",
+                  padding: "22px",
+                  transition: "all 0.25s", position: "relative",
+                  overflow: "hidden", opacity: isReviewed ? 0.8 : 1,
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
                 }}
                   onMouseEnter={e => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(37,99,235,0.3)";
+                    (e.currentTarget as HTMLDivElement).style.borderColor = "#059669";
                     (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
-                    (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 30px rgba(0,0,0,0.3)";
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(5,150,105,0.08)";
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.08)";
+                    (e.currentTarget as HTMLDivElement).style.borderColor = "#DDE7E2";
                     (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                    (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.03)";
                   }}
                 >
                   {/* Top accent */}
                   <div style={{
-                    position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-                    background: dc ? `linear-gradient(90deg, ${dc.color}, transparent)` : "linear-gradient(90deg, #2563EB, transparent)",
+                    position: "absolute", top: 0, left: 0, right: 0, height: "3px",
+                    background: dc ? dc.color : "#059669",
                   }} />
 
                   {/* Header badges */}
@@ -247,8 +258,8 @@ export default function ExamPage() {
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                       {memory.subject && (
                         <span style={{
-                          background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)",
-                          color: "#60A5FA", fontSize: "11px", padding: "2px 8px",
+                          background: "#ECFDF5", border: "1px solid #A7F3D0",
+                          color: "#065F46", fontSize: "11px", padding: "2px 8px",
                           borderRadius: "999px", fontWeight: 600,
                         }}>
                           📖 {memory.subject}
@@ -256,7 +267,7 @@ export default function ExamPage() {
                       )}
                       {dc && (
                         <span style={{
-                          background: `${dc.color}15`, border: `1px solid ${dc.color}33`,
+                          background: dc.bg, border: `1px solid ${dc.border}`,
                           color: dc.color, fontSize: "11px", padding: "2px 8px",
                           borderRadius: "999px", fontWeight: 600,
                         }}>
@@ -266,18 +277,19 @@ export default function ExamPage() {
                     </div>
                     {isReviewed && (
                       <span style={{
-                        background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)",
-                        color: "#10b981", fontSize: "10px", padding: "2px 8px", borderRadius: "999px",
+                        background: "#ECFDF5", border: "1px solid #A7F3D0",
+                        color: "#059669", fontSize: "10px", padding: "2px 8px", borderRadius: "999px",
+                        fontWeight: 600,
                       }}>✓ Reviewed</span>
                     )}
                   </div>
 
-                  <h3 style={{ color: "#F8FAFC", fontSize: "15px", fontWeight: 600, marginBottom: "8px" }}>
+                  <h3 style={{ color: "#10231D", fontSize: "15px", fontWeight: 600, marginBottom: "8px" }}>
                     {memory.title}
                   </h3>
 
                   <p style={{
-                    color: "#64748b", fontSize: "13px", lineHeight: 1.6, marginBottom: "12px",
+                    color: "#52635C", fontSize: "13px", lineHeight: 1.6, marginBottom: "12px",
                     display: "-webkit-box", WebkitLineClamp: 3,
                     WebkitBoxOrient: "vertical", overflow: "hidden",
                   }}>
@@ -287,21 +299,21 @@ export default function ExamPage() {
                   {/* AI Explanation */}
                   {memory.explanation && (
                     <div style={{
-                      background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)",
+                      background: "#F1F5F3", border: "1px solid #DDE7E2",
                       borderRadius: "10px", padding: "12px", marginBottom: "14px",
                     }}>
-                      <p style={{ color: "#475569", fontSize: "10px", fontWeight: 600, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <p style={{ color: "#064E3B", fontSize: "10px", fontWeight: 700, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         🤖 AI Explanation ({memory.difficulty})
                       </p>
-                      <p style={{ color: "#94A3B8", fontSize: "12px", lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ color: "#52635C", fontSize: "12px", lineHeight: 1.6, margin: 0 }}>
                         {memory.explanation}
                       </p>
                     </div>
                   )}
 
                   {/* Footer */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
-                    <span style={{ color: "#334155", fontSize: "11px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginTop: "auto" }}>
+                    <span style={{ color: "#7A8A84", fontSize: "11px" }}>
                       {(memory.review_count || 0) > 0 ? `reviewed ${memory.review_count}×` : "not reviewed yet"}
                     </span>
                     <div style={{ display: "flex", gap: "8px" }}>
@@ -309,14 +321,14 @@ export default function ExamPage() {
                       <button
                         onClick={() => router.push(`/quiz?id=${memory.id}`)}
                         style={{
-                          background: "rgba(124,58,237,0.12)",
-                          border: "1px solid rgba(124,58,237,0.3)",
-                          color: "#a78bfa", borderRadius: "8px",
+                          background: "#F1F5F3",
+                          border: "1px solid #DDE7E2",
+                          color: "#064E3B", borderRadius: "8px",
                           padding: "6px 12px", fontSize: "12px",
                           fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
                         }}
-                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.22)"}
-                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.12)"}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#E2E8E5"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#059669"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#F1F5F3"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#DDE7E2"; }}
                       >
                         🧠 Quiz
                       </button>
@@ -326,14 +338,17 @@ export default function ExamPage() {
                         onClick={() => handleReview(memory.id)}
                         disabled={isReviewed}
                         style={{
-                          background: isReviewed ? "rgba(16,185,129,0.12)" : "rgba(37,99,235,0.15)",
-                          border: `1px solid ${isReviewed ? "rgba(16,185,129,0.3)" : "rgba(37,99,235,0.3)"}`,
-                          color: isReviewed ? "#10b981" : "#60A5FA",
+                          background: isReviewed ? "#ECFDF5" : "#059669",
+                          border: `1px solid ${isReviewed ? "#A7F3D0" : "transparent"}`,
+                          color: isReviewed ? "#059669" : "#FFFFFF",
                           borderRadius: "8px", padding: "6px 12px",
                           fontSize: "12px", fontWeight: 600,
                           cursor: isReviewed ? "default" : "pointer",
                           transition: "all 0.2s",
+                          boxShadow: !isReviewed ? "0 1px 4px rgba(5,150,105,0.2)" : "none",
                         }}
+                        onMouseEnter={e => { if (!isReviewed) (e.currentTarget as HTMLButtonElement).style.background = "#047857"; }}
+                        onMouseLeave={e => { if (!isReviewed) (e.currentTarget as HTMLButtonElement).style.background = "#059669"; }}
                       >
                         {isReviewed ? "✓ Done" : "Mark reviewed"}
                       </button>
@@ -348,7 +363,7 @@ export default function ExamPage() {
           <div style={{ maxWidth: "640px", margin: "0 auto" }}>
             {/* Progress */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <span style={{ color: "#475569", fontSize: "13px" }}>
+              <span style={{ color: "#52635C", fontSize: "13px", fontWeight: 500 }}>
                 Card {flashcardIndex + 1} of {filtered.length}
               </span>
               <div style={{ display: "flex", gap: "4px" }}>
@@ -356,12 +371,12 @@ export default function ExamPage() {
                   <div key={i} style={{
                     width: i === flashcardIndex ? "20px" : "8px",
                     height: "8px", borderRadius: "999px",
-                    background: i < flashcardIndex ? "#10b981" : i === flashcardIndex ? "#2563EB" : "rgba(255,255,255,0.1)",
+                    background: i < flashcardIndex ? "#059669" : i === flashcardIndex ? "#064E3B" : "#DDE7E2",
                     transition: "all 0.3s",
                   }} />
                 ))}
               </div>
-              <span style={{ color: "#475569", fontSize: "13px" }}>
+              <span style={{ color: "#52635C", fontSize: "13px", fontWeight: 600 }}>
                 {Math.round((flashcardIndex / filtered.length) * 100)}%
               </span>
             </div>
@@ -372,7 +387,9 @@ export default function ExamPage() {
                 <div
                   onClick={() => setFlipped(!flipped)}
                   style={{
-                    ...glass,
+                    background: flipped ? "#F7FBF9" : "#FFFFFF",
+                    border: `1.5px solid ${flipped ? "#A7F3D0" : "#DDE7E2"}`,
+                    borderRadius: "20px",
                     padding: "48px 40px",
                     minHeight: "300px",
                     cursor: "pointer",
@@ -386,17 +403,16 @@ export default function ExamPage() {
                     gap: "16px",
                     marginBottom: "24px",
                     boxShadow: flipped
-                      ? "0 0 40px rgba(37,99,235,0.2), 0 20px 40px rgba(0,0,0,0.3)"
-                      : "0 10px 30px rgba(0,0,0,0.2)",
-                    borderColor: flipped ? "rgba(37,99,235,0.3)" : "rgba(255,255,255,0.08)",
+                      ? "0 8px 30px rgba(5,150,105,0.12)"
+                      : "0 4px 20px rgba(0,0,0,0.04)",
                   }}
                 >
                   <div style={{
                     position: "absolute", top: "16px", right: "16px",
-                    background: flipped ? "rgba(37,99,235,0.15)" : "rgba(255,255,255,0.05)",
-                    border: `1px solid ${flipped ? "rgba(37,99,235,0.3)" : "rgba(255,255,255,0.1)"}`,
+                    background: flipped ? "#ECFDF5" : "#F1F5F3",
+                    border: `1px solid ${flipped ? "#A7F3D0" : "#DDE7E2"}`,
                     borderRadius: "8px", padding: "4px 10px",
-                    color: flipped ? "#60A5FA" : "#475569",
+                    color: flipped ? "#059669" : "#52635C",
                     fontSize: "11px", fontWeight: 600,
                   }}>
                     {flipped ? "Answer" : "Question"}
@@ -404,10 +420,11 @@ export default function ExamPage() {
 
                   {currentCard.difficulty && (
                     <span style={{
-                      background: `${difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.color || "#2563EB"}15`,
-                      border: `1px solid ${difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.color || "#2563EB"}33`,
-                      color: difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.color || "#60A5FA",
+                      background: difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.bg || "#ECFDF5",
+                      border: `1px solid ${difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.border || "#A7F3D0"}`,
+                      color: difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.color || "#059669",
                       fontSize: "11px", padding: "3px 10px", borderRadius: "999px",
+                      fontWeight: 600,
                     }}>
                       {difficultyConfig[currentCard.difficulty as keyof typeof difficultyConfig]?.icon} {currentCard.difficulty}
                     </span>
@@ -415,30 +432,30 @@ export default function ExamPage() {
 
                   {!flipped ? (
                     <>
-                      <h3 style={{ color: "#F8FAFC", fontSize: "22px", fontWeight: 700, lineHeight: 1.3 }}>
+                      <h3 style={{ color: "#10231D", fontSize: "22px", fontWeight: 700, lineHeight: 1.3 }}>
                         {currentCard.title}
                       </h3>
                       {currentCard.subject && (
-                        <span style={{ color: "#475569", fontSize: "13px" }}>📖 {currentCard.subject}</span>
+                        <span style={{ color: "#52635C", fontSize: "13px" }}>📖 {currentCard.subject}</span>
                       )}
-                      <p style={{ color: "#334155", fontSize: "13px", marginTop: "8px" }}>
+                      <p style={{ color: "#7A8A84", fontSize: "13px", marginTop: "8px" }}>
                         Tap to reveal answer
                       </p>
                     </>
                   ) : (
                     <>
-                      <p style={{ color: "#94A3B8", fontSize: "15px", lineHeight: 1.7, maxWidth: "500px" }}>
+                      <p style={{ color: "#10231D", fontSize: "15px", lineHeight: 1.7, maxWidth: "500px" }}>
                         {currentCard.content}
                       </p>
                       {currentCard.explanation && (
                         <div style={{
-                          background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)",
+                          background: "#FFFFFF", border: "1px solid #DDE7E2",
                           borderRadius: "10px", padding: "14px", maxWidth: "500px", width: "100%",
                         }}>
-                          <p style={{ color: "#475569", fontSize: "10px", fontWeight: 600, marginBottom: "6px", textTransform: "uppercase" }}>
+                          <p style={{ color: "#064E3B", fontSize: "10px", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
                             🤖 AI Explanation
                           </p>
-                          <p style={{ color: "#94A3B8", fontSize: "13px", lineHeight: 1.6, margin: 0 }}>
+                          <p style={{ color: "#52635C", fontSize: "13px", lineHeight: 1.6, margin: 0 }}>
                             {currentCard.explanation}
                           </p>
                         </div>
@@ -453,11 +470,12 @@ export default function ExamPage() {
                     onClick={() => { setFlashcardIndex(Math.max(0, flashcardIndex - 1)); setFlipped(false); }}
                     disabled={flashcardIndex === 0}
                     style={{
-                      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                      background: "#FFFFFF", border: "1px solid #DDE7E2",
                       borderRadius: "12px", padding: "12px 20px",
-                      color: flashcardIndex === 0 ? "#334155" : "#94A3B8",
+                      color: flashcardIndex === 0 ? "#9CA3AF" : "#52635C",
                       fontSize: "14px", cursor: flashcardIndex === 0 ? "not-allowed" : "pointer",
-                      fontWeight: 500, transition: "all 0.2s",
+                      fontWeight: 600, transition: "all 0.2s",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                     }}
                   >
                     ← Previous
@@ -467,14 +485,14 @@ export default function ExamPage() {
                   <button
                     onClick={() => router.push(`/quiz?id=${currentCard.id}`)}
                     style={{
-                      background: "rgba(124,58,237,0.15)",
-                      border: "1px solid rgba(124,58,237,0.35)",
+                      background: "#F1F5F3",
+                      border: "1px solid #DDE7E2",
                       borderRadius: "12px", padding: "12px 20px",
-                      color: "#a78bfa", fontSize: "14px",
+                      color: "#064E3B", fontSize: "14px",
                       cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
                     }}
-                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.25)"}
-                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,58,237,0.15)"}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#E2E8E5"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#F1F5F3"; }}
                   >
                     🧠 Quiz
                   </button>
@@ -482,11 +500,12 @@ export default function ExamPage() {
                   <button
                     onClick={() => handleReview(currentCard.id)}
                     style={{
-                      background: reviewedIds.has(currentCard.id) ? "rgba(16,185,129,0.12)" : "rgba(37,99,235,0.15)",
-                      border: `1px solid ${reviewedIds.has(currentCard.id) ? "rgba(16,185,129,0.3)" : "rgba(37,99,235,0.3)"}`,
+                      background: reviewedIds.has(currentCard.id) ? "#ECFDF5" : "#FFFFFF",
+                      border: `1px solid ${reviewedIds.has(currentCard.id) ? "#A7F3D0" : "#DDE7E2"}`,
                       borderRadius: "12px", padding: "12px 20px",
-                      color: reviewedIds.has(currentCard.id) ? "#10b981" : "#60A5FA",
+                      color: reviewedIds.has(currentCard.id) ? "#059669" : "#10231D",
                       fontSize: "14px", cursor: "pointer", fontWeight: 600, transition: "all 0.2s",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                     }}
                   >
                     {reviewedIds.has(currentCard.id) ? "✓ Reviewed" : "✓ Mark reviewed"}
@@ -502,15 +521,17 @@ export default function ExamPage() {
                     disabled={flashcardIndex === filtered.length - 1}
                     style={{
                       background: flashcardIndex === filtered.length - 1
-                        ? "rgba(255,255,255,0.02)"
-                        : "linear-gradient(135deg, #2563EB, #1d4ed8)",
+                        ? "#E5E7EB"
+                        : "#059669",
                       border: "none", borderRadius: "12px", padding: "12px 20px",
-                      color: flashcardIndex === filtered.length - 1 ? "#334155" : "white",
+                      color: flashcardIndex === filtered.length - 1 ? "#9CA3AF" : "white",
                       fontSize: "14px",
                       cursor: flashcardIndex === filtered.length - 1 ? "not-allowed" : "pointer",
                       fontWeight: 600, transition: "all 0.2s",
-                      boxShadow: flashcardIndex < filtered.length - 1 ? "0 0 20px rgba(37,99,235,0.3)" : "none",
+                      boxShadow: flashcardIndex < filtered.length - 1 ? "0 2px 8px rgba(5,150,105,0.25)" : "none",
                     }}
+                    onMouseEnter={e => { if (flashcardIndex < filtered.length - 1) (e.currentTarget as HTMLButtonElement).style.background = "#047857"; }}
+                    onMouseLeave={e => { if (flashcardIndex < filtered.length - 1) (e.currentTarget as HTMLButtonElement).style.background = "#059669"; }}
                   >
                     Next →
                   </button>

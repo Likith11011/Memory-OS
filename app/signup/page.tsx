@@ -28,12 +28,13 @@ function StrengthRow({ met, label }: { met: boolean; label: string }) {
     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
       <div style={{
         width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
-        background: met ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.05)",
-        border: `1px solid ${met ? "#2563EB" : "rgba(255,255,255,0.1)"}`,
+        background: met ? "#ECFDF5" : "#F1F5F3",
+        border: `1px solid ${met ? "#059669" : "#DDE7E2"}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: "9px", color: met ? "#60A5FA" : "transparent",
+        fontSize: "9px", color: met ? "#059669" : "transparent",
+        fontWeight: 700,
       }}>✓</div>
-      <span style={{ color: met ? "#60A5FA" : "#475569", fontSize: "12px" }}>{label}</span>
+      <span style={{ color: met ? "#064E3B" : "#7A8A84", fontSize: "12px", fontWeight: met ? 600 : 400 }}>{label}</span>
     </div>
   );
 }
@@ -63,7 +64,7 @@ export default function SignupPage() {
     try {
       const data = await signup(email, password);
       if (!data?.access_token) throw new Error("No token received");
-      setSuccess("Account created! Redirecting...");
+      setSuccess("Account created! Redirecting to dashboard...");
       saveToken(data.access_token);
       setTimeout(() => router.push("/dashboard"), 1200);
     } catch (err: any) {
@@ -78,62 +79,62 @@ export default function SignupPage() {
   return (
     <main style={{
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #0A1224 0%, #0d1530 50%, #0A1224 100%)",
+      background: "#F8FAF9",
+      color: "#10231D",
       display: "flex", alignItems: "center", justifyContent: "center",
       padding: "20px", position: "relative", overflow: "hidden",
+      fontFamily: "'Inter', sans-serif",
     }}>
-      {/* Ambient orbs */}
+      {/* Ambient forest accents */}
       <div style={{
         position: "absolute", top: "20%", left: "30%",
         width: "400px", height: "400px",
-        background: "radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", bottom: "20%", right: "25%",
-        width: "300px", height: "300px",
-        background: "radial-gradient(circle, rgba(96,165,250,0.07) 0%, transparent 70%)",
+        width: "350px", height: "350px",
+        background: "radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none",
       }} />
 
       {/* Card */}
       <div style={{
         width: "100%", maxWidth: "440px",
-        background: "rgba(16,26,51,0.7)",
-        backdropFilter: "blur(30px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "24px",
-        padding: "40px",
-        boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(37,99,235,0.1), inset 0 1px 0 rgba(255,255,255,0.08)",
+        background: "#FFFFFF",
+        border: "1px solid #DDE7E2",
+        borderRadius: "20px",
+        padding: "38px",
+        boxShadow: "0 20px 40px rgba(6,78,59,0.08), 0 2px 8px rgba(16,35,29,0.04)",
         position: "relative", zIndex: 1,
       }}>
         {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
           <div style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
-            width: "52px", height: "52px",
-            background: "linear-gradient(135deg, rgba(37,99,235,0.3), rgba(96,165,250,0.2))",
-            border: "1px solid rgba(37,99,235,0.4)",
-            borderRadius: "14px", fontSize: "24px", marginBottom: "16px",
-            boxShadow: "0 0 20px rgba(37,99,235,0.3)",
+            width: "50px", height: "50px",
+            background: "linear-gradient(135deg, #064E3B 0%, #059669 100%)",
+            borderRadius: "12px", fontSize: "24px", marginBottom: "14px",
+            boxShadow: "0 4px 12px rgba(5,150,105,0.25)",
+            color: "#FFFFFF",
           }}>🧠</div>
           <h1 style={{
-            fontSize: "22px", fontWeight: 800, margin: "0 0 4px",
-            background: "linear-gradient(135deg, #F8FAFC, #94A3B8)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            fontSize: "22px", fontWeight: 700, margin: "0 0 4px",
+            color: "#064E3B",
           }}>
             Create your account
           </h1>
-          <p style={{ color: "#475569", fontSize: "13px", margin: 0 }}>
-            Start building your AI second brain
+          <p style={{ color: "#52635C", fontSize: "13px", margin: 0 }}>
+            Start building your private knowledge base
           </p>
         </div>
 
         {success && (
           <div style={{
-            background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.3)",
-            color: "#60A5FA", borderRadius: "10px", padding: "12px 16px",
-            fontSize: "13px", marginBottom: "20px",
+            background: "#ECFDF5", border: "1px solid #A7F3D0",
+            color: "#065F46", borderRadius: "10px", padding: "11px 14px",
+            fontSize: "13px", marginBottom: "18px", fontWeight: 600,
           }}>
             ✓ {success}
           </div>
@@ -141,9 +142,9 @@ export default function SignupPage() {
 
         {error && (
           <div style={{
-            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-            color: "#f87171", borderRadius: "10px", padding: "12px 16px",
-            fontSize: "13px", marginBottom: "20px",
+            background: "#FEF2F2", border: "1px solid #FEE2E2",
+            color: "#DC2626", borderRadius: "10px", padding: "11px 14px",
+            fontSize: "13px", marginBottom: "18px", fontWeight: 500,
           }}>
             ⚠ {error}
           </div>
@@ -152,9 +153,9 @@ export default function SignupPage() {
         {/* Email */}
         <div style={{ marginBottom: "16px" }}>
           <label style={{
-            color: "#94A3B8", fontSize: "11px", fontWeight: 600,
-            display: "block", marginBottom: "8px",
-            textTransform: "uppercase", letterSpacing: "0.08em",
+            color: "#064E3B", fontSize: "11px", fontWeight: 700,
+            display: "block", marginBottom: "6px",
+            textTransform: "uppercase", letterSpacing: "0.06em",
           }}>
             Email address
           </label>
@@ -164,25 +165,20 @@ export default function SignupPage() {
             onKeyDown={(e) => e.key === "Enter" && handleSignup()}
             placeholder="you@example.com"
             autoComplete="email" disabled={loading}
+            className="input-field"
             style={{
-              width: "100%",
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "12px", padding: "13px 16px",
-              color: "#F8FAFC", fontSize: "14px", outline: "none",
-              boxSizing: "border-box", transition: "all 0.2s",
+              width: "100%", padding: "12px 14px",
+              fontSize: "14px", boxSizing: "border-box",
             }}
-            onFocus={e => { e.target.style.borderColor = "rgba(37,99,235,0.6)"; e.target.style.background = "rgba(255,255,255,0.07)"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.15)"; }}
-            onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.boxShadow = "none"; }}
           />
         </div>
 
         {/* Password */}
         <div style={{ marginBottom: "16px" }}>
           <label style={{
-            color: "#94A3B8", fontSize: "11px", fontWeight: 600,
-            display: "block", marginBottom: "8px",
-            textTransform: "uppercase", letterSpacing: "0.08em",
+            color: "#064E3B", fontSize: "11px", fontWeight: 700,
+            display: "block", marginBottom: "6px",
+            textTransform: "uppercase", letterSpacing: "0.06em",
           }}>
             Password
           </label>
@@ -195,21 +191,17 @@ export default function SignupPage() {
               onKeyDown={(e) => e.key === "Enter" && handleSignup()}
               placeholder="Create a strong password"
               autoComplete="new-password" disabled={loading}
+              className="input-field"
               style={{
-                width: "100%",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "12px", padding: "13px 48px 13px 16px",
-                color: "#F8FAFC", fontSize: "14px", outline: "none",
-                boxSizing: "border-box", transition: "all 0.2s",
+                width: "100%", padding: "12px 42px 12px 14px",
+                fontSize: "14px", boxSizing: "border-box",
               }}
-              onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.boxShadow = "none"; }}
             />
             <button onClick={() => setShowPassword(!showPassword)} style={{
-              position: "absolute", right: "14px", top: "50%",
+              position: "absolute", right: "12px", top: "50%",
               transform: "translateY(-50%)",
               background: "none", border: "none",
-              color: "#475569", cursor: "pointer", fontSize: "15px", padding: "4px",
+              color: "#7A8A84", cursor: "pointer", fontSize: "14px", padding: "4px",
             }}>
               {showPassword ? "🙈" : "👁️"}
             </button>
@@ -217,11 +209,11 @@ export default function SignupPage() {
 
           {showStrength && password.length > 0 && (
             <div style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "#F8FAF9",
+              border: "1px solid #DDE7E2",
               borderRadius: "10px", padding: "14px", marginTop: "10px",
             }}>
-              <p style={{ color: "#475569", fontSize: "10px", fontWeight: 600, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              <p style={{ color: "#064E3B", fontSize: "10px", fontWeight: 700, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 Password requirements
               </p>
               <StrengthRow met={strength.hasMinLength} label="At least 6 characters" />
@@ -235,41 +227,29 @@ export default function SignupPage() {
 
         <button
           onClick={handleSignup} disabled={loading || !allMet}
+          className="btn-primary"
           style={{
-            width: "100%",
-            background: loading || !allMet
-              ? "rgba(37,99,235,0.3)"
-              : "linear-gradient(135deg, #2563EB, #1d4ed8)",
-            border: "none", borderRadius: "12px", padding: "14px",
-            color: loading || !allMet ? "rgba(255,255,255,0.4)" : "white",
-            fontSize: "15px", fontWeight: 600,
+            width: "100%", padding: "13px",
+            fontSize: "14.5px", fontWeight: 600,
             cursor: loading || !allMet ? "not-allowed" : "pointer",
-            marginTop: "8px", marginBottom: "24px",
-            boxShadow: !loading && allMet ? "0 0 25px rgba(37,99,235,0.4)" : "none",
-            transition: "all 0.2s",
+            marginTop: "6px", marginBottom: "20px",
+            opacity: loading || !allMet ? 0.6 : 1,
           }}
         >
           {loading ? "Creating account..." : "Create account →"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-          <span style={{ color: "#334155", fontSize: "12px" }}>Already have an account?</span>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "18px" }}>
+          <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
+          <span style={{ color: "#7A8A84", fontSize: "12px" }}>Already have an account?</span>
+          <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
         </div>
 
-        <Link href="/login" style={{
-          display: "block", textAlign: "center",
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "12px", padding: "13px",
-          color: "#94A3B8", fontSize: "14px", fontWeight: 500,
-          transition: "all 0.2s",
-        }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(37,99,235,0.3)"; (e.currentTarget as HTMLAnchorElement).style.color = "#60A5FA"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "#94A3B8"; }}
-        >
-          Login to existing account
+        <Link href="/login" className="btn-secondary" style={{
+          width: "100%", textAlign: "center", padding: "12px",
+          fontSize: "13.5px", boxSizing: "border-box",
+        }}>
+          Sign in to existing account
         </Link>
       </div>
     </main>

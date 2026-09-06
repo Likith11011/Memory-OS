@@ -21,7 +21,7 @@ export default function Sidebar() {
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: "⊞" },
     { label: "Search", href: "/search", icon: "⌕" },
-    { label: "Chat", href: "/chat", icon: "◈" },
+    { label: "Chat", href: "/chat", icon: "💬" },
     { label: "Exam", href: "/exam", icon: "📚" },
     { label: "Projects", href: "/projects", icon: "🚀" },
     { label: "Insights", href: "/insights", icon: "📊" },
@@ -37,49 +37,50 @@ export default function Sidebar() {
     <aside style={{
       width: "240px",
       height: "100vh",
-      background: "rgba(8,14,30,0.97)",
-      backdropFilter: "blur(24px)",
-      borderRight: "1px solid rgba(255,255,255,0.07)",
+      background: "#FFFFFF",
+      borderRight: "1px solid #DDE7E2",
       padding: "24px 14px",
       display: "flex",
       flexDirection: "column",
       position: "fixed",
       left: isMobile ? (mobileOpen ? 0 : "-240px") : 0,
       top: 0,
-      zIndex: 10,
+      zIndex: 20,
       transition: "left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      boxShadow: "1px 0 3px rgba(16,35,29,0.02)",
     }}>
       {/* Logo */}
       <div style={{
-        marginBottom: "32px", paddingLeft: "8px",
+        marginBottom: "28px", paddingLeft: "8px",
         display: "flex", alignItems: "center", gap: "10px",
       }}>
         <div style={{
-          width: "34px", height: "34px",
-          background: "linear-gradient(135deg, #2563EB, #60A5FA)",
+          width: "36px", height: "36px",
+          background: "linear-gradient(135deg, #064E3B 0%, #059669 100%)",
           borderRadius: "10px",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: "18px",
-          boxShadow: "0 0 20px rgba(37,99,235,0.4)",
+          boxShadow: "0 2px 8px rgba(5,150,105,0.25)",
           flexShrink: 0,
+          color: "#FFFFFF",
         }}>🧠</div>
         <div>
           <h1 style={{
-            fontSize: "15px", fontWeight: 800,
-            background: "linear-gradient(135deg, #F8FAFC, #60A5FA)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            fontSize: "16px", fontWeight: 700,
+            color: "#064E3B",
             margin: 0, lineHeight: 1.2,
+            letterSpacing: "-0.01em",
           }}>
             MemoryOS
           </h1>
-          <p style={{ color: "#1e3a5f", fontSize: "10px", margin: 0 }}>
-            Your second brain
+          <p style={{ color: "#7A8A84", fontSize: "11px", margin: 0, fontWeight: 500 }}>
+            Knowledge Forest
           </p>
         </div>
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "3px" }}>
+      <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
         {navItems.map((item, idx) => {
           const active = pathname === item.href;
           return (
@@ -89,29 +90,33 @@ export default function Sidebar() {
               className="animate-slideInLeft"
               style={{
                 display: "flex", alignItems: "center", gap: "10px",
-                padding: "10px 14px", borderRadius: "12px",
+                padding: "9px 12px", borderRadius: "10px",
                 textDecoration: "none",
-                color: active ? "#60A5FA" : "#475569",
-                background: active ? "rgba(37,99,235,0.14)" : "transparent",
-                border: active ? "1px solid rgba(37,99,235,0.24)" : "1px solid transparent",
-                fontSize: "14px", fontWeight: active ? 600 : 500,
-                transition: "all 0.2s ease",
-                animationDelay: `${idx * 0.05}s`,
+                color: active ? "#064E3B" : "#52635C",
+                background: active ? "#ECFDF5" : "transparent",
+                border: active ? "1px solid #D1FAE5" : "1px solid transparent",
+                fontSize: "13.5px", fontWeight: active ? 600 : 500,
+                transition: "all 0.18s ease",
+                animationDelay: `${idx * 0.04}s`,
               }}
               onMouseEnter={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#94A3B8";
-                  (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.05)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "#10231D";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "#F1F5F3";
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#475569";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "#52635C";
                   (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
                 }
               }}
             >
-              <span style={{ fontSize: "15px", opacity: active ? 1 : 0.5 }}>
+              <span style={{ 
+                fontSize: "15px", 
+                color: active ? "#059669" : "#7A8A84",
+                display: "flex", alignItems: "center"
+              }}>
                 {item.icon}
               </span>
               {item.label}
@@ -120,8 +125,8 @@ export default function Sidebar() {
                   marginLeft: "auto",
                   width: "6px", height: "6px",
                   borderRadius: "50%",
-                  background: "#2563EB",
-                  boxShadow: "0 0 8px rgba(37,99,235,0.8)",
+                  background: "#059669",
+                  boxShadow: "0 0 6px rgba(5,150,105,0.6)",
                 }} />
               )}
             </Link>
@@ -129,31 +134,31 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", margin: "12px 0" }} />
+      <div style={{ height: "1px", background: "#DDE7E2", margin: "12px 0" }} />
 
       <button
         onClick={handleLogout}
         style={{
           display: "flex", alignItems: "center", gap: "10px",
-          padding: "10px 14px", borderRadius: "12px",
+          padding: "9px 12px", borderRadius: "10px",
           background: "transparent", border: "1px solid transparent",
-          color: "#334155", fontSize: "14px", fontWeight: 500,
-          cursor: "pointer", width: "100%", transition: "all 0.2s",
+          color: "#7A8A84", fontSize: "13.5px", fontWeight: 500,
+          cursor: "pointer", width: "100%", transition: "all 0.18s",
           textAlign: "left",
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.color = "#ef4444";
-          e.currentTarget.style.background = "rgba(239,68,68,0.07)";
-          e.currentTarget.style.borderColor = "rgba(239,68,68,0.15)";
+          e.currentTarget.style.color = "#DC2626";
+          e.currentTarget.style.background = "#FEF2F2";
+          e.currentTarget.style.borderColor = "#FEE2E2";
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.color = "#334155";
+          e.currentTarget.style.color = "#7A8A84";
           e.currentTarget.style.background = "transparent";
           e.currentTarget.style.borderColor = "transparent";
         }}
       >
         <span style={{ fontSize: "14px" }}>⇤</span>
-        Logout
+        Sign out
       </button>
     </aside>
   );
@@ -164,17 +169,17 @@ export default function Sidebar() {
       {isMobile && (
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle navigation"
           style={{
-            position: "fixed", top: "16px", left: "16px", zIndex: 20,
-            background: "rgba(16,26,51,0.9)",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            position: "fixed", top: "16px", left: "16px", zIndex: 30,
+            background: "#FFFFFF",
+            border: "1px solid #DDE7E2",
             borderRadius: "10px",
             width: "40px", height: "40px",
             display: "flex", alignItems: "center", justifyContent: "center",
             cursor: "pointer", fontSize: "18px",
-            color: "#F8FAFC",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+            color: "#10231D",
+            boxShadow: "0 2px 8px rgba(16,35,29,0.08)",
           }}
         >
           {mobileOpen ? "✕" : "☰"}
@@ -185,11 +190,9 @@ export default function Sidebar() {
       {isMobile && mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
+          className="sidebar-overlay"
           style={{
-            position: "fixed", inset: 0,
-            background: "rgba(0,0,0,0.6)",
-            backdropFilter: "blur(4px)",
-            zIndex: 9,
+            display: "block",
             animation: "fadeIn 0.2s ease forwards",
           }}
         />

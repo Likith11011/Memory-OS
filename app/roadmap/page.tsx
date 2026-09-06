@@ -44,9 +44,9 @@ const EXPERIENCE_LEVELS = [
 ];
 
 const IMPORTANCE_CONFIG = {
-  high: { color: "#ef4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.25)", label: "Must Know" },
-  medium: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.25)", label: "Good to Know" },
-  low: { color: "#10b981", bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.25)", label: "Nice to Have" },
+  high: { color: "#DC2626", bg: "#FEF2F2", border: "#FECACA", label: "Must Know" },
+  medium: { color: "#D97706", bg: "#FEF3C7", border: "#FDE68A", label: "Good to Know" },
+  low: { color: "#059669", bg: "#ECFDF5", border: "#A7F3D0", label: "Nice to Have" },
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -99,66 +99,60 @@ export default function RoadmapPage() {
     }
   };
 
-  const glass = {
-    background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "16px",
-  };
-
-  const phaseColors = ["#2563EB", "#7C3AED", "#059669", "#D97706"];
+  const phaseColors = ["#059669", "#065F46", "#0284C7", "#D97706"];
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "linear-gradient(135deg, #0A1224, #0d1530)", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#F8FAF9", fontFamily: "'Inter', sans-serif" }}>
       <Sidebar />
-      <main style={{ marginLeft: "240px", flex: 1, padding: "28px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
+      <main style={{ marginLeft: "240px", flex: 1, padding: "32px 40px", width: "calc(100% - 240px)", boxSizing: "border-box", overflowX: "hidden" }}>
 
         {/* Header */}
         <div style={{ marginBottom: "28px" }}>
-          <h2 style={{ fontSize: "26px", fontWeight: 700, color: "#F8FAFC", letterSpacing: "-0.02em", marginBottom: "4px" }}>
+          <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#10231D", letterSpacing: "-0.02em", marginBottom: "4px" }}>
             🗺️ Learning Roadmap
           </h2>
-          <p style={{ color: "#475569", fontSize: "14px" }}>
-            Enter your target job title and get a complete topic-by-topic study plan
+          <p style={{ color: "#52635C", fontSize: "14px" }}>
+            Enter your target job title and get a structured, step-by-step curriculum generated for your career goals
           </p>
         </div>
 
         {/* Input section */}
-        <div style={{ ...glass, padding: "24px", marginBottom: "24px" }}>
+        <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "28px", marginBottom: "24px", boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ color: "#94A3B8", fontSize: "11px", fontWeight: 600, display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <label style={{ color: "#10231D", fontSize: "12px", fontWeight: 700, display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Target Job Title
             </label>
             <input
               value={jobTitle}
               onChange={e => setJobTitle(e.target.value)}
               onKeyDown={e => e.key === "Enter" && generateRoadmap()}
-              placeholder="e.g. Machine Learning Engineer, Backend Developer..."
+              placeholder="e.g. Machine Learning Engineer, Backend Developer, Product Manager..."
               style={{
-                width: "100%", background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px",
-                padding: "12px 16px", color: "#F8FAFC", fontSize: "14px",
-                outline: "none", boxSizing: "border-box",
+                width: "100%", background: "#FFFFFF",
+                border: "1.5px solid #DDE7E2", borderRadius: "12px",
+                padding: "13px 18px", color: "#10231D", fontSize: "14px",
+                outline: "none", boxSizing: "border-box", transition: "all 0.2s",
               }}
-              onFocus={e => e.target.style.borderColor = "rgba(37,99,235,0.5)"}
-              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
+              onFocus={e => { e.target.style.borderColor = "#059669"; e.target.style.boxShadow = "0 0 0 3px rgba(5,150,105,0.12)"; }}
+              onBlur={e => { e.target.style.borderColor = "#DDE7E2"; e.target.style.boxShadow = "none"; }}
             />
           </div>
 
           {/* Popular job suggestions */}
           {popularJobs.length > 0 && !roadmap && (
             <div style={{ marginBottom: "20px" }}>
-              <p style={{ color: "#334155", fontSize: "11px", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                Quick Pick
+              <p style={{ color: "#7A8A84", fontSize: "11px", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>
+                Quick Suggestions
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                 {popularJobs.slice(0, 8).map(job => (
                   <button key={job} onClick={() => setJobTitle(job)} style={{
-                    background: jobTitle === job ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${jobTitle === job ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`,
-                    borderRadius: "999px", padding: "4px 12px",
-                    color: jobTitle === job ? "#60A5FA" : "#475569",
+                    background: jobTitle === job ? "#ECFDF5" : "#FFFFFF",
+                    border: `1px solid ${jobTitle === job ? "#059669" : "#DDE7E2"}`,
+                    borderRadius: "999px", padding: "5px 14px",
+                    color: jobTitle === job ? "#065F46" : "#52635C",
                     fontSize: "12px", cursor: "pointer", transition: "all 0.2s",
+                    fontWeight: jobTitle === job ? 600 : 500,
                   }}>
                     {job}
                   </button>
@@ -169,35 +163,39 @@ export default function RoadmapPage() {
 
           {/* Experience level */}
           <div style={{ marginBottom: "20px" }}>
-            <label style={{ color: "#94A3B8", fontSize: "11px", fontWeight: 600, display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <label style={{ color: "#10231D", fontSize: "12px", fontWeight: 700, display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Experience Level
             </label>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px" }}>
-              {EXPERIENCE_LEVELS.map(level => (
-                <button key={level.id} onClick={() => setExperienceLevel(level.id)} style={{
-                  background: experienceLevel === level.id ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${experienceLevel === level.id ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.07)"}`,
-                  borderRadius: "12px", padding: "12px 8px",
-                  cursor: "pointer", transition: "all 0.2s",
-                  display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
-                }}>
-                  <span style={{ fontSize: "20px" }}>{level.icon}</span>
-                  <span style={{ color: experienceLevel === level.id ? "#60A5FA" : "#94A3B8", fontSize: "12px", fontWeight: 600 }}>
-                    {level.label}
-                  </span>
-                  <span style={{ color: "#334155", fontSize: "10px", textAlign: "center" }}>
-                    {level.desc}
-                  </span>
-                </button>
-              ))}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
+              {EXPERIENCE_LEVELS.map(level => {
+                const isSel = experienceLevel === level.id;
+                return (
+                  <button key={level.id} onClick={() => setExperienceLevel(level.id)} style={{
+                    background: isSel ? "#ECFDF5" : "#FFFFFF",
+                    border: `1.5px solid ${isSel ? "#059669" : "#DDE7E2"}`,
+                    borderRadius: "12px", padding: "14px 10px",
+                    cursor: "pointer", transition: "all 0.2s",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
+                    boxShadow: isSel ? "0 2px 8px rgba(5,150,105,0.12)" : "0 1px 3px rgba(0,0,0,0.02)",
+                  }}>
+                    <span style={{ fontSize: "22px" }}>{level.icon}</span>
+                    <span style={{ color: isSel ? "#064E3B" : "#10231D", fontSize: "13px", fontWeight: 600 }}>
+                      {level.label}
+                    </span>
+                    <span style={{ color: isSel ? "#065F46" : "#7A8A84", fontSize: "11px", textAlign: "center" }}>
+                      {level.desc}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {error && (
             <div style={{
-              background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-              borderRadius: "10px", padding: "10px 14px",
-              color: "#f87171", fontSize: "13px", marginBottom: "16px",
+              background: "#FEF2F2", border: "1px solid #FECACA",
+              borderRadius: "10px", padding: "12px 16px",
+              color: "#DC2626", fontSize: "13px", marginBottom: "16px",
             }}>
               ⚠ {error}
             </div>
@@ -209,17 +207,19 @@ export default function RoadmapPage() {
             style={{
               width: "100%",
               background: loading || !jobTitle.trim()
-                ? "rgba(37,99,235,0.3)"
-                : "linear-gradient(135deg, #2563EB, #1d4ed8)",
-              border: "none", borderRadius: "12px", padding: "14px",
-              color: loading || !jobTitle.trim() ? "rgba(255,255,255,0.4)" : "white",
+                ? "#9CA3AF"
+                : "#059669",
+              border: "none", borderRadius: "12px", padding: "15px",
+              color: "white",
               fontSize: "14px", fontWeight: 600,
               cursor: loading || !jobTitle.trim() ? "not-allowed" : "pointer",
-              boxShadow: !loading && jobTitle.trim() ? "0 0 20px rgba(37,99,235,0.3)" : "none",
+              boxShadow: !loading && jobTitle.trim() ? "0 2px 8px rgba(5,150,105,0.25)" : "none",
               transition: "all 0.2s",
             }}
+            onMouseEnter={e => { if (!loading && jobTitle.trim()) e.currentTarget.style.background = "#047857"; }}
+            onMouseLeave={e => { if (!loading && jobTitle.trim()) e.currentTarget.style.background = "#059669"; }}
           >
-            {loading ? "⚡ Generating your roadmap..." : "🗺️ Generate Learning Roadmap"}
+            {loading ? "⚡ Generating your structured roadmap..." : "🗺️ Generate Learning Roadmap"}
           </button>
         </div>
 
@@ -228,60 +228,66 @@ export default function RoadmapPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Overview card */}
-            <div style={{ ...glass, padding: "24px", background: "rgba(37,99,235,0.06)", borderColor: "rgba(37,99,235,0.2)" }}>
+            <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "28px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
                 <div>
-                  <h3 style={{ color: "#F8FAFC", fontSize: "20px", fontWeight: 700, margin: 0 }}>
+                  <h3 style={{ color: "#10231D", fontSize: "22px", fontWeight: 700, margin: 0 }}>
                     {roadmap.job_title}
                   </h3>
-                  <p style={{ color: "#60A5FA", fontSize: "13px", margin: "4px 0 0", textTransform: "capitalize" }}>
-                    {roadmap.experience_level} level roadmap
+                  <p style={{ color: "#059669", fontSize: "13px", margin: "4px 0 0", textTransform: "capitalize", fontWeight: 600 }}>
+                    {roadmap.experience_level} Level Curriculum
                   </p>
                 </div>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                   <div style={{
-                    background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)",
-                    borderRadius: "10px", padding: "8px 14px", textAlign: "center",
+                    background: "#ECFDF5", border: "1px solid #A7F3D0",
+                    borderRadius: "10px", padding: "8px 16px", textAlign: "center",
                   }}>
-                    <p style={{ color: "#475569", fontSize: "10px", textTransform: "uppercase", margin: 0 }}>Timeline</p>
-                    <p style={{ color: "#10b981", fontSize: "13px", fontWeight: 700, margin: 0 }}>{roadmap.timeline}</p>
+                    <p style={{ color: "#065F46", fontSize: "10px", textTransform: "uppercase", margin: 0, fontWeight: 700 }}>Estimated Timeline</p>
+                    <p style={{ color: "#059669", fontSize: "14px", fontWeight: 700, margin: 0 }}>{roadmap.timeline}</p>
                   </div>
                   <div style={{
-                    background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)",
-                    borderRadius: "10px", padding: "8px 14px", textAlign: "center",
+                    background: "#FEF3C7", border: "1px solid #FDE68A",
+                    borderRadius: "10px", padding: "8px 16px", textAlign: "center",
                   }}>
-                    <p style={{ color: "#475569", fontSize: "10px", textTransform: "uppercase", margin: 0 }}>Salary (India)</p>
-                    <p style={{ color: "#f59e0b", fontSize: "13px", fontWeight: 700, margin: 0 }}>{roadmap.salary_range}</p>
+                    <p style={{ color: "#92400E", fontSize: "10px", textTransform: "uppercase", margin: 0, fontWeight: 700 }}>Salary Expectation</p>
+                    <p style={{ color: "#D97706", fontSize: "14px", fontWeight: 700, margin: 0 }}>{roadmap.salary_range}</p>
                   </div>
                 </div>
               </div>
-              <p style={{ color: "#94A3B8", fontSize: "14px", lineHeight: 1.7, margin: 0 }}>
+              <p style={{ color: "#52635C", fontSize: "14px", lineHeight: 1.7, margin: 0 }}>
                 {roadmap.overview}
               </p>
             </div>
 
             {/* Phase navigator */}
             <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
-              {roadmap.phases.map((phase, i) => (
-                <button key={i} onClick={() => setExpandedPhase(expandedPhase === i ? null : i)} style={{
-                  background: expandedPhase === i ? `${phaseColors[i % phaseColors.length]}22` : "rgba(255,255,255,0.04)",
-                  border: `1px solid ${expandedPhase === i ? phaseColors[i % phaseColors.length] + "44" : "rgba(255,255,255,0.08)"}`,
-                  borderRadius: "12px", padding: "10px 18px",
-                  cursor: "pointer", whiteSpace: "nowrap",
-                  display: "flex", alignItems: "center", gap: "8px",
-                }}>
-                  <span style={{
-                    width: "22px", height: "22px", borderRadius: "50%",
-                    background: phaseColors[i % phaseColors.length],
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    color: "white", fontSize: "11px", fontWeight: 700, flexShrink: 0,
-                  }}>{phase.phase}</span>
-                  <span style={{ color: expandedPhase === i ? "#F8FAFC" : "#64748B", fontSize: "13px", fontWeight: 500 }}>
-                    {phase.title}
-                  </span>
-                  <span style={{ color: "#334155", fontSize: "11px" }}>{phase.duration}</span>
-                </button>
-              ))}
+              {roadmap.phases.map((phase, i) => {
+                const color = phaseColors[i % phaseColors.length];
+                const isSel = expandedPhase === i;
+                return (
+                  <button key={i} onClick={() => setExpandedPhase(expandedPhase === i ? null : i)} style={{
+                    background: isSel ? "#FFFFFF" : "#F1F5F3",
+                    border: `1.5px solid ${isSel ? color : "#DDE7E2"}`,
+                    borderRadius: "12px", padding: "10px 18px",
+                    cursor: "pointer", whiteSpace: "nowrap",
+                    display: "flex", alignItems: "center", gap: "8px",
+                    boxShadow: isSel ? "0 2px 6px rgba(0,0,0,0.05)" : "none",
+                    transition: "all 0.2s",
+                  }}>
+                    <span style={{
+                      width: "22px", height: "22px", borderRadius: "50%",
+                      background: isSel ? color : "#DDE7E2",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: isSel ? "white" : "#52635C", fontSize: "11px", fontWeight: 700, flexShrink: 0,
+                    }}>{phase.phase}</span>
+                    <span style={{ color: isSel ? "#10231D" : "#52635C", fontSize: "13px", fontWeight: 600 }}>
+                      {phase.title}
+                    </span>
+                    <span style={{ color: "#7A8A84", fontSize: "11px" }}>{phase.duration}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Expanded phase */}
@@ -289,22 +295,22 @@ export default function RoadmapPage() {
               const phase = roadmap.phases[expandedPhase];
               const color = phaseColors[expandedPhase % phaseColors.length];
               return (
-                <div style={{ ...glass, padding: "24px", borderColor: `${color}33` }}>
+                <div style={{ background: "#FFFFFF", border: `1.5px solid ${color}`, borderRadius: "16px", padding: "28px", boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
                   <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", marginBottom: "20px" }}>
                     <div style={{
                       width: "44px", height: "44px", borderRadius: "12px",
-                      background: `${color}22`, border: `1px solid ${color}44`,
+                      background: "#ECFDF5", border: `1px solid #A7F3D0`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      color, fontSize: "18px", fontWeight: 700, flexShrink: 0,
+                      color: "#059669", fontSize: "18px", fontWeight: 700, flexShrink: 0,
                     }}>{phase.phase}</div>
                     <div>
-                      <h3 style={{ color: "#F8FAFC", fontSize: "18px", fontWeight: 700, margin: 0 }}>
+                      <h3 style={{ color: "#10231D", fontSize: "18px", fontWeight: 700, margin: 0 }}>
                         {phase.title}
                       </h3>
-                      <p style={{ color, fontSize: "12px", margin: "2px 0 0" }}>⏱ {phase.duration}</p>
+                      <p style={{ color, fontSize: "13px", margin: "2px 0 0", fontWeight: 600 }}>⏱ {phase.duration}</p>
                     </div>
                   </div>
-                  <p style={{ color: "#64748B", fontSize: "13px", lineHeight: 1.6, marginBottom: "20px" }}>
+                  <p style={{ color: "#52635C", fontSize: "14px", lineHeight: 1.6, marginBottom: "20px" }}>
                     {phase.description}
                   </p>
 
@@ -317,8 +323,8 @@ export default function RoadmapPage() {
 
                       return (
                         <div key={ti} style={{
-                          background: "rgba(255,255,255,0.03)",
-                          border: `1px solid ${isExpanded ? color + "33" : "rgba(255,255,255,0.06)"}`,
+                          background: "#F8FAF9",
+                          border: `1px solid ${isExpanded ? "#059669" : "#DDE7E2"}`,
                           borderRadius: "12px", overflow: "hidden",
                           transition: "border-color 0.2s",
                         }}>
@@ -330,37 +336,38 @@ export default function RoadmapPage() {
                             }}
                           >
                             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                              <span style={{ color: "#F8FAFC", fontSize: "14px", fontWeight: 600 }}>
+                              <span style={{ color: "#10231D", fontSize: "14px", fontWeight: 600 }}>
                                 {topic.name}
                               </span>
                               <span style={{
                                 background: imp.bg, border: `1px solid ${imp.border}`,
-                                color: imp.color, fontSize: "10px", fontWeight: 600,
+                                color: imp.color, fontSize: "10px", fontWeight: 700,
                                 padding: "2px 8px", borderRadius: "999px",
                               }}>
                                 {imp.label}
                               </span>
                             </div>
-                            <span style={{ color: "#334155", fontSize: "16px" }}>
+                            <span style={{ color: "#7A8A84", fontSize: "14px" }}>
                               {isExpanded ? "▲" : "▼"}
                             </span>
                           </div>
 
                           {isExpanded && (
-                            <div style={{ padding: "0 18px 16px", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                              <p style={{ color: "#64748B", fontSize: "13px", lineHeight: 1.6, marginBottom: "12px", paddingTop: "12px" }}>
+                            <div style={{ padding: "0 18px 16px", borderTop: "1px solid #DDE7E2", background: "#FFFFFF" }}>
+                              <p style={{ color: "#52635C", fontSize: "13px", lineHeight: 1.6, marginBottom: "12px", paddingTop: "12px" }}>
                                 {topic.description}
                               </p>
-                              <p style={{ color: "#334155", fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>
-                                What to learn:
+                              <p style={{ color: "#064E3B", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>
+                                Key Concepts & Subtopics:
                               </p>
                               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                                 {topic.subtopics.map((sub, si) => (
                                   <span key={si} style={{
-                                    background: `${color}12`,
-                                    border: `1px solid ${color}28`,
-                                    color: "#94A3B8", borderRadius: "8px",
+                                    background: "#ECFDF5",
+                                    border: `1px solid #A7F3D0`,
+                                    color: "#065F46", borderRadius: "8px",
                                     padding: "4px 10px", fontSize: "12px",
+                                    fontWeight: 500,
                                   }}>
                                     {sub}
                                   </span>
@@ -378,15 +385,15 @@ export default function RoadmapPage() {
 
             {/* Resources */}
             {roadmap.resources.length > 0 && (
-              <div style={{ ...glass, padding: "24px" }}>
-                <h3 style={{ color: "#F8FAFC", fontSize: "16px", fontWeight: 700, marginBottom: "16px" }}>
-                  📚 Recommended Resources
+              <div style={{ background: "#FFFFFF", border: "1px solid #DDE7E2", borderRadius: "16px", padding: "28px", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <h3 style={{ color: "#10231D", fontSize: "16px", fontWeight: 700, marginBottom: "16px" }}>
+                  📚 Recommended Study Resources
                 </h3>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "12px" }}>
                   {roadmap.resources.map((res, i) => (
                     <div key={i} style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.07)",
+                      background: "#F8FAF9",
+                      border: "1px solid #DDE7E2",
                       borderRadius: "12px", padding: "14px 16px",
                       display: "flex", flexDirection: "column", gap: "6px",
                     }}>
@@ -395,30 +402,31 @@ export default function RoadmapPage() {
                           <span style={{ fontSize: "16px" }}>
                             {TYPE_ICONS[res.type.toLowerCase()] || "📌"}
                           </span>
-                          <span style={{ color: "#F8FAFC", fontSize: "13px", fontWeight: 600 }}>
+                          <span style={{ color: "#10231D", fontSize: "13px", fontWeight: 600 }}>
                             {res.title}
                           </span>
                         </div>
                         {res.free && (
                           <span style={{
-                            background: "rgba(16,185,129,0.1)",
-                            border: "1px solid rgba(16,185,129,0.25)",
-                            color: "#10b981", fontSize: "10px",
+                            background: "#ECFDF5",
+                            border: "1px solid #A7F3D0",
+                            color: "#059669", fontSize: "10px",
                             fontWeight: 700, padding: "2px 8px",
                             borderRadius: "999px", flexShrink: 0,
                           }}>FREE</span>
                         )}
                       </div>
                       <span style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        color: "#475569", fontSize: "10px",
+                        background: "#FFFFFF",
+                        border: "1px solid #DDE7E2",
+                        color: "#52635C", fontSize: "10px",
                         padding: "2px 8px", borderRadius: "6px",
                         width: "fit-content", textTransform: "capitalize",
+                        fontWeight: 600,
                       }}>
                         {res.type}
                       </span>
-                      <p style={{ color: "#64748B", fontSize: "12px", lineHeight: 1.5, margin: 0 }}>
+                      <p style={{ color: "#52635C", fontSize: "12px", lineHeight: 1.5, margin: 0 }}>
                         {res.description}
                       </p>
                     </div>
@@ -431,14 +439,17 @@ export default function RoadmapPage() {
             <button
               onClick={() => { setRoadmap(null); setJobTitle(""); }}
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: "12px", padding: "12px",
-                color: "#475569", fontSize: "14px",
+                background: "#FFFFFF",
+                border: "1px solid #DDE7E2",
+                borderRadius: "12px", padding: "14px",
+                color: "#52635C", fontSize: "14px", fontWeight: 600,
                 cursor: "pointer", transition: "all 0.2s",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
               }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#059669"; e.currentTarget.style.color = "#064E3B"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#DDE7E2"; e.currentTarget.style.color = "#52635C"; }}
             >
-              Generate another roadmap →
+              ← Generate another career roadmap
             </button>
           </div>
         )}

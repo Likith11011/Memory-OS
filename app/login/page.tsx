@@ -40,58 +40,59 @@ export default function LoginPage() {
   return (
     <main style={{
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #0A1224 0%, #0d1530 50%, #0A1224 100%)",
+      background: "#F8FAF9",
+      color: "#10231D",
       display: "flex", alignItems: "center", justifyContent: "center",
       padding: "20px", position: "relative", overflow: "hidden",
+      fontFamily: "'Inter', sans-serif",
     }}>
+      {/* Ambient background accents */}
       <div style={{
-        position: "absolute", top: "25%", right: "20%",
-        width: "350px", height: "350px",
-        background: "radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%)",
+        position: "absolute", top: "20%", right: "20%",
+        width: "400px", height: "400px",
+        background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none",
       }} />
       <div style={{
-        position: "absolute", bottom: "25%", left: "20%",
-        width: "280px", height: "280px",
-        background: "radial-gradient(circle, rgba(96,165,250,0.07) 0%, transparent 70%)",
+        position: "absolute", bottom: "20%", left: "20%",
+        width: "350px", height: "350px",
+        background: "radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none",
       }} />
 
       <div style={{
         width: "100%", maxWidth: "420px",
-        background: "rgba(16,26,51,0.7)",
-        backdropFilter: "blur(30px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: "24px", padding: "40px",
-        boxShadow: "0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(37,99,235,0.1), inset 0 1px 0 rgba(255,255,255,0.08)",
+        background: "#FFFFFF",
+        border: "1px solid #DDE7E2",
+        borderRadius: "20px", padding: "38px",
+        boxShadow: "0 20px 40px rgba(6,78,59,0.08), 0 2px 8px rgba(16,35,29,0.04)",
         position: "relative", zIndex: 1,
       }}>
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
           <div style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
-            width: "52px", height: "52px",
-            background: "linear-gradient(135deg, rgba(37,99,235,0.3), rgba(96,165,250,0.2))",
-            border: "1px solid rgba(37,99,235,0.4)",
-            borderRadius: "14px", fontSize: "24px", marginBottom: "16px",
-            boxShadow: "0 0 20px rgba(37,99,235,0.3)",
+            width: "50px", height: "50px",
+            background: "linear-gradient(135deg, #064E3B 0%, #059669 100%)",
+            borderRadius: "12px", fontSize: "24px", marginBottom: "14px",
+            boxShadow: "0 4px 12px rgba(5,150,105,0.25)",
+            color: "#FFFFFF",
           }}>🧠</div>
           <h1 style={{
-            fontSize: "22px", fontWeight: 800, margin: "0 0 4px",
-            background: "linear-gradient(135deg, #F8FAFC, #94A3B8)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            fontSize: "22px", fontWeight: 700, margin: "0 0 4px",
+            color: "#064E3B",
           }}>
             Welcome back
           </h1>
-          <p style={{ color: "#475569", fontSize: "13px", margin: 0 }}>
-            Login to your second brain
+          <p style={{ color: "#52635C", fontSize: "13px", margin: 0 }}>
+            Sign in to your private knowledge base
           </p>
         </div>
 
         {error && (
           <div style={{
-            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-            color: "#f87171", borderRadius: "10px", padding: "12px 16px",
-            fontSize: "13px", marginBottom: "20px",
+            background: "#FEF2F2", border: "1px solid #FEE2E2",
+            color: "#DC2626", borderRadius: "10px", padding: "11px 14px",
+            fontSize: "13px", marginBottom: "18px", fontWeight: 500,
           }}>
             ⚠ {error}
           </div>
@@ -99,9 +100,9 @@ export default function LoginPage() {
 
         <div style={{ marginBottom: "16px" }}>
           <label style={{
-            color: "#94A3B8", fontSize: "11px", fontWeight: 600,
-            display: "block", marginBottom: "8px",
-            textTransform: "uppercase", letterSpacing: "0.08em",
+            color: "#064E3B", fontSize: "11px", fontWeight: 700,
+            display: "block", marginBottom: "6px",
+            textTransform: "uppercase", letterSpacing: "0.06em",
           }}>
             Email address
           </label>
@@ -111,23 +112,19 @@ export default function LoginPage() {
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             placeholder="you@example.com"
             autoComplete="email" disabled={loading}
+            className="input-field"
             style={{
-              width: "100%", background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "12px", padding: "13px 16px",
-              color: "#F8FAFC", fontSize: "14px", outline: "none",
-              boxSizing: "border-box", transition: "all 0.2s",
+              width: "100%", padding: "12px 14px",
+              fontSize: "14px", boxSizing: "border-box",
             }}
-            onFocus={e => { e.target.style.borderColor = "rgba(37,99,235,0.6)"; e.target.style.background = "rgba(255,255,255,0.07)"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.15)"; }}
-            onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.boxShadow = "none"; }}
           />
         </div>
 
         <div style={{ marginBottom: "24px" }}>
           <label style={{
-            color: "#94A3B8", fontSize: "11px", fontWeight: 600,
-            display: "block", marginBottom: "8px",
-            textTransform: "uppercase", letterSpacing: "0.08em",
+            color: "#064E3B", fontSize: "11px", fontWeight: 700,
+            display: "block", marginBottom: "6px",
+            textTransform: "uppercase", letterSpacing: "0.06em",
           }}>
             Password
           </label>
@@ -139,21 +136,17 @@ export default function LoginPage() {
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
               placeholder="••••••••"
               autoComplete="current-password" disabled={loading}
+              className="input-field"
               style={{
-                width: "100%", background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "12px", padding: "13px 48px 13px 16px",
-                color: "#F8FAFC", fontSize: "14px", outline: "none",
-                boxSizing: "border-box", transition: "all 0.2s",
+                width: "100%", padding: "12px 42px 12px 14px",
+                fontSize: "14px", boxSizing: "border-box",
               }}
-              onFocus={e => { e.target.style.borderColor = "rgba(37,99,235,0.6)"; e.target.style.background = "rgba(255,255,255,0.07)"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.15)"; }}
-              onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.boxShadow = "none"; }}
             />
             <button onClick={() => setShowPassword(!showPassword)} style={{
-              position: "absolute", right: "14px", top: "50%",
+              position: "absolute", right: "12px", top: "50%",
               transform: "translateY(-50%)",
               background: "none", border: "none",
-              color: "#475569", cursor: "pointer", fontSize: "15px", padding: "4px",
+              color: "#7A8A84", cursor: "pointer", fontSize: "14px", padding: "4px",
             }}>
               {showPassword ? "🙈" : "👁️"}
             </button>
@@ -162,38 +155,28 @@ export default function LoginPage() {
 
         <button
           onClick={handleLogin} disabled={loading}
+          className="btn-primary"
           style={{
-            width: "100%",
-            background: loading ? "rgba(37,99,235,0.4)" : "linear-gradient(135deg, #2563EB, #1d4ed8)",
-            border: "none", borderRadius: "12px", padding: "14px",
-            color: loading ? "rgba(255,255,255,0.5)" : "white",
-            fontSize: "15px", fontWeight: 600,
+            width: "100%", padding: "13px",
+            fontSize: "14.5px", fontWeight: 600,
             cursor: loading ? "not-allowed" : "pointer",
-            marginBottom: "24px",
-            boxShadow: !loading ? "0 0 25px rgba(37,99,235,0.4)" : "none",
-            transition: "all 0.2s",
+            marginBottom: "20px",
+            opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? "Logging in..." : "Login →"}
+          {loading ? "Signing in..." : "Sign in →"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-          <span style={{ color: "#334155", fontSize: "12px" }}>Don't have an account?</span>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "18px" }}>
+          <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
+          <span style={{ color: "#7A8A84", fontSize: "12px" }}>Don't have an account?</span>
+          <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
         </div>
 
-        <Link href="/signup" style={{
-          display: "block", textAlign: "center",
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "12px", padding: "13px",
-          color: "#94A3B8", fontSize: "14px", fontWeight: 500,
-          transition: "all 0.2s",
-        }}
-          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(37,99,235,0.3)"; (e.currentTarget as HTMLAnchorElement).style.color = "#60A5FA"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "#94A3B8"; }}
-        >
+        <Link href="/signup" className="btn-secondary" style={{
+          width: "100%", textAlign: "center", padding: "12px",
+          fontSize: "13.5px", boxSizing: "border-box",
+        }}>
           Create a new account
         </Link>
       </div>
