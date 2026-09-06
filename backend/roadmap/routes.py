@@ -88,7 +88,7 @@ Include 3-4 phases with 3-4 topics each.
 Include 5-6 resources."""
 
         response = client.chat.completions.create(
-            model="qwen-qwq-32b",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=3000,

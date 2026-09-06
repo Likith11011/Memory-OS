@@ -78,7 +78,7 @@ Rules:
 
 Tags:"""
         response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": tag_prompt}],
             temperature=0.2,
             max_tokens=80,
