@@ -194,7 +194,7 @@ def generate_quiz(memory_id: int, user_id: int, db: Session) -> dict:
         client = Groq(api_key=settings.GROQ_API_KEY)
 
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="qwen-qwq-32b",
             messages=[{
                 "role": "user",
                 "content": f"""Generate 5 multiple choice questions based on this content.

@@ -88,7 +88,7 @@ Include 3-4 phases with 3-4 topics each.
 Include 5-6 resources."""
 
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="qwen-qwq-32b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=3000,

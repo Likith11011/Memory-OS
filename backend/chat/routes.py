@@ -183,7 +183,7 @@ def chat_with_memories(
     try:
         client = get_groq_client()
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+           model="qwen-qwq-32b",
             messages=[
                 {"role": "system", "content": build_system_prompt()},
                 {"role": "user", "content": build_user_prompt(message, relevant_memories)}
@@ -204,7 +204,7 @@ def chat_with_memories(
             try:
                 client = get_groq_client()
                 response = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
+                    model="qwen-qwq-32b",
                     messages=[
                         {"role": "system", "content": build_system_prompt()},
                         {"role": "user", "content": build_user_prompt(message, relevant_memories)}
