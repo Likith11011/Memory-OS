@@ -32,11 +32,12 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from database import Base, engine
+from database import Base, engine, SessionLocal
 from auth.routes import router as auth_router
 from memories.routes import router as memories_router
 from chat.routes import router as chat_router
 from roadmap.routes import router as roadmap_router
+
 try:
     Base.metadata.create_all(bind=engine)
     logger.info("Database initialized successfully")
@@ -44,7 +45,7 @@ except Exception as e:
     logger.error(f"Database init failed: {e}")
 
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(title="MemoryOS  API", version="1.0.0")
+app = FastAPI(title="MemoryOS API", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -60,9 +61,23 @@ app.include_router(auth_router, prefix="/auth")
 app.include_router(memories_router)
 app.include_router(chat_router)
 app.include_router(roadmap_router)
+
 @app.on_event("startup")
 async def startup_event():
-    logger.info("MemoryOS API starting...")
+    logger.info("MemoryOS API starting up...")
+    
+    # Run self-healing database to vector sync so redeployments retain all memories
+    try:
+        from vector_store.chroma import sync_all_memories_from_db
+        db = SessionLocal()
+        try:
+            synced = sync_all_memories_from_db(db)
+            logger.info(f"Memory self-healing startup check complete. Synced {synced} items.")
+        finally:
+            db.close()
+    except Exception as sync_err:
+        logger.warning(f"Startup vector sync warning: {sync_err}")
+
     if not IS_PRODUCTION:
         try:
             from memories.embedder import model
@@ -70,7 +85,7 @@ async def startup_event():
         except Exception as e:
             logger.error(f"Model load failed: {e}")
     else:
-        logger.info("Production mode: lightweight embeddings active")
+        logger.info("Production mode active: resilient ChromaDB & vector search online")
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

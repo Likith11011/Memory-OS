@@ -1,14 +1,14 @@
 export function MemoryCardSkeleton() {
   return (
     <div style={{
-      background: "#FFFFFF",
-      border: "1px solid #DDE7E2",
+      background: "#111E1A",
+      border: "1px solid #1F3830",
       borderRadius: "16px",
       padding: "20px",
       display: "flex",
       flexDirection: "column",
       gap: "12px",
-      boxShadow: "0 1px 3px rgba(16, 35, 29, 0.03)",
+      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
     }}>
       <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
         <div className="skeleton" style={{ width: "32px", height: "32px", borderRadius: "8px" }} />
@@ -34,8 +34,8 @@ export function MemoryCardSkeleton() {
 export function StatSkeleton() {
   return (
     <div style={{
-      background: "#FFFFFF",
-      border: "1px solid #DDE7E2",
+      background: "#111E1A",
+      border: "1px solid #1F3830",
       borderRadius: "14px",
       padding: "16px 14px",
       textAlign: "center",
@@ -43,7 +43,7 @@ export function StatSkeleton() {
       flexDirection: "column",
       alignItems: "center",
       gap: "8px",
-      boxShadow: "0 1px 3px rgba(16, 35, 29, 0.03)",
+      boxShadow: "0 4px 16px rgba(0, 0, 0, 0.25)",
     }}>
       <div className="skeleton" style={{ width: "45px", height: "11px" }} />
       <div className="skeleton" style={{ width: "36px", height: "28px" }} />

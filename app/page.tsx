@@ -1,21 +1,22 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import Link from "next/link";
 
 const features = [
-  { icon: "🧠", title: "Semantic Search", desc: "Find memories by meaning, not just keywords. AI understands context." },
-  { icon: "📄", title: "Multi-Format Upload", desc: "PDFs, Word docs, code, images, URLs — all automatically indexed." },
-  { icon: "💬", title: "Chat with Memories", desc: "Ask questions and get AI answers grounded in your personal knowledge." },
-  { icon: "🔬", title: "Research Recall", desc: "Auto-detect research papers, extract citations, page-level search." },
-  { icon: "💻", title: "Code Snippets", desc: "Save code with syntax highlighting and language auto-detection." },
-  { icon: "📚", title: "Exam Revision", desc: "AI flashcards and quizzes at easy, medium, or hard difficulty levels." },
+  { icon: "🧠", title: "Semantic Vector Search", desc: "Find memories by meaning, concept, and context rather than exact keyword matches." },
+  { icon: "📄", title: "Universal Ingestion", desc: "PDFs, Word documents, Markdown notes, source code, web pages — indexed automatically." },
+  { icon: "💬", title: "Grounded AI Chat", desc: "Ask questions and receive hallucination-free answers cited with exact memory sources." },
+  { icon: "🔬", title: "Research & Citations", desc: "Auto-extract page citations, paper abstracts, and academic insights into knowledge graphs." },
+  { icon: "💻", title: "Code & Snippet Hub", desc: "Store multi-language code snippets with instant recall and syntax-highlighted previews." },
+  { icon: "📚", title: "Spaced Repetition & Exam", desc: "Turn raw study notes into active recall flashcards, quizzes, and difficulty-rated revision cards." },
 ];
 
 export default function Home() {
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"search" | "chat" | "cards">("search");
 
   useEffect(() => {
     if (!isLoading && isLoggedIn) router.push("/dashboard");
@@ -26,173 +27,315 @@ export default function Home() {
   return (
     <main style={{
       minHeight: "100vh",
-      background: "#F8FAF9",
-      color: "#10231D",
+      background: "#09110E",
+      color: "#F0FDF4",
       fontFamily: "'Inter', sans-serif",
       position: "relative",
       overflow: "hidden",
     }}>
-      {/* Subtle ambient forest gradients */}
+      {/* Background ambient lighting */}
       <div style={{
-        position: "fixed", top: "-10%", left: "20%",
-        width: "600px", height: "600px",
-        background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%)",
+        position: "fixed", top: "-15%", left: "30%",
+        width: "700px", height: "700px",
+        background: "radial-gradient(circle, rgba(16,185,129,0.14) 0%, transparent 65%)",
         borderRadius: "50%", pointerEvents: "none", zIndex: 0,
       }} />
       <div style={{
-        position: "fixed", bottom: "10%", right: "10%",
-        width: "500px", height: "500px",
-        background: "radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%)",
+        position: "fixed", bottom: "10%", right: "5%",
+        width: "600px", height: "600px",
+        background: "radial-gradient(circle, rgba(5,150,105,0.09) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none", zIndex: 0,
       }} />
 
-      {/* Navigation */}
-      <nav style={{
+      {/* Top Navbar */}
+      <header style={{
         position: "fixed", top: 0, left: 0, right: 0,
         zIndex: 100,
-        background: "rgba(255,255,255,0.85)",
-        backdropFilter: "blur(16px)",
-        borderBottom: "1px solid #DDE7E2",
-        padding: "0 40px",
+        background: "rgba(9, 17, 14, 0.85)",
+        backdropFilter: "blur(18px)",
+        borderBottom: "1px solid #1F3830",
+        padding: "0 32px",
         height: "64px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div style={{
-            width: "34px", height: "34px",
-            background: "linear-gradient(135deg, #064E3B 0%, #059669 100%)",
-            borderRadius: "9px",
+            width: "36px", height: "36px",
+            background: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
+            borderRadius: "10px",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "17px",
-            boxShadow: "0 2px 8px rgba(5,150,105,0.2)",
+            fontSize: "18px",
+            boxShadow: "0 2px 12px rgba(16,185,129,0.4)",
             color: "#FFFFFF",
           }}>🧠</div>
-          <span style={{ fontWeight: 800, fontSize: "17px", color: "#064E3B", letterSpacing: "-0.01em" }}>
+          <span style={{ fontWeight: 800, fontSize: "18px", color: "#F0FDF4", letterSpacing: "-0.01em" }}>
             MemoryOS
           </span>
         </div>
 
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <Link href="/login" className="btn-secondary" style={{
-            padding: "8px 18px", borderRadius: "10px", fontSize: "14px",
+            padding: "8px 18px", borderRadius: "10px", fontSize: "13.5px",
           }}>
             Sign in
           </Link>
           <Link href="/signup" className="btn-primary" style={{
-            padding: "8px 20px", borderRadius: "10px", fontSize: "14px",
+            padding: "8px 20px", borderRadius: "10px", fontSize: "13.5px",
           }}>
-            Get Started
+            Get Started Free
           </Link>
         </div>
-      </nav>
+      </header>
 
-      {/* Hero section */}
+      {/* Hero Section */}
       <section style={{
         position: "relative", zIndex: 1,
-        minHeight: "100vh",
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        padding: "120px 20px 60px",
+        padding: "130px 20px 40px",
+        maxWidth: "1160px",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
         textAlign: "center",
       }}>
-        {/* Badge */}
-        <div style={{
+        {/* Release / Status Badge */}
+        <div className="animate-fadeInUp" style={{
           display: "inline-flex", alignItems: "center", gap: "8px",
-          background: "#ECFDF5",
-          border: "1px solid #D1FAE5",
+          background: "rgba(16, 185, 129, 0.1)",
+          border: "1px solid rgba(16, 185, 129, 0.3)",
           borderRadius: "999px",
           padding: "6px 16px",
-          marginBottom: "28px",
-          color: "#065F46",
+          marginBottom: "24px",
+          color: "#34D399",
           fontSize: "13px", fontWeight: 600,
-          boxShadow: "0 1px 3px rgba(5,150,105,0.06)",
+          boxShadow: "0 0 20px rgba(16,185,129,0.12)",
         }}>
           <span style={{
             width: "7px", height: "7px",
-            background: "#059669",
+            background: "#10B981",
             borderRadius: "50%",
-            boxShadow: "0 0 6px rgba(5,150,105,0.6)",
+            boxShadow: "0 0 8px #10B981",
           }} />
-          AI-Powered Second Brain
+          MemoryOS 2.0 • AI-Powered Second Brain
         </div>
 
-        {/* Title */}
-        <h1 style={{
-          fontSize: "clamp(2.8rem, 6.5vw, 5rem)",
+        {/* Main Heading */}
+        <h1 className="animate-fadeInUp" style={{
+          fontSize: "clamp(2.6rem, 5.5vw, 4.4rem)",
           fontWeight: 800,
-          lineHeight: 1.08,
+          lineHeight: 1.1,
           letterSpacing: "-0.03em",
-          marginBottom: "22px",
-          maxWidth: "800px",
+          marginBottom: "20px",
+          maxWidth: "850px",
         }}>
-          <span style={{ color: "#064E3B" }}>
-            Your Memory,{" "}
-          </span>
-          <br />
-          <span style={{ color: "#059669" }}>
-            Supercharged
+          Turn Your Scattered Knowledge into an{" "}
+          <span style={{
+            background: "linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}>
+            Active Second Brain
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p style={{
-          color: "#52635C",
-          fontSize: "clamp(1.05rem, 2.2vw, 1.25rem)",
-          lineHeight: 1.65,
-          maxWidth: "600px",
-          marginBottom: "40px",
+        <p className="animate-fadeInUp" style={{
+          color: "#9EB3A8",
+          fontSize: "clamp(1rem, 2vw, 1.2rem)",
+          lineHeight: 1.6,
+          maxWidth: "680px",
+          marginBottom: "36px",
         }}>
-          Upload notes, PDFs, code, and ideas. Retrieve them later using
-          natural language — your AI second brain remembers everything.
+          Store notes, documents, research, and code. Ask questions, generate flashcards,
+          and explore neural memory connections with lightning-fast AI retrieval.
         </p>
 
-        {/* CTAs */}
-        <div style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap", marginBottom: "64px" }}>
+        {/* CTA Buttons */}
+        <div className="animate-fadeInUp" style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap", marginBottom: "48px" }}>
           <Link href="/signup" className="btn-primary" style={{
-            padding: "14px 34px", borderRadius: "12px", fontSize: "15px",
+            padding: "13px 32px", borderRadius: "12px", fontSize: "15px",
           }}>
-            Start for free →
+            Create Your Brain Free →
           </Link>
           <Link href="/login" className="btn-secondary" style={{
-            padding: "14px 30px", borderRadius: "12px", fontSize: "15px",
+            padding: "13px 26px", borderRadius: "12px", fontSize: "15px",
           }}>
-            Sign in
+            Live Demo Access
           </Link>
         </div>
 
-        {/* Feature pills */}
-        <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-          {["Semantic Search", "Vector Embeddings", "RAG Chat", "Code Snippets", "Exam Revision", "Knowledge Graph"].map((f) => (
-            <span key={f} style={{
-              background: "#FFFFFF",
-              border: "1px solid #DDE7E2",
-              color: "#52635C",
-              padding: "6px 14px", borderRadius: "999px",
-              fontSize: "12px", fontWeight: 500,
-              boxShadow: "0 1px 2px rgba(16,35,29,0.02)",
+        {/* Interactive App Preview Window */}
+        <div className="glass-card animate-scaleIn" style={{
+          width: "100%",
+          maxWidth: "920px",
+          borderRadius: "18px",
+          border: "1px solid rgba(255,255,255,0.08)",
+          background: "#0E1915",
+          padding: "16px",
+          boxShadow: "0 24px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(16, 185, 129, 0.08)",
+          textAlign: "left",
+          marginBottom: "70px",
+        }}>
+          {/* Mock Window Header */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            borderBottom: "1px solid #1F3830", paddingBottom: "12px", marginBottom: "16px",
+          }}>
+            <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#EF4444" }} />
+              <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#F59E0B" }} />
+              <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#10B981" }} />
+              <span style={{ color: "#5D756C", fontSize: "12px", marginLeft: "10px", fontFamily: "monospace" }}>
+                memoryos.ai/app/workspace
+              </span>
+            </div>
+
+            {/* Interactive Preview Tabs */}
+            <div style={{ display: "flex", gap: "6px" }}>
+              <button
+                onClick={() => setActiveTab("search")}
+                style={{
+                  padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 600,
+                  cursor: "pointer", border: "1px solid",
+                  background: activeTab === "search" ? "rgba(16,185,129,0.2)" : "transparent",
+                  borderColor: activeTab === "search" ? "#10B981" : "#1F3830",
+                  color: activeTab === "search" ? "#34D399" : "#9EB3A8",
+                }}
+              >
+                ⌕ Semantic Search
+              </button>
+              <button
+                onClick={() => setActiveTab("chat")}
+                style={{
+                  padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 600,
+                  cursor: "pointer", border: "1px solid",
+                  background: activeTab === "chat" ? "rgba(16,185,129,0.2)" : "transparent",
+                  borderColor: activeTab === "chat" ? "#10B981" : "#1F3830",
+                  color: activeTab === "chat" ? "#34D399" : "#9EB3A8",
+                }}
+              >
+                💬 RAG Chat
+              </button>
+              <button
+                onClick={() => setActiveTab("cards")}
+                style={{
+                  padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 600,
+                  cursor: "pointer", border: "1px solid",
+                  background: activeTab === "cards" ? "rgba(16,185,129,0.2)" : "transparent",
+                  borderColor: activeTab === "cards" ? "#10B981" : "#1F3830",
+                  color: activeTab === "cards" ? "#34D399" : "#9EB3A8",
+                }}
+              >
+                📚 Active Recall
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Content Preview */}
+          {activeTab === "search" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{
+                background: "#111E1A", border: "1px solid #1F3830", borderRadius: "10px",
+                padding: "10px 14px", display: "flex", alignItems: "center", gap: "10px",
+              }}>
+                <span style={{ color: "#10B981" }}>⌕</span>
+                <span style={{ color: "#F0FDF4", fontSize: "13px" }}>how does distributed consensus work in raft?</span>
+                <span className="kbd-badge" style={{ marginLeft: "auto" }}>98% Match</span>
+              </div>
+              <div style={{
+                background: "#14241E", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "10px",
+                padding: "14px",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                  <span style={{ color: "#34D399", fontWeight: 600, fontSize: "13px" }}>📄 Raft Distributed Consensus Protocol Notes</span>
+                  <span style={{ fontSize: "11px", color: "#5D756C" }}>Indexed 2 hrs ago</span>
+                </div>
+                <p style={{ color: "#9EB3A8", fontSize: "12.5px", lineHeight: 1.5, margin: 0 }}>
+                  Raft achieves consensus by electing a distinguished leader, then giving the leader complete responsibility for managing the replicated log. Leaders accept log entries from clients and replicate them across followers...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "chat" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ alignSelf: "flex-end", background: "#172923", padding: "8px 14px", borderRadius: "12px 12px 2px 12px", maxWidth: "70%" }}>
+                <p style={{ color: "#F0FDF4", fontSize: "13px", margin: 0 }}>What are the 3 key takeaways from my Machine Learning notes?</p>
+              </div>
+              <div style={{ alignSelf: "flex-start", background: "#111E1A", border: "1px solid #1F3830", padding: "12px 16px", borderRadius: "12px 12px 12px 2px", maxWidth: "80%" }}>
+                <p style={{ color: "#F0FDF4", fontSize: "13px", margin: "0 0 6px 0", lineHeight: 1.5 }}>
+                  Based on your saved note <strong>Deep Learning Fundamentals (p. 42)</strong>:
+                </p>
+                <ul style={{ color: "#9EB3A8", fontSize: "12px", margin: 0, paddingLeft: "18px", lineHeight: 1.5 }}>
+                  <li>Gradient descent convergence relies on learning rate schedules (Adam/Cosine).</li>
+                  <li>Overfitting mitigation is achieved via weight decay and dropout layers.</li>
+                  <li>Cross-entropy loss optimizes maximum likelihood for multi-class classification.</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "cards" && (
+            <div style={{
+              background: "#111E1A", border: "1px solid #1F3830", borderRadius: "12px",
+              padding: "20px", textAlign: "center",
             }}>
-              {f}
-            </span>
+              <span style={{ fontSize: "11px", color: "#10B981", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Active Recall Flashcard
+              </span>
+              <h3 style={{ color: "#F0FDF4", fontSize: "16px", fontWeight: 600, margin: "10px 0 16px" }}>
+                What is the time complexity of vector similarity search in HNSW?
+              </h3>
+              <div style={{ display: "inline-flex", gap: "8px" }}>
+                <span className="tag-pill" style={{ background: "rgba(16,185,129,0.15)" }}>O(log N) Average</span>
+                <span className="tag-pill" style={{ background: "rgba(56,189,248,0.15)", color: "#38BDF8", borderColor: "rgba(56,189,248,0.3)" }}>Graph Exploration</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Stats Row */}
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: "16px", width: "100%", maxWidth: "900px", marginBottom: "70px",
+        }}>
+          {[
+            { metric: "100%", label: "Private & Local Vector Storage" },
+            { metric: "Sub-50ms", label: "Semantic RAG Query Speed" },
+            { metric: "Zero", label: "Hallucination Citation Guarantee" },
+            { metric: "10+ Formats", label: "PDF, DOCX, Code, Audio & Web" },
+          ].map((s) => (
+            <div key={s.label} style={{
+              background: "#111E1A", border: "1px solid #1F3830",
+              borderRadius: "14px", padding: "18px 14px", textAlign: "center",
+            }}>
+              <div style={{ fontSize: "22px", fontWeight: 800, color: "#34D399", marginBottom: "4px" }}>
+                {s.metric}
+              </div>
+              <div style={{ fontSize: "12px", color: "#9EB3A8" }}>
+                {s.label}
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Features grid */}
+      {/* Features Grid Section */}
       <section style={{
         position: "relative", zIndex: 1,
-        padding: "40px 24px 100px",
+        padding: "30px 24px 100px",
         maxWidth: "1100px", margin: "0 auto",
       }}>
-        <div style={{ textAlign: "center", marginBottom: "50px" }}>
+        <div style={{ textAlign: "center", marginBottom: "44px" }}>
           <h2 style={{
-            fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
-            fontWeight: 700, color: "#064E3B",
+            fontSize: "clamp(1.8rem, 3.5vw, 2.4rem)",
+            fontWeight: 700, color: "#F0FDF4",
             marginBottom: "10px", letterSpacing: "-0.02em",
           }}>
-            Everything you need
+            Architected for Serious Thinkers
           </h2>
-          <p style={{ color: "#52635C", fontSize: "15px" }}>
-            Built with production-grade AI vector retrieval & contextual memory
+          <p style={{ color: "#9EB3A8", fontSize: "15px" }}>
+            Experience the precision of modern semantic intelligence.
           </p>
         </div>
 
@@ -203,44 +346,65 @@ export default function Home() {
         }}>
           {features.map((f) => (
             <div key={f.title} style={{
-              background: "#FFFFFF",
-              border: "1px solid #DDE7E2",
+              background: "#111E1A",
+              border: "1px solid #1F3830",
               borderRadius: "18px",
               padding: "26px",
-              transition: "all 0.2s ease",
-              boxShadow: "0 1px 3px rgba(16, 35, 29, 0.03)",
+              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.35)",
             }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = "#B5D1C5";
+                (e.currentTarget as HTMLDivElement).style.borderColor = "#10B981";
                 (e.currentTarget as HTMLDivElement).style.transform = "translateY(-3px)";
-                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(6, 78, 59, 0.06)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 10px 30px rgba(16, 185, 129, 0.15)";
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = "#DDE7E2";
+                (e.currentTarget as HTMLDivElement).style.borderColor = "#1F3830";
                 (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 3px rgba(16, 35, 29, 0.03)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.35)";
               }}
             >
               <div style={{
-                width: "46px", height: "46px",
-                background: "#ECFDF5",
-                border: "1px solid #D1FAE5",
+                width: "44px", height: "44px",
+                background: "rgba(16, 185, 129, 0.12)",
+                border: "1px solid rgba(16, 185, 129, 0.25)",
                 borderRadius: "12px",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: "20px", marginBottom: "16px",
               }}>
                 {f.icon}
               </div>
-              <h3 style={{ color: "#064E3B", fontSize: "16px", fontWeight: 700, marginBottom: "8px" }}>
+              <h3 style={{ color: "#F0FDF4", fontSize: "16px", fontWeight: 700, marginBottom: "8px" }}>
                 {f.title}
               </h3>
-              <p style={{ color: "#52635C", fontSize: "13.5px", lineHeight: 1.6 }}>
+              <p style={{ color: "#9EB3A8", fontSize: "13.5px", lineHeight: 1.6, margin: 0 }}>
                 {f.desc}
               </p>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Footer */}
+      <footer style={{
+        borderTop: "1px solid #1F3830",
+        padding: "36px 32px",
+        background: "#070E0B",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        flexWrap: "wrap", gap: "16px",
+        color: "#5D756C", fontSize: "13px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span>🧠 MemoryOS Second Brain</span>
+          <span>•</span>
+          <span>© 2026</span>
+        </div>
+        <div style={{ display: "flex", gap: "20px" }}>
+          <Link href="/login" style={{ color: "#9EB3A8" }}>Login</Link>
+          <Link href="/signup" style={{ color: "#9EB3A8" }}>Signup</Link>
+          <Link href="/dashboard" style={{ color: "#9EB3A8" }}>Dashboard</Link>
+        </div>
+      </footer>
     </main>
   );
 }

@@ -42,22 +42,22 @@ export default function BackendWaker() {
       left: "50%",
       transform: "translateX(-50%)",
       zIndex: 9999,
-      background: "#FFFFFF",
-      border: "1px solid #DDE7E2",
+      background: "#111E1A",
+      border: "1px solid #1F3830",
       borderRadius: "999px",
       padding: "8px 18px",
       display: "flex",
       alignItems: "center",
       gap: "10px",
-      boxShadow: "0 6px 20px rgba(6, 78, 59, 0.1), 0 2px 6px rgba(16, 35, 29, 0.04)",
+      boxShadow: "0 6px 20px rgba(0, 0, 0, 0.6), 0 0 12px rgba(16, 185, 129, 0.15)",
     }}>
       <div style={{
         width: "8px", height: "8px", borderRadius: "50%",
-        background: "#D97706",
+        background: "#F59E0B",
         animation: "pulse 1s ease-in-out infinite",
       }} />
       <style>{`@keyframes pulse { 0%,100%{opacity:0.4;transform:scale(0.8)} 50%{opacity:1;transform:scale(1)} }`}</style>
-      <span style={{ color: "#52635C", fontSize: "12.5px", fontWeight: 500 }}>
+      <span style={{ color: "#9EB3A8", fontSize: "12.5px", fontWeight: 500 }}>
         Waking up server... first load takes ~30 seconds
       </span>
     </div>

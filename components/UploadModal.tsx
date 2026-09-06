@@ -143,11 +143,11 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
 
   const inputStyle = {
     width: "100%",
-    background: "#FFFFFF",
-    border: "1px solid #DDE7E2",
+    background: "#0E1915",
+    border: "1.5px solid #1F3830",
     borderRadius: "10px",
     padding: "10px 14px",
-    color: "#10231D",
+    color: "#F0FDF4",
     fontSize: "13.5px",
     outline: "none",
     boxSizing: "border-box" as const,
@@ -156,7 +156,7 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
   };
 
   const labelStyle = {
-    color: "#064E3B", fontSize: "11px", fontWeight: 700 as const,
+    color: "#34D399", fontSize: "11px", fontWeight: 700 as const,
     display: "block" as const, marginBottom: "6px",
     textTransform: "uppercase" as const, letterSpacing: "0.06em",
   };
@@ -166,27 +166,27 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
       onClick={(e) => { if (e.target === e.currentTarget && !loading) onClose(); }}
       style={{
         position: "fixed", inset: 0,
-        background: "rgba(2, 44, 34, 0.45)",
-        backdropFilter: "blur(6px)",
+        background: "rgba(0, 0, 0, 0.75)",
+        backdropFilter: "blur(8px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         zIndex: 50, padding: "20px",
       }}
     >
       <div style={{
-        background: "#FFFFFF",
-        border: "1px solid #DDE7E2",
+        background: "#111E1A",
+        border: "1.5px solid #1F3830",
         borderRadius: "20px", padding: "28px",
         width: "100%", maxWidth: "580px",
         position: "relative",
-        boxShadow: "0 20px 45px rgba(6, 78, 59, 0.12), 0 4px 12px rgba(16, 35, 29, 0.04)",
+        boxShadow: "0 24px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.08)",
         maxHeight: "90vh", overflowY: "auto",
       }}>
         {/* Header */}
         <div style={{ marginBottom: "20px", paddingRight: "40px" }}>
-          <h2 style={{ fontSize: "19px", fontWeight: 700, color: "#064E3B", marginBottom: "2px" }}>
+          <h2 style={{ fontSize: "19px", fontWeight: 700, color: "#F0FDF4", marginBottom: "2px" }}>
             Add Memory
           </h2>
-          <p style={{ color: "#52635C", fontSize: "13px" }}>
+          <p style={{ color: "#9EB3A8", fontSize: "13px" }}>
             Store notes, documents, and code into your personal knowledge base
           </p>
         </div>
@@ -198,16 +198,16 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
           aria-label="Close modal"
           style={{
             position: "absolute", top: "20px", right: "20px",
-            background: "#F1F5F3",
-            border: "1px solid #DDE7E2",
-            color: "#52635C", borderRadius: "8px",
+            background: "#172923",
+            border: "1px solid #1F3830",
+            color: "#9EB3A8", borderRadius: "8px",
             width: "32px", height: "32px",
             cursor: "pointer", fontSize: "13px",
             display: "flex", alignItems: "center", justifyContent: "center",
             transition: "all 0.15s",
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = "#10231D"; e.currentTarget.style.background = "#E2ECE7"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "#52635C"; e.currentTarget.style.background = "#F1F5F3"; }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#F0FDF4"; e.currentTarget.style.background = "#1F3830"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "#9EB3A8"; e.currentTarget.style.background = "#172923"; }}
         >✕</button>
 
         {/* Category selector */}
@@ -222,9 +222,9 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                   onClick={() => handleCategoryChange(cat.id)}
                   style={{
                     padding: "6px 12px", borderRadius: "8px",
-                    border: active ? "1px solid #059669" : "1px solid #DDE7E2",
-                    background: active ? "#ECFDF5" : "#FFFFFF",
-                    color: active ? "#064E3B" : "#52635C",
+                    border: active ? "1px solid #10B981" : "1px solid #1F3830",
+                    background: active ? "rgba(16, 185, 129, 0.15)" : "#0E1915",
+                    color: active ? "#34D399" : "#9EB3A8",
                     fontSize: "12px", fontWeight: active ? 700 : 500, cursor: "pointer",
                     transition: "all 0.15s",
                     display: "flex", alignItems: "center", gap: "5px",
@@ -243,9 +243,9 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
           gap: "4px", marginBottom: "18px",
-          background: "#F1F5F3",
+          background: "#0E1915",
           borderRadius: "12px", padding: "4px",
-          border: "1px solid #DDE7E2",
+          border: "1px solid #1F3830",
         }}>
           {TABS.map((t) => {
             const active = tab === t.id;
@@ -257,12 +257,12 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                 title={t.label}
                 style={{
                   padding: "7px 2px", borderRadius: "8px", border: "none",
-                  background: active ? "#FFFFFF" : "transparent",
-                  color: active ? "#064E3B" : "#7A8A84",
+                  background: active ? "#172923" : "transparent",
+                  color: active ? "#34D399" : "#5D756C",
                   fontSize: "15px", cursor: "pointer", transition: "all 0.15s",
                   display: "flex", flexDirection: "column",
                   alignItems: "center", gap: "2px",
-                  boxShadow: active ? "0 1px 3px rgba(16,35,29,0.06)" : "none",
+                  boxShadow: active ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
                 }}
               >
                 <span>{t.icon}</span>
@@ -281,8 +281,8 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
             placeholder="Give this memory a clear title..."
             maxLength={255} disabled={loading}
             style={inputStyle}
-            onFocus={e => { e.target.style.borderColor = "#059669"; e.target.style.boxShadow = "0 0 0 3px rgba(5,150,105,0.12)"; }}
-            onBlur={e => { e.target.style.borderColor = "#DDE7E2"; e.target.style.boxShadow = "none"; }}
+            onFocus={e => { e.target.style.borderColor = "#10B981"; e.target.style.boxShadow = "0 0 0 3px rgba(16,185,129,0.15)"; }}
+            onBlur={e => { e.target.style.borderColor = "#1F3830"; e.target.style.boxShadow = "none"; }}
           />
         </div>
 
@@ -299,8 +299,8 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                 ...inputStyle, resize: "vertical",
                 fontFamily: isCodeTab ? "'Fira Code', 'Courier New', monospace" : "inherit",
               }}
-              onFocus={e => { e.target.style.borderColor = "#059669"; e.target.style.boxShadow = "0 0 0 3px rgba(5,150,105,0.12)"; }}
-              onBlur={e => { e.target.style.borderColor = "#DDE7E2"; e.target.style.boxShadow = "none"; }}
+              onFocus={e => { e.target.style.borderColor = "#10B981"; e.target.style.boxShadow = "0 0 0 3px rgba(16,185,129,0.15)"; }}
+              onBlur={e => { e.target.style.borderColor = "#1F3830"; e.target.style.boxShadow = "none"; }}
             />
           </div>
         )}
@@ -315,10 +315,10 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
               placeholder="https://example.com/article..."
               disabled={loading}
               style={inputStyle}
-              onFocus={e => { e.target.style.borderColor = "#059669"; e.target.style.boxShadow = "0 0 0 3px rgba(5,150,105,0.12)"; }}
-              onBlur={e => { e.target.style.borderColor = "#DDE7E2"; e.target.style.boxShadow = "none"; }}
+              onFocus={e => { e.target.style.borderColor = "#10B981"; e.target.style.boxShadow = "0 0 0 3px rgba(16,185,129,0.15)"; }}
+              onBlur={e => { e.target.style.borderColor = "#1F3830"; e.target.style.boxShadow = "none"; }}
             />
-            <p style={{ color: "#7A8A84", fontSize: "11.5px", marginTop: "5px" }}>
+            <p style={{ color: "#5D756C", fontSize: "11.5px", marginTop: "5px" }}>
               Extracts readable text from any webpage or article
             </p>
           </div>
@@ -331,20 +331,20 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
             <div
               onClick={() => !loading && document.getElementById(`file-input-${tab}`)?.click()}
               style={{
-                border: `2px dashed ${file ? "#059669" : "#A7F3D0"}`,
+                border: `2px dashed ${file ? "#10B981" : "#1F3830"}`,
                 borderRadius: "14px", padding: "24px 20px", textAlign: "center",
                 cursor: loading ? "not-allowed" : "pointer",
-                background: file ? "#ECFDF5" : "#F8FAF9",
+                background: file ? "rgba(16, 185, 129, 0.1)" : "#0E1915",
                 transition: "all 0.2s ease",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = "#ECFDF5"; (e.currentTarget as HTMLDivElement).style.borderColor = "#059669"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = file ? "#ECFDF5" : "#F8FAF9"; (e.currentTarget as HTMLDivElement).style.borderColor = file ? "#059669" : "#A7F3D0"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor = "#10B981"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = file ? "#10B981" : "#1F3830"; }}
             >
               <div style={{ fontSize: "32px", marginBottom: "6px" }}>{currentTab.icon}</div>
-              <p style={{ color: file ? "#064E3B" : "#10231D", fontSize: "13.5px", fontWeight: 600, wordBreak: "break-all" }}>
+              <p style={{ color: file ? "#34D399" : "#F0FDF4", fontSize: "13.5px", fontWeight: 600, wordBreak: "break-all" }}>
                 {file ? file.name : `Click or drag to select ${currentTab.label} file`}
               </p>
-              <p style={{ color: "#7A8A84", fontSize: "11px", marginTop: "4px" }}>
+              <p style={{ color: "#5D756C", fontSize: "11px", marginTop: "4px" }}>
                 {file ? `${(file.size / 1024).toFixed(1)} KB` : "PDF • TXT • DOCX • Code"}
               </p>
             </div>
@@ -391,17 +391,17 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="e.g. Data Structures, Machine Learning"
                 style={inputStyle}
-                onFocus={e => { e.target.style.borderColor = "#059669"; e.target.style.boxShadow = "0 0 0 3px rgba(5,150,105,0.12)"; }}
-                onBlur={e => { e.target.style.borderColor = "#DDE7E2"; e.target.style.boxShadow = "none"; }}
+                onFocus={e => { e.target.style.borderColor = "#10B981"; e.target.style.boxShadow = "0 0 0 3px rgba(16,185,129,0.15)"; }}
+                onBlur={e => { e.target.style.borderColor = "#1F3830"; e.target.style.boxShadow = "none"; }}
               />
             </div>
             <div>
               <label style={labelStyle}>Difficulty Level</label>
               <div style={{ display: "flex", gap: "8px" }}>
                 {[
-                  { id: "easy", label: "Easy", icon: "🟢", desc: "Simple language", color: "#059669" },
-                  { id: "medium", label: "Medium", icon: "🟡", desc: "Professor level", color: "#D97706" },
-                  { id: "hard", label: "Hard", icon: "🔴", desc: "Textbook level", color: "#DC2626" },
+                  { id: "easy", label: "Easy", icon: "🟢", desc: "Simple language", color: "#34D399" },
+                  { id: "medium", label: "Medium", icon: "🟡", desc: "Professor level", color: "#FBBF24" },
+                  { id: "hard", label: "Hard", icon: "🔴", desc: "Textbook level", color: "#F87171" },
                 ].map((d) => {
                   const active = difficulty === d.id;
                   return (
@@ -410,9 +410,9 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                       onClick={() => setDifficulty(d.id)}
                       style={{
                         flex: 1, padding: "9px 6px", borderRadius: "10px",
-                        border: active ? `1px solid ${d.color}` : "1px solid #DDE7E2",
-                        background: active ? "#F8FAF9" : "#FFFFFF",
-                        color: active ? d.color : "#52635C",
+                        border: active ? `1px solid ${d.color}` : "1px solid #1F3830",
+                        background: active ? "rgba(16, 185, 129, 0.12)" : "#0E1915",
+                        color: active ? d.color : "#9EB3A8",
                         fontSize: "12px", fontWeight: 600, cursor: "pointer",
                         display: "flex", flexDirection: "column", alignItems: "center", gap: "3px",
                         transition: "all 0.15s",
@@ -420,7 +420,7 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                     >
                       <span style={{ fontSize: "16px" }}>{d.icon}</span>
                       <span>{d.label}</span>
-                      <span style={{ fontSize: "10px", color: "#7A8A84", fontWeight: 400 }}>{d.desc}</span>
+                      <span style={{ fontSize: "10px", color: "#5D756C", fontWeight: 400 }}>{d.desc}</span>
                     </button>
                   );
                 })}
@@ -441,9 +441,9 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
                     onClick={() => setProjectStatus(s)}
                     style={{
                       flex: 1, padding: "8px 4px", borderRadius: "8px",
-                      border: active ? "1px solid #059669" : "1px solid #DDE7E2",
-                      background: active ? "#ECFDF5" : "#FFFFFF",
-                      color: active ? "#064E3B" : "#52635C",
+                      border: active ? "1px solid #10B981" : "1px solid #1F3830",
+                      background: active ? "rgba(16, 185, 129, 0.14)" : "#0E1915",
+                      color: active ? "#34D399" : "#9EB3A8",
                       fontSize: "11.5px", fontWeight: active ? 700 : 500, cursor: "pointer",
                       textTransform: "capitalize",
                       transition: "all 0.15s",
@@ -457,12 +457,11 @@ export default function UploadModal({ onClose, onSuccess }: Props) {
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div style={{
-            background: "#FEF2F2",
-            border: "1px solid #FEE2E2",
-            color: "#DC2626", borderRadius: "10px",
+            background: "rgba(239, 68, 68, 0.15)",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+            color: "#F87171", borderRadius: "10px",
             padding: "10px 14px", fontSize: "13px", marginBottom: "14px",
             fontWeight: 500,
           }}>

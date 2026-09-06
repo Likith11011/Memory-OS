@@ -28,13 +28,13 @@ function StrengthRow({ met, label }: { met: boolean; label: string }) {
     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
       <div style={{
         width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0,
-        background: met ? "#ECFDF5" : "#F1F5F3",
-        border: `1px solid ${met ? "#059669" : "#DDE7E2"}`,
+        background: met ? "rgba(16, 185, 129, 0.15)" : "#0E1915",
+        border: `1px solid ${met ? "#10B981" : "#1F3830"}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: "9px", color: met ? "#059669" : "transparent",
+        fontSize: "9px", color: met ? "#34D399" : "transparent",
         fontWeight: 700,
       }}>✓</div>
-      <span style={{ color: met ? "#064E3B" : "#7A8A84", fontSize: "12px", fontWeight: met ? 600 : 400 }}>{label}</span>
+      <span style={{ color: met ? "#F0FDF4" : "#5D756C", fontSize: "12px", fontWeight: met ? 600 : 400 }}>{label}</span>
     </div>
   );
 }
@@ -79,8 +79,8 @@ export default function SignupPage() {
   return (
     <main style={{
       minHeight: "100vh",
-      background: "#F8FAF9",
-      color: "#10231D",
+      background: "#09110E",
+      color: "#F0FDF4",
       display: "flex", alignItems: "center", justifyContent: "center",
       padding: "20px", position: "relative", overflow: "hidden",
       fontFamily: "'Inter', sans-serif",
@@ -89,24 +89,24 @@ export default function SignupPage() {
       <div style={{
         position: "absolute", top: "20%", left: "30%",
         width: "400px", height: "400px",
-        background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", bottom: "20%", right: "25%",
         width: "350px", height: "350px",
-        background: "radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(5,150,105,0.08) 0%, transparent 70%)",
         borderRadius: "50%", pointerEvents: "none",
       }} />
 
       {/* Card */}
       <div style={{
         width: "100%", maxWidth: "440px",
-        background: "#FFFFFF",
-        border: "1px solid #DDE7E2",
+        background: "#111E1A",
+        border: "1px solid #1F3830",
         borderRadius: "20px",
         padding: "38px",
-        boxShadow: "0 20px 40px rgba(6,78,59,0.08), 0 2px 8px rgba(16,35,29,0.04)",
+        boxShadow: "0 20px 50px rgba(0,0,0,0.6), 0 0 25px rgba(16,185,129,0.08)",
         position: "relative", zIndex: 1,
       }}>
         {/* Logo */}
@@ -114,26 +114,26 @@ export default function SignupPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
             width: "50px", height: "50px",
-            background: "linear-gradient(135deg, #064E3B 0%, #059669 100%)",
+            background: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
             borderRadius: "12px", fontSize: "24px", marginBottom: "14px",
-            boxShadow: "0 4px 12px rgba(5,150,105,0.25)",
+            boxShadow: "0 4px 14px rgba(16,185,129,0.3)",
             color: "#FFFFFF",
           }}>🧠</div>
           <h1 style={{
             fontSize: "22px", fontWeight: 700, margin: "0 0 4px",
-            color: "#064E3B",
+            color: "#F0FDF4",
           }}>
             Create your account
           </h1>
-          <p style={{ color: "#52635C", fontSize: "13px", margin: 0 }}>
+          <p style={{ color: "#9EB3A8", fontSize: "13px", margin: 0 }}>
             Start building your private knowledge base
           </p>
         </div>
 
         {success && (
           <div style={{
-            background: "#ECFDF5", border: "1px solid #A7F3D0",
-            color: "#065F46", borderRadius: "10px", padding: "11px 14px",
+            background: "rgba(16, 185, 129, 0.15)", border: "1px solid #1F3830",
+            color: "#34D399", borderRadius: "10px", padding: "11px 14px",
             fontSize: "13px", marginBottom: "18px", fontWeight: 600,
           }}>
             ✓ {success}
@@ -142,8 +142,8 @@ export default function SignupPage() {
 
         {error && (
           <div style={{
-            background: "#FEF2F2", border: "1px solid #FEE2E2",
-            color: "#DC2626", borderRadius: "10px", padding: "11px 14px",
+            background: "rgba(239, 68, 68, 0.15)", border: "1px solid rgba(239, 68, 68, 0.3)",
+            color: "#F87171", borderRadius: "10px", padding: "11px 14px",
             fontSize: "13px", marginBottom: "18px", fontWeight: 500,
           }}>
             ⚠ {error}
@@ -153,7 +153,7 @@ export default function SignupPage() {
         {/* Email */}
         <div style={{ marginBottom: "16px" }}>
           <label style={{
-            color: "#064E3B", fontSize: "11px", fontWeight: 700,
+            color: "#34D399", fontSize: "11px", fontWeight: 700,
             display: "block", marginBottom: "6px",
             textTransform: "uppercase", letterSpacing: "0.06em",
           }}>
@@ -176,7 +176,7 @@ export default function SignupPage() {
         {/* Password */}
         <div style={{ marginBottom: "16px" }}>
           <label style={{
-            color: "#064E3B", fontSize: "11px", fontWeight: 700,
+            color: "#34D399", fontSize: "11px", fontWeight: 700,
             display: "block", marginBottom: "6px",
             textTransform: "uppercase", letterSpacing: "0.06em",
           }}>
@@ -201,7 +201,7 @@ export default function SignupPage() {
               position: "absolute", right: "12px", top: "50%",
               transform: "translateY(-50%)",
               background: "none", border: "none",
-              color: "#7A8A84", cursor: "pointer", fontSize: "14px", padding: "4px",
+              color: "#9EB3A8", cursor: "pointer", fontSize: "14px", padding: "4px",
             }}>
               {showPassword ? "🙈" : "👁️"}
             </button>
@@ -209,11 +209,11 @@ export default function SignupPage() {
 
           {showStrength && password.length > 0 && (
             <div style={{
-              background: "#F8FAF9",
-              border: "1px solid #DDE7E2",
+              background: "#0E1915",
+              border: "1px solid #1F3830",
               borderRadius: "10px", padding: "14px", marginTop: "10px",
             }}>
-              <p style={{ color: "#064E3B", fontSize: "10px", fontWeight: 700, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              <p style={{ color: "#34D399", fontSize: "10px", fontWeight: 700, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 Password requirements
               </p>
               <StrengthRow met={strength.hasMinLength} label="At least 6 characters" />
@@ -240,9 +240,9 @@ export default function SignupPage() {
         </button>
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "18px" }}>
-          <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
-          <span style={{ color: "#7A8A84", fontSize: "12px" }}>Already have an account?</span>
-          <div style={{ flex: 1, height: "1px", background: "#DDE7E2" }} />
+          <div style={{ flex: 1, height: "1px", background: "#1F3830" }} />
+          <span style={{ color: "#5D756C", fontSize: "12px" }}>Already have an account?</span>
+          <div style={{ flex: 1, height: "1px", background: "#1F3830" }} />
         </div>
 
         <Link href="/login" className="btn-secondary" style={{

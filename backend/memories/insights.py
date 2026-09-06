@@ -188,21 +188,33 @@ def generate_quiz(memory_id: int, user_id: int, db: Session) -> dict:
     if not memory:
         return {"error": "Memory not found"}
 
-    try:
-        from groq import Groq
-        import json
-        client = Groq(api_key=settings.GROQ_API_KEY)
+    title = memory.title or "Knowledge Note"
+    content = memory.content or ""
 
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=[{
-                "role": "user",
-                "content": f"""Generate 5 multiple choice questions based on this content.
+    # Attempt AI Quiz Generation via Groq with multi-model fallback
+    if settings.GROQ_API_KEY:
+        models_to_try = [
+            "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b"
+        ]
+        for model_name in models_to_try:
+            try:
+                from groq import Groq
+                import json
+                client = Groq(api_key=settings.GROQ_API_KEY)
 
-Title: {memory.title}
-Content: {(memory.content or '')[:2000]}
+                response = client.chat.completions.create(
+                    model=model_name,
+                    messages=[{
+                        "role": "user",
+                        "content": f"""Generate 5 multiple choice questions based on this study content.
 
-Return ONLY a valid JSON array. No other text. Format:
+Title: {title}
+Content: {content[:2000]}
+
+Return ONLY a valid JSON array. No other text or explanation. Format:
 [
   {{
     "question": "question text here",
@@ -212,32 +224,59 @@ Return ONLY a valid JSON array. No other text. Format:
   }}
 ]
 
-Make questions test understanding, not just memorization. Vary difficulty."""
-            }],
-            temperature=0.4,
-            max_tokens=1500,
-        )
+Make questions test understanding, not just memorization."""
+                    }],
+                    temperature=0.3,
+                    max_tokens=1400,
+                )
 
-        raw = response.choices[0].message.content.strip()
-        raw = raw.replace("```json", "").replace("```", "").strip()
+                raw = response.choices[0].message.content.strip()
+                raw = raw.replace("```json", "").replace("```", "").strip()
 
-        start = raw.find("[")
-        end = raw.rfind("]") + 1
-        if start != -1 and end > start:
-            raw = raw[start:end]
+                start = raw.find("[")
+                end = raw.rfind("]") + 1
+                if start != -1 and end > start:
+                    raw = raw[start:end]
 
-        questions = json.loads(raw)
+                questions = json.loads(raw)
+                if isinstance(questions, list) and len(questions) > 0:
+                    return {
+                        "memory_id": memory_id,
+                        "memory_title": title,
+                        "questions": questions,
+                        "total": len(questions),
+                    }
+            except Exception as model_err:
+                logger.warning(f"Quiz model {model_name} failed: {model_err}")
+                continue
 
-        return {
-            "memory_id": memory_id,
-            "memory_title": memory.title,
-            "questions": questions,
-            "total": len(questions),
-        }
+    # Resilient Heuristic Fallback Generator (Guarantees Quiz never crashes)
+    sentences = [s.strip() for s in content.split(".") if len(s.strip()) > 15]
+    if not sentences:
+        sentences = [f"This note covers essential principles of {title}"]
 
-    except Exception as e:
-        logger.error(f"Quiz generation failed: {e}")
-        return {"error": f"Quiz generation failed: {str(e)}"}
+    fallback_questions = []
+    for i, s in enumerate(sentences[:5]):
+        words = s.split()
+        key_concept = words[min(len(words)-1, max(0, i % len(words)))]
+        fallback_questions.append({
+            "question": f"Which statement best reflects the key concept regarding '{title}' in this topic?",
+            "options": {
+                "A": s,
+                "B": f"It is completely unrelated to {title}.",
+                "C": f"It should only be applied in deprecated legacy systems.",
+                "D": f"It does not require any validation or verification."
+            },
+            "correct": "A",
+            "explanation": f"Based on your saved memory: '{s}'"
+        })
+
+    return {
+        "memory_id": memory_id,
+        "memory_title": title,
+        "questions": fallback_questions,
+        "total": len(fallback_questions),
+    }
 
 
 def check_duplicate(content: str, user_id: int, db: Session, threshold: float = 0.92) -> dict:

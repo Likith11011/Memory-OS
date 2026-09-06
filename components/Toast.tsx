@@ -20,9 +20,9 @@ export default function Toast({ message, type = "success", onClose, duration = 3
   }, [duration, onClose]);
 
   const colors = {
-    success: { bg: "#FFFFFF", border: "#A7F3D0", text: "#059669", iconBg: "#ECFDF5", icon: "✓" },
-    error: { bg: "#FFFFFF", border: "#FCA5A5", text: "#DC2626", iconBg: "#FEF2F2", icon: "✕" },
-    info: { bg: "#FFFFFF", border: "#BFDBFE", text: "#2563EB", iconBg: "#EFF6FF", icon: "ℹ" },
+    success: { bg: "#111E1A", border: "#1F3830", text: "#34D399", iconBg: "rgba(16, 185, 129, 0.15)", icon: "✓" },
+    error: { bg: "#111E1A", border: "rgba(239, 68, 68, 0.3)", text: "#F87171", iconBg: "rgba(239, 68, 68, 0.15)", icon: "✕" },
+    info: { bg: "#111E1A", border: "rgba(56, 189, 248, 0.3)", text: "#38BDF8", iconBg: "rgba(56, 189, 248, 0.15)", icon: "ℹ" },
   };
 
   const c = colors[type];
@@ -42,7 +42,7 @@ export default function Toast({ message, type = "success", onClose, duration = 3
         display: "flex",
         alignItems: "center",
         gap: "10px",
-        boxShadow: "0 10px 25px rgba(6, 78, 59, 0.08), 0 2px 6px rgba(16, 35, 29, 0.04)",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.1)",
         minWidth: "280px",
         maxWidth: "400px",
       }}
@@ -58,14 +58,14 @@ export default function Toast({ message, type = "success", onClose, duration = 3
       }}>
         {c.icon}
       </span>
-      <span style={{ color: "#10231D", fontSize: "13px", fontWeight: 600, flex: 1 }}>
+      <span style={{ color: "#F0FDF4", fontSize: "13px", fontWeight: 600, flex: 1 }}>
         {message}
       </span>
       <button
         onClick={() => { setExiting(true); setTimeout(onClose, 300); }}
         style={{
           background: "none", border: "none",
-          color: "#7A8A84", cursor: "pointer",
+          color: "#9EB3A8", cursor: "pointer",
           fontSize: "14px", padding: "2px",
           flexShrink: 0,
         }}

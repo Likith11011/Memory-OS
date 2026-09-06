@@ -20,12 +20,13 @@ export default function Sidebar() {
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: "⊞" },
-    { label: "Search", href: "/search", icon: "⌕" },
-    { label: "Chat", href: "/chat", icon: "💬" },
-    { label: "Exam", href: "/exam", icon: "📚" },
-    { label: "Projects", href: "/projects", icon: "🚀" },
-    { label: "Insights", href: "/insights", icon: "📊" },
-    { label: "Roadmap", href: "/roadmap", icon: "🗺️" },
+    { label: "Semantic Search", href: "/search", icon: "⌕" },
+    { label: "AI Copilot", href: "/chat", icon: "💬" },
+    { label: "Exam & Cards", href: "/exam", icon: "📚" },
+    { label: "Quiz Test", href: "/quiz", icon: "🎯" },
+    { label: "Kanban Board", href: "/projects", icon: "🚀" },
+    { label: "Knowledge Graph", href: "/insights", icon: "📊" },
+    { label: "Study Roadmap", href: "/roadmap", icon: "🗺️" },
   ];
 
   const handleLogout = () => {
@@ -35,52 +36,74 @@ export default function Sidebar() {
 
   const sidebarContent = (
     <aside style={{
-      width: "240px",
+      width: "250px",
       height: "100vh",
-      background: "#FFFFFF",
-      borderRight: "1px solid #DDE7E2",
-      padding: "24px 14px",
+      background: "linear-gradient(180deg, #0B1612 0%, #070E0B 100%)",
+      borderRight: "1px solid #1F3830",
+      padding: "20px 14px",
       display: "flex",
       flexDirection: "column",
       position: "fixed",
-      left: isMobile ? (mobileOpen ? 0 : "-240px") : 0,
+      left: isMobile ? (mobileOpen ? 0 : "-250px") : 0,
       top: 0,
-      zIndex: 20,
-      transition: "left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-      boxShadow: "1px 0 3px rgba(16,35,29,0.02)",
+      zIndex: 30,
+      transition: "left 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+      boxShadow: "4px 0 24px rgba(0,0,0,0.5)",
     }}>
-      {/* Logo */}
-      <div style={{
-        marginBottom: "28px", paddingLeft: "8px",
-        display: "flex", alignItems: "center", gap: "10px",
+      {/* Brand Header */}
+      <Link href="/dashboard" style={{
+        marginBottom: "22px", padding: "8px 10px",
+        display: "flex", alignItems: "center", gap: "12px",
+        borderRadius: "12px",
+        background: "rgba(17, 30, 26, 0.6)",
+        border: "1px solid rgba(31, 56, 48, 0.6)",
+        transition: "all 0.2s ease",
+        textDecoration: "none",
       }}>
         <div style={{
           width: "36px", height: "36px",
-          background: "linear-gradient(135deg, #064E3B 0%, #059669 100%)",
+          background: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
           borderRadius: "10px",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: "18px",
-          boxShadow: "0 2px 8px rgba(5,150,105,0.25)",
+          boxShadow: "0 0 16px rgba(16,185,129,0.35)",
           flexShrink: 0,
-          color: "#FFFFFF",
         }}>🧠</div>
-        <div>
-          <h1 style={{
-            fontSize: "16px", fontWeight: 700,
-            color: "#064E3B",
-            margin: 0, lineHeight: 1.2,
-            letterSpacing: "-0.01em",
-          }}>
-            MemoryOS
-          </h1>
-          <p style={{ color: "#7A8A84", fontSize: "11px", margin: 0, fontWeight: 500 }}>
-            Knowledge Forest
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <h1 style={{
+              fontSize: "15px", fontWeight: 700,
+              color: "#F0FDF4",
+              margin: 0, lineHeight: 1.2,
+              letterSpacing: "-0.01em",
+            }}>
+              MemoryOS
+            </h1>
+            <span style={{
+              fontSize: "9px", fontWeight: 700,
+              padding: "1px 5px", borderRadius: "4px",
+              background: "rgba(16, 185, 129, 0.18)",
+              color: "#34D399",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+              letterSpacing: "0.04em",
+            }}>PRO</span>
+          </div>
+          <p style={{ color: "#5D756C", fontSize: "11px", margin: 0, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            AI Second Brain
           </p>
         </div>
+      </Link>
+
+      {/* Nav List */}
+      <div style={{
+        fontSize: "10px", fontWeight: 700,
+        color: "#5D756C", textTransform: "uppercase",
+        letterSpacing: "0.08em", padding: "0 10px 8px 10px",
+      }}>
+        Workspace
       </div>
 
-      {/* Nav */}
-      <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+      <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px", overflowY: "auto" }}>
         {navItems.map((item, idx) => {
           const active = pathname === item.href;
           return (
@@ -90,43 +113,46 @@ export default function Sidebar() {
               className="animate-slideInLeft"
               style={{
                 display: "flex", alignItems: "center", gap: "10px",
-                padding: "9px 12px", borderRadius: "10px",
+                padding: "8px 12px", borderRadius: "10px",
                 textDecoration: "none",
-                color: active ? "#064E3B" : "#52635C",
-                background: active ? "#ECFDF5" : "transparent",
-                border: active ? "1px solid #D1FAE5" : "1px solid transparent",
-                fontSize: "13.5px", fontWeight: active ? 600 : 500,
-                transition: "all 0.18s ease",
-                animationDelay: `${idx * 0.04}s`,
+                color: active ? "#34D399" : "#9EB3A8",
+                background: active ? "rgba(16, 185, 129, 0.12)" : "transparent",
+                border: active ? "1px solid rgba(16, 185, 129, 0.28)" : "1px solid transparent",
+                fontSize: "13px", fontWeight: active ? 600 : 500,
+                transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
+                animationDelay: `${idx * 0.03}s`,
+                position: "relative",
               }}
               onMouseEnter={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#10231D";
-                  (e.currentTarget as HTMLAnchorElement).style.background = "#F1F5F3";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "#F0FDF4";
+                  (e.currentTarget as HTMLAnchorElement).style.background = "#14241E";
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#52635C";
+                  (e.currentTarget as HTMLAnchorElement).style.color = "#9EB3A8";
                   (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
                 }
               }}
             >
               <span style={{ 
-                fontSize: "15px", 
-                color: active ? "#059669" : "#7A8A84",
-                display: "flex", alignItems: "center"
+                fontSize: "14px", 
+                color: active ? "#10B981" : "#5D756C",
+                display: "flex", alignItems: "center", width: "18px", justifyContent: "center",
               }}>
                 {item.icon}
               </span>
-              {item.label}
+              <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {item.label}
+              </span>
+
               {active && (
                 <div style={{
-                  marginLeft: "auto",
                   width: "6px", height: "6px",
                   borderRadius: "50%",
-                  background: "#059669",
-                  boxShadow: "0 0 6px rgba(5,150,105,0.6)",
+                  background: "#10B981",
+                  boxShadow: "0 0 8px #10B981",
                 }} />
               )}
             </Link>
@@ -134,25 +160,25 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div style={{ height: "1px", background: "#DDE7E2", margin: "12px 0" }} />
+      <div style={{ height: "1px", background: "#1F3830", margin: "14px 0" }} />
 
       <button
         onClick={handleLogout}
         style={{
           display: "flex", alignItems: "center", gap: "10px",
-          padding: "9px 12px", borderRadius: "10px",
+          padding: "8px 12px", borderRadius: "10px",
           background: "transparent", border: "1px solid transparent",
-          color: "#7A8A84", fontSize: "13.5px", fontWeight: 500,
+          color: "#5D756C", fontSize: "13px", fontWeight: 500,
           cursor: "pointer", width: "100%", transition: "all 0.18s",
           textAlign: "left",
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.color = "#DC2626";
-          e.currentTarget.style.background = "#FEF2F2";
-          e.currentTarget.style.borderColor = "#FEE2E2";
+          e.currentTarget.style.color = "#F87171";
+          e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+          e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.25)";
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.color = "#7A8A84";
+          e.currentTarget.style.color = "#5D756C";
           e.currentTarget.style.background = "transparent";
           e.currentTarget.style.borderColor = "transparent";
         }}
@@ -171,15 +197,15 @@ export default function Sidebar() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle navigation"
           style={{
-            position: "fixed", top: "16px", left: "16px", zIndex: 30,
-            background: "#FFFFFF",
-            border: "1px solid #DDE7E2",
+            position: "fixed", top: "16px", left: "16px", zIndex: 40,
+            background: "#111E1A",
+            border: "1px solid #1F3830",
             borderRadius: "10px",
             width: "40px", height: "40px",
             display: "flex", alignItems: "center", justifyContent: "center",
             cursor: "pointer", fontSize: "18px",
-            color: "#10231D",
-            boxShadow: "0 2px 8px rgba(16,35,29,0.08)",
+            color: "#F0FDF4",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
           }}
         >
           {mobileOpen ? "✕" : "☰"}
