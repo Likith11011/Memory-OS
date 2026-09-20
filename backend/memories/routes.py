@@ -54,9 +54,10 @@ def generate_tags_with_groq(
 ) -> str:
     try:
         from groq import Groq
-        if not settings.GROQ_API_KEY:
+        api_key = settings.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+        if not api_key:
             return ""
-        groq_client = Groq(api_key=settings.GROQ_API_KEY)
+        groq_client = Groq(api_key=api_key)
         category_hints = {
             "code": "This is a code snippet.",
             "research": "This is a research document.",
@@ -77,13 +78,21 @@ Rules:
 - Return ONLY comma-separated tags, nothing else
 
 Tags:"""
-        response = groq_client.chat.completions.create(
-            model="openai/gpt-oss-20b",
-            messages=[{"role": "user", "content": tag_prompt}],
-            temperature=0.2,
-            max_tokens=80,
-        )
-        if not response.choices or not response.choices[0].message.content:
+        response = None
+        for m_name in ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"]:
+            try:
+                response = groq_client.chat.completions.create(
+                    model=m_name,
+                    messages=[{"role": "user", "content": tag_prompt}],
+                    temperature=0.2,
+                    max_tokens=80,
+                )
+                if response and response.choices and response.choices[0].message.content:
+                    break
+            except Exception:
+                continue
+
+        if not response or not response.choices or not response.choices[0].message.content:
             return ""
         raw = response.choices[0].message.content.strip().split("\n")[0]
         tag_list = [t.strip().lower() for t in raw.split(",") if t.strip()]
@@ -99,9 +108,10 @@ def generate_explanation_with_groq(
 ) -> str:
     try:
         from groq import Groq
-        if not settings.GROQ_API_KEY or not difficulty:
+        api_key = settings.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+        if not api_key or not difficulty:
             return ""
-        groq_client = Groq(api_key=settings.GROQ_API_KEY)
+        groq_client = Groq(api_key=api_key)
         style_map = {
             "easy": "Explain in very simple layman terms.",
             "medium": "Explain at undergraduate level.",
@@ -116,13 +126,21 @@ Style: {style_map.get(difficulty, style_map["medium"])}
 Generate a clear explanation in 3-5 sentences. Start directly.
 
 Explanation:"""
-        response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.4,
-            max_tokens=200,
-        )
-        if not response.choices or not response.choices[0].message.content:
+        response = None
+        for m_name in ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"]:
+            try:
+                response = groq_client.chat.completions.create(
+                    model=m_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.4,
+                    max_tokens=200,
+                )
+                if response and response.choices and response.choices[0].message.content:
+                    break
+            except Exception:
+                continue
+
+        if not response or not response.choices or not response.choices[0].message.content:
             return ""
         return response.choices[0].message.content.strip()
     except Exception as e:

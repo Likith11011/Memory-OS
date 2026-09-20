@@ -119,12 +119,19 @@ def get_weekly_summary(user_id: int, db: Session) -> dict:
 
     try:
         from groq import Groq
-        client = Groq(api_key=settings.GROQ_API_KEY)
-        response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[{
-                "role": "user",
-                "content": f"""Analyze these memories uploaded this week and write a brief weekly learning summary.
+        api_key = settings.GROQ_API_KEY or ""
+        if not api_key:
+            raise ValueError("No Groq API key")
+        client = Groq(api_key=api_key)
+        
+        response = None
+        for model_name in ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"]:
+            try:
+                response = client.chat.completions.create(
+                    model=model_name,
+                    messages=[{
+                        "role": "user",
+                        "content": f"""Analyze these memories uploaded this week and write a brief weekly learning summary.
 
 {content_blob}
 
@@ -134,10 +141,19 @@ TOPICS: [comma separated list of main topics covered]
 INSIGHT: [one actionable insight or suggestion for next week]
 
 Be specific, encouraging, and concise."""
-            }],
-            temperature=0.4,
-            max_tokens=300,
-        )
+                    }],
+                    temperature=0.4,
+                    max_tokens=300,
+                )
+                if response and response.choices and response.choices[0].message.content:
+                    break
+            except Exception as m_err:
+                logger.warning(f"Summary model {model_name} failed: {m_err}")
+                continue
+
+        if not response or not response.choices:
+            raise ValueError("No valid response from Groq summary models")
+
         raw = response.choices[0].message.content.strip()
 
         summary = ""
@@ -192,18 +208,20 @@ def generate_quiz(memory_id: int, user_id: int, db: Session) -> dict:
     content = memory.content or ""
 
     # Attempt AI Quiz Generation via Groq with multi-model fallback
-    if settings.GROQ_API_KEY:
+    api_key = settings.GROQ_API_KEY or ""
+    if api_key:
         models_to_try = [
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "qwen/qwen3.8-27b",
             "llama-3.3-70b-versatile",
             "llama-3.1-8b-instant",
-            "openai/gpt-oss-120b",
-            "openai/gpt-oss-20b"
         ]
         for model_name in models_to_try:
             try:
                 from groq import Groq
                 import json
-                client = Groq(api_key=settings.GROQ_API_KEY)
+                client = Groq(api_key=api_key)
 
                 response = client.chat.completions.create(
                     model=model_name,

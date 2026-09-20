@@ -12,10 +12,11 @@ for noisy in ["httpx","httpcore","sentence_transformers",
               "huggingface_hub","transformers","filelock"]:
     logging.getLogger(noisy).setLevel(logging.WARNING)
 
+from config import settings
+
 logger = logging.getLogger(__name__)
 
 IS_PRODUCTION = bool(os.getenv("RENDER", False))
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 # Only load heavy model locally
 if not IS_PRODUCTION:
@@ -37,7 +38,8 @@ def _get_groq_embedding(text: str) -> List[float]:
     """Use Groq embeddings API in production"""
     try:
         from groq import Groq
-        client = Groq(api_key=GROQ_API_KEY)
+        api_key = settings.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+        client = Groq(api_key=api_key)
         response = client.embeddings.create(
             model="llama3-8b-8192",
             input=text[:2048],

@@ -42,23 +42,26 @@ next-env.d.ts
 
 # Python backend
 backend/venv/
-backend/__pycache__/
+backend/.env
+backend/chroma_db/
 backend/*.db
-backend/config.py
+backend/model_cache/
+**/__pycache__/
+**/*.pyc
+*.pyc
+
 # Environment
 .env
 .env.local
 .env.production
-backend/.env
+.env*
 
-# Python
-__pycache__/
-*.pyc
+# Python & DBs
 venv/
 *.db
 chroma_db/
+model_cache/
 
 # Next.js
 .next/
 node_modules/
-model_cache/

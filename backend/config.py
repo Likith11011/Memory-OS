@@ -1,5 +1,11 @@
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+# Explicitly load .env file from the backend directory
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 class Settings(BaseSettings):
     SECRET_KEY: str = "change-this-before-deployment"
@@ -13,7 +19,7 @@ class Settings(BaseSettings):
     HF_TOKEN: str = ""
 
     class Config:
-        env_file = ".env"
+        env_file = str(env_path)
         env_file_encoding = "utf-8"
         extra = "ignore"
 

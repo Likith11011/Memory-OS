@@ -10,12 +10,11 @@ from auth.models import User
 from memories.models import Memory
 from memories.embedder import get_search_embedding
 from vector_store.chroma import search_chroma
+from config import settings
 from groq import Groq
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/chat", tags=["chat"])
-
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 
 class ChatRequest(BaseModel):
@@ -31,10 +30,11 @@ class ChatResponse(BaseModel):
 
 
 def get_groq_client():
-    if not GROQ_API_KEY:
+    api_key = settings.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+    if not api_key:
         raise HTTPException(status_code=503, detail="Groq API key not configured.")
     try:
-        return Groq(api_key=GROQ_API_KEY)
+        return Groq(api_key=api_key)
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Failed to initialize Groq: {str(e)}")
 

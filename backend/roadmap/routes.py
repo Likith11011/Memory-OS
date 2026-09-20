@@ -6,11 +6,10 @@ from pydantic import BaseModel
 from database import get_db
 from auth.utils import get_current_user
 from auth.models import User
+from config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/roadmap", tags=["roadmap"])
-
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 
 class RoadmapRequest(BaseModel):
@@ -40,14 +39,15 @@ def generate_roadmap(
     if len(request.job_title) > 100:
         raise HTTPException(status_code=400, detail="Job title too long")
 
-    if not GROQ_API_KEY:
+    api_key = settings.GROQ_API_KEY or os.getenv("GROQ_API_KEY", "")
+    if not api_key:
         raise HTTPException(status_code=503, detail="Groq API key not configured")
 
     try:
         from groq import Groq
         import json
 
-        client = Groq(api_key=GROQ_API_KEY)
+        client = Groq(api_key=api_key)
 
         prompt = f"""You are a career guidance expert. Generate a detailed learning roadmap for someone who wants to become a {request.job_title} at the {request.experience_level} level.
 
